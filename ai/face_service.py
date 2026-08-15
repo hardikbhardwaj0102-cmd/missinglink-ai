@@ -1,9 +1,20 @@
 import cv2
 from insightface.app import FaceAnalysis
 
-# Load the model only once
-face_app = FaceAnalysis(name="buffalo_l")
-face_app.prepare(ctx_id=-1)
+
+# ==========================================
+# Load InsightFace Model
+# ==========================================
+
+face_app = FaceAnalysis(
+    name="buffalo_l",
+    providers=["CPUExecutionProvider"]
+)
+
+face_app.prepare(
+    ctx_id=-1,
+    det_size=(640, 640)
+)
 
 
 def get_face_embedding(image_path):
@@ -18,7 +29,10 @@ def get_face_embedding(image_path):
 
     image = cv2.imread(image_path)
 
+    # ==========================================
     # Image could not be read
+    # ==========================================
+
     if image is None:
         return (
             False,
@@ -26,10 +40,16 @@ def get_face_embedding(image_path):
             "Unable to read the uploaded image. Please try another image."
         )
 
+    # ==========================================
     # Detect faces
+    # ==========================================
+
     faces = face_app.get(image)
 
-    # No face detected
+    # ==========================================
+    # No face
+    # ==========================================
+
     if len(faces) == 0:
         return (
             False,
@@ -37,7 +57,10 @@ def get_face_embedding(image_path):
             "No face detected. Please upload a clear image containing the person's face."
         )
 
-    # More than one face detected
+    # ==========================================
+    # Multiple faces
+    # ==========================================
+
     if len(faces) > 1:
         return (
             False,
@@ -45,7 +68,10 @@ def get_face_embedding(image_path):
             "Multiple faces detected. Please upload an image containing only one person's face."
         )
 
-    # Exactly one face detected
+    # ==========================================
+    # Exactly one face
+    # ==========================================
+
     embedding = faces[0].embedding.tolist()
 
     return (
