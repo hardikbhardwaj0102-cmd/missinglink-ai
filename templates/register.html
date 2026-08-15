@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="register-page">
+
+    <!-- ================= LEFT ================= -->
+
+    <div class="register-left">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                🛡️
+            </div>
+
+            <h1>Join MissingLink AI</h1>
+
+            <p>
+                Register your organization to securely access the MissingLink AI
+                investigation dashboard.
+            </p>
+
+        </div>
+
+        <div class="info-card">
+
+            <h2>Who can register?</h2>
+
+            <div class="feature">
+                <span>👮</span>
+                <p>Police Departments</p>
+            </div>
+
+            <div class="feature">
+                <span>🤝</span>
+                <p>Registered NGOs</p>
+            </div>
+
+            <div class="feature">
+                <span>🏥</span>
+                <p>Hospitals & Shelter Homes</p>
+            </div>
+
+            <div class="feature">
+                <span>👶</span>
+                <p>Child Welfare Organizations</p>
+            </div>
+
+            <div class="feature">
+                <span>🛡️</span>
+                <p>Government Authorities</p>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- ================= RIGHT ================= -->
+
+    <div class="register-right">
+
+        <div class="register-card">
+
+            <h2>Organization Registration</h2>
+
+            <p>
+                Fill in your organization details. Your account will be reviewed
+                before dashboard access is granted.
+            </p>
+
+            <form action="/register" method="POST" enctype="multipart/form-data">
+
+                <h3>Organization Information</h3>
+
+                <div class="form-grid">
+
+                    <div class="input-group">
+                        <label>Organization Name</label>
+                        <input type="text" name="organization" placeholder="Delhi Police" required>
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>Organization Type</label>
+
+                        <select name="role" required>
+
+                            <option value="">Select Type</option>
+
+                            <option>Police Department</option>
+                            <option>NGO</option>
+                            <option>Child Welfare Committee</option>
+                            <option>Hospital</option>
+                            <option>Women Protection Cell</option>
+                            <option>Shelter Home</option>
+                            <option>Government Authority</option>
+                            <option>Other</option>
+
+                        </select>
+
+                    </div>
+
+                    <div class="input-group">
+                        <label>Official Email</label>
+                        <input type="email" name="email" placeholder="example@organization.org" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <h3>Representative Information</h3>
+
+                <div class="form-grid">
+
+                    <div class="input-group">
+                        <label>Full Name</label>
+                        <input type="text" name="full_name" placeholder="Officer Rahul Sharma" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Government / Employee ID</label>
+                        <input type="text" name="government_id" placeholder="Employee ID" required>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label>Upload Identity Card</label>
+                        <input type="file" name="id_card" accept="image/*,.pdf" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" name="password" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Confirm Password</label>
+                        <input type="password" name="confirm_password" required>
+                    </div>
+
+                </div>
+
+                <div class="checkbox">
+
+                    <input type="checkbox" required>
+
+                    <label>
+                        I certify that I belong to this organization and the
+                        information provided is correct.
+                    </label>
+
+                </div>
+
+                <button type="submit" class="register-btn">
+
+                    Request Verification
+
+                </button>
+
+            </form>
+
+            <div class="bottom-text">
+
+                Already have an approved account?
+
+                <a href="/login">
+
+                    Login
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+<div id="popupOverlay" class="popup-overlay">
+    <div class="popup">
+
+        <div id="popupIcon">🎉</div>
+
+        <h2 id="popupTitle"></h2>
+
+        <p id="popupMessage"></p>
+
+        <button onclick="closePopup()">OK</button>
+
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="{{ url_for('static', filename='js/popup.js') }}"></script>
+
+{% if popup %}
+<script>
+    window.onload = function () {
+
+        showPopup(
+            "{{ popup.type }}",
+            "{{ popup.title }}",
+            "{{ popup.message }}"
+        );
+
+    };
+</script>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="dashboard">
+
+    <!-- ================= HEADER ================= -->
+
+    <div class="dashboard-header">
+
+        <div>
+
+            <h1>MissingLink AI Dashboard</h1>
+
+            <p class="subtitle">
+                Monitor missing and found person reports in one place.
+            </p>
+
+        </div>
+
+        <div class="dashboard-actions">
+
+            <a href="/report-missing" class="action-btn primary">
+                + Report Missing
+            </a>
+
+            <a href="/report-found" class="action-btn secondary">
+                + Report Found
+            </a>
+            <a id="logout-btn" href="{{ url_for('logout') }}">Logout</a>
+        </div>
+
+    </div>
+
+    <!-- ================= SEARCH ================= -->
+
+    <div class="search-box">
+
+        <input type="text" id="searchInput" placeholder="Search by name or location...">
+
+    </div>
+
+    <!-- ================= STATS ================= -->
+
+    <div class="stats">
+
+        <div class="stat-card">
+
+            <h2>{{ missing_count }}</h2>
+
+            <p>Missing Reports</p>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h2>{{ found_count }}</h2>
+
+            <p>Found Reports</p>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h2>{{ missing_count + found_count }}</h2>
+
+            <p>Total Cases</p>
+
+        </div>
+
+        <div class="stat-card">
+
+            <h2>AI</h2>
+
+            <p>Matching Ready</p>
+
+        </div>
+
+    </div>
+
+    <!-- ================= QUICK ACTIONS ================= -->
+
+
+    <!-- ================= MISSING PERSONS ================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <h2>Missing Persons</h2>
+
+            <span>{{ missing_count }} Records</span>
+
+        </div>
+
+        <div class="case-grid">
+
+            {% if missing_people %}
+
+            {% for person in missing_people %}
+
+            <div class="case-card">
+
+                {% if person.photo_url %}
+
+                <img src="{{ person.photo_url }}" alt="{{ person.name }}">
+
+                {% else %}
+
+                <div class="image-placeholder">
+                    No Image Available
+                </div>
+
+                {% endif %}
+
+                <div class="case-info">
+
+                    <h3>{{ person.name }}</h3>
+
+                    <p><strong>Age:</strong> {{ person.age }}</p>
+
+                    <p><strong>Location:</strong> {{ person.last_seen_location }}</p>
+
+                    <span class="badge missing">
+                        Missing
+                    </span>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+            {% else %}
+
+            <div class="empty-card">
+
+                <h3>No Missing Reports</h3>
+
+                <p>No missing person reports have been submitted yet.</p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+    <!-- ================= FOUND PERSONS ================= -->
+
+    <section class="dashboard-section">
+
+        <div class="section-header">
+
+            <h2>Found Persons</h2>
+
+            <span>{{ found_count }} Records</span>
+
+        </div>
+
+        <div class="case-grid">
+
+            {% if found_people %}
+
+            {% for person in found_people %}
+
+            <div class="case-card">
+
+                {% if person.photo_url %}
+
+                <img src="{{ person.photo_url }}" alt="Found Person">
+
+                {% else %}
+
+                <div class="image-placeholder">
+                    No Image Available
+                </div>
+
+                {% endif %}
+
+                <div class="case-info">
+
+                    <h3>Unknown Person</h3>
+
+                    <p><strong>Estimated Age:</strong> {{ person.estimated_age }}</p>
+
+                    <p><strong>Location:</strong> {{ person.found_location }}</p>
+
+                    <span class="badge found">
+                        Found
+                    </span>
+
+                    <a href="{{ url_for('ai_match', found_id=person.id) }}" class="ai-match-btn ai-loader-link">
+                        AI Face Match
+                    </a>
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+            {% else %}
+
+            <div class="empty-card">
+
+                <h3>No Found Reports</h3>
+
+                <p>No found person reports have been submitted yet.</p>
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+    <div id="aiLoader" class="ai-loader">
+
+        <div class="loader-box">
+
+            <div class="loader-icon"></div>
+
+            <h2>MissingLink AI</h2>
+
+            <p id="loaderText">
+                Initializing AI...
+            </p>
+
+            <div class="progress">
+
+                <div id="progressBar"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

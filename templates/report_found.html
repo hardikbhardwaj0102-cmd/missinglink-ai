@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/report_found.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<form action="/report-found" method="POST" enctype="multipart/form-data" class="report-page">
+
+    <!-- ================= LEFT SIDE ================= -->
+
+    <div class="upload-section">
+
+        <div class="upload-card">
+
+            <div class="upload-icon">
+                📷
+            </div>
+
+            <h2>Upload Photo</h2>
+
+            <p id="para">
+                Upload a clear front-facing image for the best AI matching accuracy.
+            </p>
+
+            <label for="photoInput" class="upload-box">
+
+                <img id="previewImage" src="{{ url_for('static', filename='images/upload-placeholder.png') }}"
+                    alt="Preview">
+
+                <span>Click to Upload</span>
+
+            </label>
+
+            <input type="file" id="photoInput" name="photo" accept="image/*" required>
+
+
+            <!-- ================= FACE ERROR ================= -->
+
+            {% if face_error %}
+
+            <div class="face-error">
+
+                <div class="face-error-icon">
+                    !
+                </div>
+
+                <div class="face-error-content">
+
+                    <strong>Photo Validation Failed</strong>
+
+                    <p>{{ face_error }}</p>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- ================= AI PHOTO QUALITY ================= -->
+
+            <div class="ai-score">
+
+                <h3>AI Photo Quality</h3>
+
+                <div class="progress">
+
+                    <div class="progress-bar"></div>
+
+                </div>
+
+                <p>Waiting for image...</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= RIGHT SIDE ================= -->
+
+    <div class="form-section">
+
+        <div class="form-card">
+
+            <h1>Report Found Person</h1>
+
+            <p id="para">
+                Submit information about a found individual. The report will be securely stored
+                and later compared with missing person records.
+            </p>
+
+
+            <!-- ================= Found Person ================= -->
+
+            <div class="form-grid">
+
+                <div class="input-group">
+
+                    <label>Estimated Age</label>
+
+                    <input id="para" type="number" name="estimated_age" placeholder="Approximate age" required>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Gender</label>
+
+                    <select name="gender">
+
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Height</label>
+
+                    <input type="text" name="height" placeholder="e.g. 170 cm">
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Clothing</label>
+
+                    <input type="text" name="clothing" placeholder="Blue T-shirt, Black Jeans">
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Found Date</label>
+
+                    <input type="date" name="found_date" required>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Found Time</label>
+
+                    <input type="time" name="found_time">
+
+                </div>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Found Location</label>
+
+                <input type="text" name="found_location" placeholder="Where was the person found?" required>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Current Condition</label>
+
+                <select name="condition">
+
+                    <option>Healthy</option>
+
+                    <option>Minor Injuries</option>
+
+                    <option>Seriously Injured</option>
+
+                    <option>Unconscious</option>
+
+                    <option>Needs Medical Attention</option>
+
+                </select>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Description</label>
+
+                <textarea rows="5" name="description"
+                    placeholder="Describe appearance, behaviour, identifying marks, accessories, or any useful observations."></textarea>
+
+            </div>
+
+
+            <hr>
+
+
+            <!-- ================= Finder ================= -->
+
+            <h2>Finder Information</h2>
+
+            <div class="form-grid">
+
+                <div class="input-group">
+
+                    <label>Finder Name</label>
+
+                    <input type="text" name="finder_name" required>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Phone Number</label>
+
+                    <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Email</label>
+
+                    <input type="email" name="email" placeholder="example@email.com">
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Organization</label>
+
+                    <input type="text" name="organization" placeholder="NGO / Hospital / Volunteer">
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Police Station</label>
+
+                    <input type="text" name="police_station" placeholder="Optional">
+
+                </div>
+
+            </div>
+
+
+            <button type="submit" class="submit-btn">
+
+                Submit Found Report
+
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="{{ url_for('static', filename='js/report_found.js') }}"></script>
+
+{% endblock %}

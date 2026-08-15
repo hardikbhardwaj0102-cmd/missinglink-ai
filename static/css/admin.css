@@ -1,0 +1,888 @@
+/* ==========================================
+   MissingLink AI - Admin Panel
+========================================== */
+
+:root {
+
+    --bg: #07111f;
+
+    --card: #101b2d;
+
+    --card-hover: #17253d;
+
+    --primary: #2563eb;
+
+    --success: #22c55e;
+
+    --danger: #ef4444;
+
+    --warning: #f59e0b;
+
+    --text: #ffffff;
+
+    --text2: #9ca3af;
+
+    --border: rgba(255, 255, 255, .08);
+
+}
+
+* {
+
+    margin: 0;
+
+    padding: 0;
+
+    box-sizing: border-box;
+
+    font-family: "Poppins", sans-serif;
+
+}
+
+body {
+
+    background: linear-gradient(135deg, #07111f, #0f172a);
+
+    color: var(--text);
+
+}
+
+/* ================================= */
+
+.admin-dashboard {
+
+    width: 92%;
+
+    max-width: 1450px;
+
+    margin: 110px auto 60px;
+
+}
+
+/* ================================= */
+
+.dashboard-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 45px;
+
+    flex-wrap: wrap;
+
+    gap: 20px;
+
+}
+
+.dashboard-header h1 {
+
+    font-size: 42px;
+
+    margin-bottom: 8px;
+
+}
+
+.dashboard-header p {
+
+    color: var(--text2);
+
+}
+
+.logout-btn {
+
+    background: var(--danger);
+
+    color: white;
+
+    padding: 14px 28px;
+
+    text-decoration: none;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+
+    transition: .3s;
+
+}
+
+.logout-btn:hover {
+
+    transform: translateY(-3px);
+
+    background: #dc2626;
+
+}
+
+/* ================================= */
+
+.stats-grid {
+
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 25px;
+
+    margin-bottom: 45px;
+
+}
+
+.stat-card {
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 18px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    transition: .3s;
+
+}
+
+.stat-card:hover {
+
+    background: var(--card-hover);
+
+    transform: translateY(-6px);
+
+}
+
+.stat-card h2 {
+
+    font-size: 42px;
+
+    color: #60a5fa;
+
+    margin-bottom: 10px;
+
+}
+
+.stat-card p {
+
+    color: var(--text2);
+
+}
+
+/* ================================= */
+
+.flash {
+
+    padding: 16px 22px;
+
+    border-radius: 12px;
+
+    margin-bottom: 25px;
+
+    font-weight: 500;
+
+}
+
+.flash.success {
+
+    background: rgba(34, 197, 94, .18);
+
+    border-left: 5px solid var(--success);
+
+}
+
+.flash.warning {
+
+    background: rgba(245, 158, 11, .15);
+
+    border-left: 5px solid var(--warning);
+
+}
+
+.flash.danger {
+
+    background: rgba(239, 68, 68, .15);
+
+    border-left: 5px solid var(--danger);
+
+}
+
+/* ================================= */
+
+.table-card {
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 20px;
+
+    padding: 30px;
+
+    margin-bottom: 40px;
+
+    overflow-x: auto;
+
+}
+
+.table-card h2 {
+
+    margin-bottom: 25px;
+
+    font-size: 28px;
+
+}
+
+/* ================================= */
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+}
+
+thead {
+
+    background: rgba(255, 255, 255, .05);
+
+}
+
+th {
+
+    text-align: left;
+
+    padding: 18px;
+
+    color: #93c5fd;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+}
+
+td {
+
+    padding: 18px;
+
+    border-top: 1px solid rgba(255, 255, 255, .06);
+
+    color: #d1d5db;
+
+}
+
+tbody tr {
+
+    transition: .25s;
+
+}
+
+tbody tr:hover {
+
+    background: rgba(255, 255, 255, .04);
+
+}
+
+/* ================================= */
+
+.approve-btn,
+
+.reject-btn {
+
+    display: inline-block;
+
+    text-decoration: none;
+
+    padding: 10px 18px;
+
+    border-radius: 10px;
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition: .25s;
+
+    margin-right: 8px;
+
+}
+
+.approve-btn {
+
+    background: var(--success);
+
+}
+
+.approve-btn:hover {
+
+    background: #16a34a;
+
+}
+
+.reject-btn {
+
+    background: var(--danger);
+
+}
+
+.reject-btn:hover {
+
+    background: #dc2626;
+
+}
+
+/* ================================= */
+
+.empty {
+
+    text-align: center;
+
+    color: var(--text2);
+
+    padding: 50px 0;
+
+    font-size: 17px;
+
+}
+
+/* ================================= */
+
+@media(max-width:1100px) {
+
+    .stats-grid {
+
+        grid-template-columns: repeat(2, 1fr);
+
+    }
+
+}
+
+@media(max-width:768px) {
+
+    .dashboard-header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+    }
+
+    .stats-grid {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    table {
+
+        min-width: 700px;
+
+    }
+
+}
+
+select {
+
+    color: white;
+
+    background: rgba(255, 255, 255, 0.08);
+
+}
+
+
+select option {
+
+    color: white;
+
+    background: #07111f;
+
+}
+
+/* ==========================================
+   Organization Details Button
+========================================== */
+
+.details-btn {
+    border: 1px solid rgba(96, 165, 250, .35);
+    background: rgba(37, 99, 235, .12);
+    color: #60a5fa;
+
+    padding: 10px 16px;
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    transition: .25s;
+}
+
+.details-btn:hover {
+    background: var(--primary);
+    color: white;
+    transform: translateY(-2px);
+}
+
+
+/* ==========================================
+   Action Buttons
+========================================== */
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* ==========================================
+   Pending Badge
+========================================== */
+
+.pending-badge {
+    display: inline-block;
+
+    padding: 8px 14px;
+
+    border-radius: 30px;
+
+    background: rgba(245, 158, 11, .12);
+
+    border: 1px solid rgba(245, 158, 11, .25);
+
+    color: #fbbf24;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* ==========================================
+   Organization Details Modal
+========================================== */
+
+.org-modal {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 25px;
+
+    background: rgba(0, 0, 0, .72);
+
+    backdrop-filter: blur(10px);
+
+    z-index: 9999;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition: .3s;
+}
+
+.org-modal.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* ==========================================
+   Modal Box
+========================================== */
+
+.org-modal-content {
+    position: relative;
+
+    width: min(900px, 100%);
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: var(--card);
+
+    border: 1px solid var(--border);
+
+    border-radius: 22px;
+
+    padding: 35px;
+
+    box-shadow: 0 30px 80px rgba(0, 0, 0, .55);
+
+    transform: translateY(20px) scale(.97);
+
+    transition: .3s;
+}
+
+.org-modal.active .org-modal-content {
+    transform: translateY(0) scale(1);
+}
+
+
+/* ==========================================
+   Modal Close Button
+========================================== */
+
+.modal-close {
+    position: absolute;
+
+    top: 18px;
+    right: 20px;
+
+    width: 38px;
+    height: 38px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, .06);
+
+    color: white;
+
+    font-size: 26px;
+
+    cursor: pointer;
+
+    transition: .25s;
+}
+
+.modal-close:hover {
+    background: var(--danger);
+
+    transform: rotate(90deg);
+}
+
+
+/* ==========================================
+   Modal Header
+========================================== */
+
+.modal-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding-right: 45px;
+
+    padding-bottom: 25px;
+
+    margin-bottom: 30px;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.modal-header h2 {
+    font-size: 28px;
+
+    margin-bottom: 6px;
+}
+
+.modal-header p {
+    color: var(--text2);
+
+    font-size: 14px;
+}
+
+
+/* ==========================================
+   Organization Information
+========================================== */
+
+.details-section {
+    margin-bottom: 30px;
+}
+
+.details-section h3 {
+    font-size: 19px;
+
+    margin-bottom: 18px;
+}
+
+.details-grid {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 15px;
+}
+
+.detail-item {
+    background: rgba(255, 255, 255, .04);
+
+    border: 1px solid var(--border);
+
+    border-radius: 14px;
+
+    padding: 16px;
+}
+
+.detail-item span {
+    display: block;
+
+    color: var(--text2);
+
+    font-size: 13px;
+
+    margin-bottom: 7px;
+}
+
+.detail-item strong {
+    display: block;
+
+    color: white;
+
+    font-size: 15px;
+
+    word-break: break-word;
+}
+
+
+/* ==========================================
+   Government ID Card
+========================================== */
+
+.id-card-preview {
+    width: 100%;
+
+    min-height: 250px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    padding: 20px;
+
+    background: rgba(0, 0, 0, .2);
+
+    border: 1px solid var(--border);
+
+    border-radius: 16px;
+}
+
+.id-card-preview img {
+    max-width: 100%;
+
+    max-height: 450px;
+
+    object-fit: contain;
+
+    border-radius: 10px;
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, .4);
+}
+
+
+/* ==========================================
+   Modal Actions
+========================================== */
+
+.modal-actions {
+    display: flex;
+
+    gap: 15px;
+
+    padding-top: 25px;
+
+    border-top: 1px solid var(--border);
+}
+
+.modal-actions a {
+    flex: 1;
+
+    text-align: center;
+
+    text-decoration: none;
+}
+
+.modal-approve,
+.modal-reject {
+    padding: 14px 20px;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+
+    transition: .25s;
+}
+
+.modal-approve {
+    background: var(--success);
+
+    color: white;
+}
+
+.modal-approve:hover {
+    background: #16a34a;
+
+    transform: translateY(-2px);
+}
+
+.modal-reject {
+    background: var(--danger);
+
+    color: white;
+}
+
+.modal-reject:hover {
+    background: #dc2626;
+
+    transform: translateY(-2px);
+}
+
+
+/* ==========================================
+   Modal Responsive Design
+========================================== */
+
+@media(max-width:700px) {
+
+    .org-modal {
+        padding: 15px;
+    }
+
+    .org-modal-content {
+        padding: 25px 20px;
+    }
+
+    .modal-header {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+
+        align-items: stretch;
+    }
+
+}
+
+/* ==========================================
+   GOVERNMENT ID CARD
+========================================== */
+
+.id-card-preview {
+    margin-top: 20px;
+    padding: 22px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.025);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+}
+
+/* ID Card Image */
+
+.id-card-preview img {
+    display: block;
+
+    width: 100%;
+    max-width: 520px;
+    max-height: 340px;
+
+    object-fit: contain;
+
+    border-radius: 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    background: #ffffff;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+
+/* View ID Button */
+
+.view-id-btn {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 11px 22px;
+
+    border-radius: 9px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    transition: all 0.25s ease;
+}
+
+.view-id-btn:hover {
+    transform: translateY(-2px);
+
+    background: #1d4ed8;
+
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+}
+
+
+/* PDF */
+
+.pdf-id-card {
+    width: 100%;
+
+    max-width: 420px;
+
+    padding: 30px;
+
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.04);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    text-align: center;
+}
+
+.pdf-icon {
+    font-size: 48px;
+
+    margin-bottom: 10px;
+}
+
+.pdf-id-card p {
+    margin: 0 0 18px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+}

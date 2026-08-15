@@ -1,0 +1,564 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-dashboard">
+
+    <!-- ==========================================
+         Dashboard Header
+    ========================================== -->
+
+    <div class="dashboard-header">
+
+        <div>
+            <h1>Admin Dashboard</h1>
+            <p>Manage organizations and monitor MissingLink AI.</p>
+        </div>
+
+        <a href="{{ url_for('admin_logout') }}" class="logout-btn">
+            Logout
+        </a>
+
+    </div>
+
+
+    <!-- ==========================================
+         Statistics
+    ========================================== -->
+
+    <div class="stats-grid">
+
+        <div class="stat-card">
+            <h2>{{ pending_count }}</h2>
+            <p>Pending Requests</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>{{ verified_count }}</h2>
+            <p>Verified Organizations</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>{{ missing_count }}</h2>
+            <p>Missing Reports</p>
+        </div>
+
+        <div class="stat-card">
+            <h2>{{ found_count }}</h2>
+            <p>Found Reports</p>
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         Flash Messages
+    ========================================== -->
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+
+    {% if messages %}
+
+    {% for category, message in messages %}
+
+    <div class="flash {{ category }}">
+        {{ message }}
+    </div>
+
+    {% endfor %}
+
+    {% endif %}
+
+    {% endwith %}
+
+
+    <!-- ==========================================
+         Pending Organizations
+    ========================================== -->
+
+    <div class="table-card">
+
+        <h2>Pending Organization Requests</h2>
+
+        {% if pending %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Organization</th>
+                        <th>Role</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Details</th>
+                        <th>Action</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for org in pending %}
+
+                    <tr>
+
+                        <td>
+                            {{ org.organization }}
+                        </td>
+
+                        <td>
+                            {{ org.role }}
+                        </td>
+
+                        <td>
+                            {{ org.full_name }}
+                        </td>
+
+                        <td>
+                            {{ org.email }}
+                        </td>
+
+                        <td>
+
+                            <button type="button" class="details-btn" onclick="openOrgModal('{{ org.id }}')">
+                                View Details
+                            </button>
+
+                        </td>
+
+                        <td>
+
+                            <div class="action-buttons">
+
+                                <a class="approve-btn" href="{{ url_for('approve_org', id=org.id) }}">
+                                    Approve
+                                </a>
+
+                                <a class="reject-btn" href="{{ url_for('reject_org', id=org.id) }}">
+                                    Reject
+                                </a>
+
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <p class="empty">
+            No pending organization requests.
+        </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ==========================================
+         Organization Details Modals
+    ========================================== -->
+
+    {% for org in pending %}
+
+    <div class="org-modal" id="orgModal{{ org.id }}" onclick="closeOrgModalOutside(event, '{{ org.id }}')">
+
+        <div class="org-modal-content">
+
+            <!-- Close Button -->
+
+            <button type="button" class="modal-close" onclick="closeOrgModal('{{ org.id }}')" aria-label="Close">
+                &times;
+            </button>
+
+
+            <!-- ==================================
+                     Modal Header
+                ================================== -->
+
+            <div class="modal-header">
+
+                <div>
+
+                    <h2>
+                        {{ org.organization }}
+                    </h2>
+
+                    <p>
+                        Organization Registration Details
+                    </p>
+
+                </div>
+
+                <span class="pending-badge">
+                    Pending Approval
+                </span>
+
+            </div>
+
+
+            <!-- ==================================
+                     Organization Information
+                ================================== -->
+
+            <div class="details-section">
+
+                <h3>Organization Information</h3>
+
+                <div class="details-grid">
+
+                    <div class="detail-item">
+
+                        <span>
+                            Organization
+                        </span>
+
+                        <strong>
+                            {{ org.organization }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Role
+                        </span>
+
+                        <strong>
+                            {{ org.role }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Full Name
+                        </span>
+
+                        <strong>
+                            {{ org.full_name }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Government ID
+                        </span>
+
+                        <strong>
+                            {{ org.government_id }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Email
+                        </span>
+
+                        <strong>
+                            {{ org.email }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Phone
+                        </span>
+
+                        <strong>
+                            {{ org.phone }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="detail-item">
+                        <span>Registration Date</span>
+
+                        <strong>
+                            {% if org.created_at %}
+                            {{ org.created_at.strftime('%d %b %Y') }}
+                            {% else %}
+                            Not available
+                            {% endif %}
+                        </strong>
+                    </div>
+
+
+                    <div class="detail-item">
+
+                        <span>
+                            Verification Status
+                        </span>
+
+                        <strong>
+                            Pending
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                     Government ID Card
+                ================================== -->
+
+            <div class="details-section">
+
+                <h3>
+                    Government ID Card
+                </h3>
+
+                <div class="id-card-preview">
+
+                    {% if org.id_card_url %}
+
+                    {% set id_extension = org.id_card.lower().split('.')[-1] %}
+
+                    {% if id_extension in ['jpg', 'jpeg', 'png', 'webp', 'gif'] %}
+
+                    <img src="{{ org.id_card_url }}" alt="Government ID Card of {{ org.full_name }}">
+
+                    <a href="{{ org.id_card_url }}" target="_blank" class="view-id-btn">
+                        Open ID Card
+                    </a>
+
+                    {% elif id_extension == 'pdf' %}
+
+                    <div class="pdf-id-card">
+
+                        <div class="pdf-icon">
+                            📄
+                        </div>
+
+                        <p>
+                            Identity Card PDF
+                        </p>
+
+                        <a href="{{ org.id_card_url }}" target="_blank" class="view-id-btn">
+                            View ID Document
+                        </a>
+
+                    </div>
+
+                    {% else %}
+
+                    <a href="{{ org.id_card_url }}" target="_blank" class="view-id-btn">
+                        View Identity Document
+                    </a>
+
+                    {% endif %}
+
+                    {% else %}
+
+                    <p class="empty">
+                        No ID card uploaded or document unavailable.
+                    </p>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================
+                     Modal Actions
+                ================================== -->
+
+            <div class="modal-actions">
+
+                <a class="approve-btn modal-approve" href="{{ url_for('approve_org', id=org.id) }}">
+                    Approve Organization
+                </a>
+
+                <a class="reject-btn modal-reject" href="{{ url_for('reject_org', id=org.id) }}">
+                    Reject Organization
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endfor %}
+
+
+    <!-- ==========================================
+         Verified Organizations
+    ========================================== -->
+
+    <div class="table-card">
+
+        <h2>Verified Organizations</h2>
+
+        {% if verified %}
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Organization</th>
+                        <th>Role</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    {% for org in verified %}
+
+                    <tr>
+
+                        <td>
+                            {{ org.organization }}
+                        </td>
+
+                        <td>
+                            {{ org.role }}
+                        </td>
+
+                        <td>
+                            {{ org.full_name }}
+                        </td>
+
+                        <td>
+                            {{ org.email }}
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% else %}
+
+        <p class="empty">
+            No verified organizations.
+        </p>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     Organization Modal JavaScript
+========================================== -->
+
+<script>
+
+    function openOrgModal(id) {
+
+        const modal = document.getElementById("orgModal" + id);
+
+        if (modal) {
+
+            modal.classList.add("active");
+
+            // Prevent background scrolling
+            document.body.style.overflow = "hidden";
+
+        }
+
+    }
+
+
+    function closeOrgModal(id) {
+
+        const modal = document.getElementById("orgModal" + id);
+
+        if (modal) {
+
+            modal.classList.remove("active");
+
+            // Restore background scrolling
+            document.body.style.overflow = "";
+
+        }
+
+    }
+
+
+    function closeOrgModalOutside(event, id) {
+
+        // Close only when clicking the dark overlay
+
+        if (event.target === event.currentTarget) {
+
+            closeOrgModal(id);
+
+        }
+
+    }
+
+
+    // ==========================================
+    // Close modal with Escape key
+    // ==========================================
+
+    document.addEventListener("keydown", function (event) {
+
+        if (event.key === "Escape") {
+
+            document
+                .querySelectorAll(".org-modal.active")
+                .forEach(function (modal) {
+
+                    modal.classList.remove("active");
+
+                });
+
+            document.body.style.overflow = "";
+
+        }
+
+    });
+
+</script>
+
+{% endblock %}

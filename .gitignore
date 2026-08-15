@@ -1,0 +1,23 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Local database
+instance/
+*.db
+
+# Uploaded files
+static/uploads/*
+static/id_cards/*
+
+# InsightFace models
+.models/

@@ -1,0 +1,425 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!-- ================= NAVBAR ================= -->
+
+<nav class="navbar">
+
+    <div class="logo">
+        <span class="logo-icon">🔍</span>
+        <span>MissingLink AI</span>
+    </div>
+
+    <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#stats">Impact</a>
+        <a href="#how">How It Works</a>
+        <a href="{{ url_for('login') }}">Dashboard</a>
+    </div>
+
+</nav>
+
+<!-- ================= HERO SECTION ================= -->
+
+<section class="hero">
+
+    <!-- Left Content -->
+
+    <div class="hero-content">
+
+        <div class="badge">
+            AI-Powered Humanitarian Technology
+        </div>
+
+        <h1>
+            Reuniting
+            <span>Families</span>
+            Through AI
+        </h1>
+
+        <p>
+            MissingLink AI helps families, police, NGOs, hospitals, and
+            government agencies identify potential matches between missing
+            and found persons using secure AI-assisted facial analysis.
+        </p>
+
+        <div class="hero-buttons">
+
+            <a href="/report-missing" class="btn-primary">
+                Report Missing
+            </a>
+
+            <a href="/report-found" class="btn-secondary">
+                Report Found
+            </a>
+        </div>
+
+        <!-- Quick Statistics -->
+
+        <div class="mini-stats">
+
+            <div class="mini-stat">
+                <h3>90 + %</h3>
+                <span>Match Accuracy</span>
+            </div>
+
+            <div class="mini-stat">
+                <h3>&lt;5s</h3>
+                <span>Average Search</span>
+            </div>
+
+            <div class="mini-stat">
+                <h3>24/7</h3>
+                <span>AI Monitoring</span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Right Content -->
+
+    <div class="hero-visual">
+
+        <div class="glass-card main-card">
+
+            <div class="card-header">
+
+                <div class="pulse"></div>
+
+                <span>AI Matching Engine</span>
+
+            </div>
+
+            <div class="match-item">
+
+                <div class="avatar blue"></div>
+
+                <div class="match-info">
+                    <h4>Rahul Sharma</h4>
+                    <p>Possible Match • 90%</p>
+                </div>
+
+            </div>
+
+            <div class="match-item">
+
+                <div class="avatar green"></div>
+
+                <div class="match-info">
+                    <h4>Unknown Child</h4>
+                    <p>Found • Jaipur</p>
+                </div>
+
+            </div>
+
+            <div class="connection-line"></div>
+
+            <div class="status success">
+                ✓ High Confidence Match Detected
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= FEATURES ================= -->
+
+<section id="features" class="features">
+
+    <div class="section-title">
+
+        <h2>Built for Real-World Search Operations</h2>
+
+        <p id="feature-description">
+            Designed for families, NGOs, hospitals, and law enforcement
+            agencies to collaborate efficiently.
+        </p>
+
+    </div>
+
+    <div class="feature-grid">
+
+        <div class="feature-card">
+
+            <div class="feature-icon">AI</div>
+
+            <h3>AI Face Matching</h3>
+
+            <p id="feature-description">
+                Generate secure facial embeddings and identify potential
+                matches within seconds using advanced AI.
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <div class="feature-icon">📍</div>
+
+            <h3>Location Intelligence</h3>
+
+            <p id="feature-description">
+                Track last-seen and found locations to improve search
+                operations across different regions.
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <div class="feature-icon">📄</div>
+
+            <h3>AI Report Summaries</h3>
+
+            <p id="feature-description">
+                Automatically convert detailed reports into structured,
+                searchable case information.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- ================= IMPACT ================= -->
+
+<section id="stats" class="stats">
+
+    <div class="stat-card">
+        <h2>15K+</h2>
+        <p id="feature-description">Potential Cases Processed</p>
+    </div>
+
+    <div class="stat-card">
+        <h2>96%</h2>
+        <p id="feature-description">Matching Precision</p>
+    </div>
+
+    <div class="stat-card">
+        <h2>1.2K</h2>
+        <p id="feature-description">NGO & Authority Collaborations</p>
+    </div>
+
+    <div class="stat-card">
+        <h2>24/7</h2>
+        <p id="feature-description">AI Assistance</p>
+    </div>
+
+</section>
+
+<!-- ================= HOW IT WORKS ================= -->
+
+<section id="how" class="how-it-works">
+
+    <div class="section-title">
+
+        <h2>How MissingLink AI Works</h2>
+
+        <p id="feature-description">
+            A secure AI-assisted workflow designed to reconnect missing
+            persons with their families quickly and responsibly.
+        </p>
+
+    </div>
+
+    <div class="steps">
+
+        <div class="step">
+
+            <div class="step-number">1</div>
+
+            <h3>Report a Case</h3>
+
+            <p id="feature-description">
+                Families, NGOs, hospitals, or police submit a missing or
+                found person report with photographs and details.
+            </p>
+
+        </div>
+
+        <div class="step">
+
+            <div class="step-number">2</div>
+
+            <h3>AI Analysis</h3>
+
+            <p id="feature-description">
+                AI extracts secure facial embeddings and compares them
+                against registered records for possible matches.
+            </p>
+
+        </div>
+
+        <div class="step">
+
+            <div class="step-number">3</div>
+
+            <h3>Smart Matching</h3>
+
+            <p id="feature-description">
+                Similarity search identifies high-confidence matches within
+                seconds using advanced facial recognition.
+            </p>
+
+        </div>
+
+        <div class="step">
+
+            <div class="step-number">4</div>
+
+            <h3>Human Verification</h3>
+
+            <p id="feature-description">
+                Authorized organizations verify AI results before families
+                are contacted or official action is taken.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= SECURITY ================= -->
+
+<section class="features">
+
+    <div class="section-title">
+
+        <h2>Secure & Trusted Platform</h2>
+
+        <p id="feature-description">
+            MissingLink AI protects sensitive case information through
+            verification, controlled access, and human oversight.
+        </p>
+
+    </div>
+
+    <div class="feature-grid">
+
+        <div class="feature-card">
+
+            <div class="feature-icon">🛡️</div>
+
+            <h3>Verified Organizations</h3>
+
+            <p id="feature-description">
+                Only verified police departments, NGOs, hospitals,
+                and government agencies receive access to the
+                investigation dashboard.
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <div class="feature-icon">🔒</div>
+
+            <h3>Protected Dashboard</h3>
+
+            <p id="feature-description">
+                Sensitive reports and AI matches remain accessible only
+                to approved organizations after secure login.
+            </p>
+
+        </div>
+
+        <div class="feature-card">
+
+            <div class="feature-icon">✅</div>
+
+            <h3>Human Verified Decisions</h3>
+
+            <p id="feature-description">
+                AI assists investigators, but every important decision
+                is reviewed and confirmed by authorized personnel.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- ================= CALL TO ACTION ================= -->
+
+<section class="cta-section">
+
+    <div class="cta-card">
+
+        <h2>
+            Help Reunite Families Through Technology
+        </h2>
+
+        <p>
+            MissingLink AI enables families, police departments, NGOs,
+            hospitals, and government organizations to work together
+            using AI-assisted facial matching while maintaining privacy
+            and human verification.
+        </p>
+
+    </div>
+
+</section>
+
+<!-- ================= FOOTER ================= -->
+
+<footer class="footer">
+
+    <div class="footer-container">
+
+        <div class="footer-about">
+
+            <h3>🔍 MissingLink AI</h3>
+
+            <p>
+                An AI-powered humanitarian platform designed to help
+                reconnect missing people with their families through
+                secure facial matching and responsible human verification.
+            </p>
+
+        </div>
+
+        <div class="footer-links">
+
+            <h4>Quick Links</h4>
+
+            <a href="/">Home</a>
+            <a href="/report-missing">Report Missing</a>
+            <a href="/report-found">Report Found</a>
+            <a href="/register">Register Organization</a>
+            <a href="/login">Dashboard Login</a>
+
+        </div>
+
+        <div class="footer-security">
+
+            <h4>Security</h4>
+
+            <p>✔ Verified Organizations Only</p>
+            <p>✔ AI Assisted Matching</p>
+            <p>✔ Human Verification</p>
+            <p>✔ Privacy First</p>
+
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+
+        <p>
+            © 2026 MissingLink AI. All Rights Reserved.
+        </p>
+
+        <p>
+            Built with ❤️ to help reunite families.
+        </p>
+
+    </div>
+
+</footer>
+
+{% endblock %}

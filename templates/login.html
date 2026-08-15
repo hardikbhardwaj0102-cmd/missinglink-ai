@@ -1,0 +1,195 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="login-page">
+
+    <!-- Left Side -->
+
+    <div class="login-left">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                🔒
+            </div>
+
+            <h1>MissingLink AI</h1>
+
+            <p>
+                Secure Organization Portal
+            </p>
+
+        </div>
+
+        <div class="info-card">
+
+            <h2>Authorized Access Only</h2>
+
+            <p>
+                This dashboard is reserved for verified Police departments,
+                NGOs, Child Welfare organizations, hospitals and other
+                authorized agencies.
+            </p>
+
+            <div class="feature">
+
+                <span>✓</span>
+
+                <p>Access missing & found reports</p>
+
+            </div>
+
+            <div class="feature">
+
+                <span>✓</span>
+
+                <p>AI-powered face matching</p>
+
+            </div>
+
+            <div class="feature">
+
+                <span>✓</span>
+
+                <p>Review high-confidence matches</p>
+
+            </div>
+
+            <div class="feature">
+
+                <span>✓</span>
+
+                <p>Privacy protected system</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Right Side -->
+
+    <div class="login-right">
+
+        <div class="login-card">
+
+            <h2>Organization Login</h2>
+
+            <p>
+                Sign in using your verified organization account.
+            </p>
+
+            <form method="POST">
+
+                <div class="input-group">
+
+                    <label>Email Address</label>
+
+                    <input type="email" name="email" placeholder="organization@example.com" required>
+
+                </div>
+
+                <div class="input-group">
+
+                    <label>Password</label>
+
+                    <input type="password" name="password" placeholder="Enter password" required>
+
+                </div>
+
+                <button class="login-btn" type="submit">
+
+                    Login
+
+                </button>
+
+            </form>
+
+            <div class="divider">
+
+                <span>OR</span>
+
+            </div>
+
+            <a href="/register" class="register-btn">
+
+                Register Organization
+
+            </a>
+
+            <div class="security-note">
+
+                🔒 Only approved organizations can access the investigation dashboard.
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% if login_error %}
+
+<div class="login-alert-overlay" id="loginAlert">
+
+    <div class="login-alert">
+
+        <button type="button" class="login-alert-close" onclick="closeLoginAlert()">
+            &times;
+        </button>
+
+        <div class="login-alert-icon">
+            ⚠
+        </div>
+
+        <h2>
+            {{ login_error.title }}
+        </h2>
+
+        <p>
+            {{ login_error.message }}
+        </p>
+
+        <button type="button" class="login-alert-btn" onclick="closeLoginAlert()">
+            Try Again
+        </button>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+<script>
+
+    function closeLoginAlert() {
+
+        const alert = document.getElementById("loginAlert");
+
+        if (alert) {
+            alert.classList.remove("show");
+        }
+
+    }
+
+    window.addEventListener("load", function () {
+
+        const alert = document.getElementById("loginAlert");
+
+        if (alert) {
+
+            setTimeout(function () {
+                alert.classList.add("show");
+            }, 100);
+
+        }
+
+    });
+
+</script>
+{% endblock %}

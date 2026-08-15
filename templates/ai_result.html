@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ai_result.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="ai-container">
+
+    <!-- Header -->
+
+    <div class="ai-header">
+
+        <h1>🤖 AI Face Matching Results</h1>
+
+        <p>
+            Facial comparison completed successfully.
+            The results below are ranked according to similarity.
+        </p>
+
+    </div>
+
+
+    <!-- Found Person -->
+
+    <div class="found-person">
+
+        <div class="found-image">
+
+            <img src="{{ found_person.photo_url }}" alt="Found Person">
+
+        </div>
+
+        <div class="found-info">
+
+            <h2>Found Person</h2>
+
+            <p><strong>Estimated Age:</strong> {{ found_person.estimated_age }}</p>
+
+            <p><strong>Gender:</strong> {{ found_person.gender }}</p>
+
+            <p><strong>Found Location:</strong> {{ found_person.found_location }}</p>
+
+            <p><strong>Condition:</strong> {{ found_person.condition }}</p>
+
+        </div>
+
+    </div>
+
+
+    <!-- AI Results -->
+
+    <h2 class="section-title">
+
+        Top AI Matches
+
+    </h2>
+
+    {% if matches %}
+
+    <div class="match-grid">
+
+        {% for match in matches %}
+
+        <div class="match-card">
+
+            <img src="{{ match.person.photo_url }}" alt="{{ match.person.name }}">
+
+            <h3>{{ match.person.name }}</h3>
+
+            <p>
+
+                <strong>Age:</strong>
+
+                {{ match.person.age }}
+
+            </p>
+
+            <p>
+
+                <strong>Last Seen:</strong>
+
+                {{ match.person.last_seen_location }}
+
+            </p>
+
+            <div class="score">
+
+                Match Score
+
+                <span>
+
+                    {{ match.similarity }}
+
+                </span>
+
+            </div>
+
+            {% if match.similarity >= 75 %}
+
+            <div class="status high">
+
+                🟢 High Match
+
+            </div>
+
+            {% elif match.similarity >= 45 %}
+
+            <div class="status medium">
+
+                🟡 Possible Match
+
+            </div>
+
+            {% else %}
+
+            <div class="status low">
+
+                🔴 Low Match
+
+            </div>
+
+            {% endif %}
+
+            <a href="/missing/{{ match.person.id }}" class="details-btn">
+
+                View Complete Profile
+
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+    <div class="no-results">
+
+        <h2>No Matches Found</h2>
+
+        <p>
+
+            AI could not identify any similar faces.
+
+        </p>
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

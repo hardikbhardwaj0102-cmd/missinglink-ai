@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/report_missing.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<form action="/report-missing" method="POST" enctype="multipart/form-data" class="report-page">
+
+    <!-- ================= LEFT SIDE ================= -->
+
+    <div class="upload-section">
+
+        <div class="upload-card">
+
+            <div class="upload-icon">
+                📷
+            </div>
+
+            <h2>Upload Photo</h2>
+
+            <p id="para">
+                Upload a clear front-facing image for the best AI matching accuracy.
+            </p>
+
+            <label for="photoInput" class="upload-box">
+
+                <img id="previewImage" src="{{ url_for('static', filename='images/upload-placeholder.png') }}"
+                    alt="Preview">
+
+                <span>Click to Upload</span>
+
+            </label>
+
+            <input type="file" id="photoInput" name="photo" accept="image/*" required>
+
+
+            <!-- ================= FACE ERROR ================= -->
+
+            {% if face_error %}
+
+            <div class="face-error">
+
+                <div class="face-error-icon">
+                    !
+                </div>
+
+                <div class="face-error-content">
+
+                    <strong>Photo Validation Failed</strong>
+
+                    <p>{{ face_error }}</p>
+
+                </div>
+
+            </div>
+
+            {% endif %}
+
+
+            <!-- ================= AI PHOTO QUALITY ================= -->
+
+            <div class="ai-score">
+
+                <h3>AI Photo Quality</h3>
+
+                <div class="progress">
+
+                    <div class="progress-bar"></div>
+
+                </div>
+
+                <p>Waiting for image...</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= RIGHT SIDE ================= -->
+
+    <div class="form-section">
+
+        <div class="form-card">
+
+            <h1>Report Missing Person</h1>
+
+            <p id="para">
+                Fill in all available details. More accurate information
+                helps improve AI matching.
+            </p>
+
+
+            <!-- ================= Personal Details ================= -->
+
+            <div class="form-grid">
+
+                <div class="input-group">
+
+                    <label>Full Name</label>
+
+                    <input type="text" name="name" placeholder="Enter full name" required>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Age</label>
+
+                    <input type="number" name="age" placeholder="Age" required>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Gender</label>
+
+                    <select name="gender">
+
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Height</label>
+
+                    <input type="text" name="height" placeholder="e.g. 165 cm">
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Clothing</label>
+
+                    <input type="text" name="clothing" placeholder="Blue Shirt, Black Jeans">
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Last Seen Date</label>
+
+                    <input type="date" name="last_seen_date">
+
+                </div>
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Last Seen Location</label>
+
+                <input type="text" name="last_seen_location" placeholder="Enter last known location">
+
+            </div>
+
+
+            <div class="input-group">
+
+                <label>Description</label>
+
+                <textarea rows="5" name="description"
+                    placeholder="Mention distinguishing marks, appearance, behaviour, or any helpful information."></textarea>
+
+            </div>
+
+
+            <hr>
+
+
+            <!-- ================= Reporter Information ================= -->
+
+            <h2>Reporter Information</h2>
+
+            <div class="form-grid">
+
+                <div class="input-group">
+
+                    <label>Your Name</label>
+
+                    <input type="text" name="reporter_name" required>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Relationship</label>
+
+                    <input type="text" name="relationship" placeholder="Father, Mother, Friend">
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Phone</label>
+
+                    <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
+
+                </div>
+
+
+                <div class="input-group">
+
+                    <label>Email</label>
+
+                    <input type="email" name="email" placeholder="example@email.com">
+
+                </div>
+
+            </div>
+
+
+            <button type="submit" class="submit-btn">
+
+                Submit Report
+
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script src="{{ url_for('static', filename='js/report_missing.js') }}"></script>
+
+{% endblock %}

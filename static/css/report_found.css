@@ -1,0 +1,247 @@
+/* ==========================================
+   MissingLink AI
+   Report Found UI
+========================================== */
+
+/* Reuse all styles from Report Missing */
+
+@import url("report_missing.css");
+
+
+/* ===============================
+   Accent Colors
+=============================== */
+
+:root {
+
+    --primary: #0ea5e9;
+
+    --primary-light: #38bdf8;
+
+}
+
+
+/* ===============================
+   Upload Icon
+=============================== */
+
+.upload-icon {
+
+    background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+
+}
+
+
+/* ===============================
+   Submit Button
+=============================== */
+
+.submit-btn {
+
+    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
+
+    box-shadow: 0 15px 35px rgba(14, 165, 233, .35);
+
+}
+
+.submit-btn:hover {
+
+    box-shadow: 0 20px 40px rgba(14, 165, 233, .45);
+
+}
+
+
+/* ===============================
+   AI Status Panel
+=============================== */
+
+.ai-status {
+
+    margin-top: 20px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 12px;
+
+}
+
+
+.status-item {
+
+    padding: 12px 18px;
+
+    background: rgba(255, 255, 255, .05);
+
+    border: 1px solid rgba(255, 255, 255, .08);
+
+    border-radius: 12px;
+
+    color: #d1d5db;
+
+    font-size: 14px;
+
+    transition: .3s;
+
+}
+
+
+.status-item:hover {
+
+    background: rgba(14, 165, 233, .12);
+
+    border-color: #38bdf8;
+
+    transform: translateX(6px);
+
+}
+
+
+/* ===============================
+   Condition Dropdown
+=============================== */
+
+select[name="condition"] {
+
+    font-weight: 600;
+
+}
+
+
+/* ===============================
+   Form Heading
+=============================== */
+
+.form-card h1 {
+
+    color: white;
+
+}
+
+
+/* ===============================
+   Upload Card Hover
+=============================== */
+
+.upload-card:hover {
+
+    box-shadow:
+
+        0 25px 60px rgba(0, 0, 0, .45),
+
+        0 0 30px rgba(14, 165, 233, .18);
+
+}
+
+#para {
+    color: white;
+}
+
+input::placeholder,
+textarea::placeholder {
+
+    color: #ffffff;
+
+    opacity: 1;
+
+}
+
+select {
+
+    color: white;
+
+    background: rgba(255, 255, 255, 0.08);
+
+}
+
+
+select option {
+
+    color: white;
+
+    background: #07111f;
+
+}
+
+/* ===============================
+   Animation
+=============================== */
+
+.status-item {
+
+    animation: slideIn .6s ease;
+
+}
+
+
+@keyframes slideIn {
+
+    from {
+
+        opacity: 0;
+
+        transform: translateX(-20px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform: translateX(0);
+
+    }
+
+}
+
+.face-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    margin-top: 16px;
+    padding: 14px 16px;
+
+    border-radius: 10px;
+
+    background: #fff1f1;
+    border: 1px solid #f2b8b8;
+
+    color: #b42318;
+
+    text-align: left;
+}
+
+.face-error-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+
+    border-radius: 50%;
+
+    background: #b42318;
+    color: white;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.face-error-content strong {
+    display: block;
+
+    margin-bottom: 3px;
+
+    font-size: 14px;
+}
+
+.face-error-content p {
+    margin: 0;
+
+    font-size: 13px;
+    line-height: 1.5;
+}

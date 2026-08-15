@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="profile-container">
+
+    <h1>Missing Person Profile</h1>
+
+    {% block extra_css %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/missing_profile.css') }}">
+    {% endblock %}
+    <div class="profile-card">
+
+        <img src="{{ person.photo_url }}" alt="{{ person.name }}">
+
+
+        <div class="profile-info">
+
+            <h2>{{ person.name }}</h2>
+
+            <p>
+                <strong>Age:</strong>
+                {{ person.age }}
+            </p>
+
+
+            <p>
+                <strong>Gender:</strong>
+                {{ person.gender }}
+            </p>
+
+
+            <p>
+                <strong>Height:</strong>
+                {{ person.height }}
+            </p>
+
+
+            <p>
+                <strong>Last Seen Location:</strong>
+                {{ person.last_seen_location }}
+            </p>
+
+
+            <p>
+                <strong>Last Seen Date:</strong>
+                {{ person.last_seen_date }}
+            </p>
+
+
+            <p>
+                <strong>Clothing:</strong>
+                {{ person.clothing }}
+            </p>
+
+
+            <p>
+                <strong>Description:</strong>
+                {{ person.description }}
+            </p>
+
+
+            <hr>
+
+
+            <h3>Reporter Details</h3>
+
+
+            <p>
+                Name: {{ person.reporter_name }}
+            </p>
+
+
+            <p>
+                Phone: {{ person.phone }}
+            </p>
+
+
+            <p>
+                Email: {{ person.email }}
+            </p>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+{% endblock %}
