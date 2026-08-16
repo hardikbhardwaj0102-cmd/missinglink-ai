@@ -50,7 +50,7 @@ def test_email():
                 "onboarding@resend.dev"
             ),
 
-            "to": ["missinglinkai0@gmail.com"],
+            "to": ["hardikbhardwaj0102@gmail.com"],
 
             "subject": "MissingLink AI - Email Test",
 
@@ -1377,24 +1377,7 @@ def clear_data():
         <h2>Error clearing data</h2>
         <p>{str(e)}</p>
         """
-@app.route("/resend-debug")
-def resend_debug():
 
-    api_key = os.getenv("RESEND_API_KEY")
-
-    if not api_key:
-        return {
-            "exists": False,
-            "message": "RESEND_API_KEY is missing"
-        }, 500
-
-    return {
-        "exists": True,
-        "starts_with_re": api_key.startswith("re_"),
-        "length": len(api_key),
-        "first_3": api_key[:3],
-        "last_3": api_key[-3:]
-    }
 # ==========================================
 # Run App
 # ==========================================
