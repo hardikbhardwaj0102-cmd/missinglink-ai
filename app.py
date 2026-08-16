@@ -39,53 +39,6 @@ app.config.from_object(Config)
 resend.api_key = os.getenv("RESEND_API_KEY")
 
 serializer = URLSafeSerializer(app.config["SECRET_KEY"])
-@app.route("/test-email")
-def test_email():
-
-    try:
-
-        params = {
-            "from": os.getenv(
-                "RESEND_FROM_EMAIL",
-                "onboarding@resend.dev"
-            ),
-
-            "to": ["hardikbhardwaj0102@gmail.com"],
-
-            "subject": "MissingLink AI - Email Test",
-
-            "html": """
-                <h2>MissingLink AI</h2>
-
-                <p>Hello,</p>
-
-                <p>
-                    This is a test email from MissingLink AI.
-                </p>
-
-                <p>
-                    If you received this email,
-                    the Resend email system is working correctly.
-                </p>
-
-                <p>
-                    Regards,<br>
-                    MissingLink AI Team
-                </p>
-            """
-        }
-
-        email = resend.Emails.send(params)
-
-        print("RESEND RESPONSE:", email)
-
-        return "EMAIL SENT SUCCESSFULLY"
-
-    except Exception as e:
-
-        print("RESEND EMAIL ERROR:", e)
-
-        return f"EMAIL ERROR: {str(e)}", 500
 
 
 # Upload folders
