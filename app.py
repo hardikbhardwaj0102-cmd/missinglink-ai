@@ -982,7 +982,8 @@ def approve_org(id):
         return redirect(url_for("admin_login"))
 
     org = Organization.query.get_or_404(id)
-
+    org.verified = True
+    db.session.commit()
     # Approve organization
        # Send approval email
     try:
