@@ -808,7 +808,7 @@ def admin_login():
         username = request.form["username"]
         password = request.form["password"]
 
-        if username == "admin" and password == "admin123":
+        if username == "Hardik" and password == "Hardik@123":
 
             session["admin"] = True
 
