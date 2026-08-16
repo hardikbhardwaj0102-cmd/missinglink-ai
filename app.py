@@ -1298,6 +1298,24 @@ def clear_data():
         <h2>Error clearing data</h2>
         <p>{str(e)}</p>
         """
+@app.route("/smtp-test")
+def smtp_test():
+
+    import socket
+
+    try:
+        connection = socket.create_connection(
+            ("smtp.gmail.com", 587),
+            timeout=10
+        )
+
+        connection.close()
+
+        return "SMTP CONNECTION SUCCESSFUL"
+
+    except Exception as e:
+
+        return f"SMTP CONNECTION FAILED: {type(e).__name__}: {str(e)}", 500
 # ==========================================
 # Run App
 # ==========================================
