@@ -3,13 +3,13 @@ import uuid
 from itsdangerous import URLSafeSerializer
 from ai.face_service import get_face_embedding
 import json
+import resend
 from datetime import datetime, date
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
 from flask import session
 from ai.face_matcher import find_best_matches
-from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from supabase import create_client, Client
 load_dotenv()
@@ -36,34 +36,56 @@ app = Flask(__name__)
 
 app.config.from_object(Config)
 
-mail = Mail(app)
+resend.api_key = os.getenv("RESEND_API_KEY")
+
 serializer = URLSafeSerializer(app.config["SECRET_KEY"])
 @app.route("/test-email")
 def test_email():
 
     try:
-        msg = Message(
-            subject="MissingLink AI - Email Test",
-            sender=app.config["MAIL_USERNAME"],
-            recipients=["missinglinkai0@gmail.com"]
-        )
 
-        msg.body = """
-Hello,
+        params = {
+            "from": os.getenv(
+                "RESEND_FROM_EMAIL",
+                "onboarding@resend.dev"
+            ),
 
-This is a test email from MissingLink AI.
+            "to": ["missinglinkai0@gmail.com"],
 
-If you received this email, the Flask email system is working correctly.
+            "subject": "MissingLink AI - Email Test",
 
-MissingLink AI
-"""
+            "html": """
+                <h2>MissingLink AI</h2>
 
-        mail.send(msg)
+                <p>Hello,</p>
+
+                <p>
+                    This is a test email from MissingLink AI.
+                </p>
+
+                <p>
+                    If you received this email,
+                    the Resend email system is working correctly.
+                </p>
+
+                <p>
+                    Regards,<br>
+                    MissingLink AI Team
+                </p>
+            """
+        }
+
+        email = resend.Emails.send(params)
+
+        print("RESEND RESPONSE:", email)
 
         return "EMAIL SENT SUCCESSFULLY"
 
     except Exception as e:
-        return f"EMAIL ERROR: {str(e)}"
+
+        print("RESEND EMAIL ERROR:", e)
+
+        return f"EMAIL ERROR: {str(e)}", 500
 
 
 # Upload folders
@@ -962,35 +984,60 @@ def approve_org(id):
     org = Organization.query.get_or_404(id)
 
     # Approve organization
-    org.verified = True
+       # Send approval email
+    try:
 
-    db.session.commit()
+        resend.Emails.send({
+            "from": os.getenv(
+                "RESEND_FROM_EMAIL",
+                "onboarding@resend.dev"
+            ),
 
-    # Send approval email
-    msg = Message(
-        subject="MissingLink AI - Organization Approved",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[org.email]
-    )
+            "to": [org.email],
 
-    msg.body = f"""
-Hello {org.full_name},
+            "subject": "MissingLink AI - Organization Approved",
 
-We are pleased to inform you that your organization registration
-with MissingLink AI has been approved.
+            "html": f"""
+                <h2>MissingLink AI</h2>
 
-Organization: {org.organization}
+                <p>Hello {org.full_name},</p>
 
-You can now log in to your MissingLink AI account and access
-the features available to verified organizations.
+                <p>
+                    We are pleased to inform you that your organization
+                    registration with MissingLink AI has been approved.
+                </p>
 
-Thank you for joining MissingLink AI.
+                <p>
+                    <strong>Organization:</strong> {org.organization}
+                </p>
 
-Regards,
-MissingLink AI Team
-"""
+                <p>
+                    You can now log in to your MissingLink AI account
+                    and access the features available to verified
+                    organizations.
+                </p>
 
-    mail.send(msg)
+                <p>
+                    Thank you for joining MissingLink AI.
+                </p>
+
+                <p>
+                    Regards,<br>
+                    MissingLink AI Team
+                </p>
+            """
+        })
+
+    except Exception as e:
+
+        print("APPROVAL EMAIL ERROR:", e)
+
+        flash(
+            f"Organization approved, but email could not be sent: {str(e)}",
+            "warning"
+        )
+
+        return redirect(url_for("admin_dashboard"))
 
     flash(
         "Organization approved successfully and approval email sent.",
@@ -1017,32 +1064,64 @@ def reject_org(id):
     db.session.commit()
 
     # Send rejection email
-    msg = Message(
-        subject="MissingLink AI - Organization Registration Update",
-        sender=app.config["MAIL_USERNAME"],
-        recipients=[email]
-    )
+        # Send rejection email
+    try:
 
-    msg.body = f"""
-Hello {full_name},
+        resend.Emails.send({
 
-Thank you for registering your organization with MissingLink AI.
+            "from": os.getenv(
+                "RESEND_FROM_EMAIL",
+                "onboarding@resend.dev"
+            ),
 
-After reviewing your registration and submitted information,
-we regret to inform you that your organization registration
-could not be approved at this time.
+            "to": [email],
 
-Organization: {organization_name}
+            "subject": "MissingLink AI - Organization Registration Update",
 
-If you believe this decision was made in error or would like
-further clarification, please contact the MissingLink AI
-administration team.
+            "html": f"""
+                <h2>MissingLink AI</h2>
 
-Regards,
-MissingLink AI Team
-"""
+                <p>Hello {full_name},</p>
 
-    mail.send(msg)
+                <p>
+                    Thank you for registering your organization
+                    with MissingLink AI.
+                </p>
+
+                <p>
+                    After reviewing your registration and submitted
+                    information, we regret to inform you that your
+                    organization registration could not be approved
+                    at this time.
+                </p>
+
+                <p>
+                    <strong>Organization:</strong> {organization_name}
+                </p>
+
+                <p>
+                    If you believe this decision was made in error
+                    or would like further clarification, please
+                    contact the MissingLink AI administration team.
+                </p>
+
+                <p>
+                    Regards,<br>
+                    MissingLink AI Team
+                </p>
+            """
+        })
+
+    except Exception as e:
+
+        print("REJECTION EMAIL ERROR:", e)
+
+        flash(
+            f"Organization rejected, but email could not be sent: {str(e)}",
+            "warning"
+        )
+
+        return redirect(url_for("admin_dashboard"))
 
     flash(
         "Organization rejected and rejection email sent.",
@@ -1298,24 +1377,7 @@ def clear_data():
         <h2>Error clearing data</h2>
         <p>{str(e)}</p>
         """
-@app.route("/smtp-test")
-def smtp_test():
 
-    import socket
-
-    try:
-        connection = socket.create_connection(
-            ("smtp.gmail.com", 587),
-            timeout=10
-        )
-
-        connection.close()
-
-        return "SMTP CONNECTION SUCCESSFUL"
-
-    except Exception as e:
-
-        return f"SMTP CONNECTION FAILED: {type(e).__name__}: {str(e)}", 500
 # ==========================================
 # Run App
 # ==========================================
