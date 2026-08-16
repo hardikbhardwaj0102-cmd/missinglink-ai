@@ -102,7 +102,7 @@
 
                     <label>Estimated Age</label>
 
-                    <input id="para" type="number" name="estimated_age" placeholder="Approximate age" required>
+                    <input type="number" name="estimated_age" placeholder="Approximate age" required>
 
                 </div>
 
@@ -140,11 +140,13 @@
                 </div>
 
 
+                <!-- ================= FOUND DATE ================= -->
+
                 <div class="input-group">
 
                     <label>Found Date</label>
 
-                    <input type="date" name="found_date" required>
+                    <input type="date" name="found_date" id="foundDate" required>
 
                 </div>
 
@@ -176,13 +178,9 @@
                 <select name="condition">
 
                     <option>Healthy</option>
-
                     <option>Minor Injuries</option>
-
                     <option>Seriously Injured</option>
-
                     <option>Unconscious</option>
-
                     <option>Needs Medical Attention</option>
 
                 </select>
@@ -274,5 +272,25 @@
 {% block extra_js %}
 
 <script src="{{ url_for('static', filename='js/report_found.js') }}"></script>
+
+<script>
+
+    // Allow only dates before today
+
+    const foundDate = document.getElementById("foundDate");
+
+    const yesterday = new Date();
+
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const year = yesterday.getFullYear();
+
+    const month = String(yesterday.getMonth() + 1).padStart(2, "0");
+
+    const day = String(yesterday.getDate()).padStart(2, "0");
+
+    foundDate.max = `${year}-${month}-${day}`;
+
+</script>
 
 {% endblock %}

@@ -35,7 +35,6 @@
 
             <input type="file" id="photoInput" name="photo" accept="image/*" required>
 
-
             <!-- ================= FACE ERROR ================= -->
 
             {% if face_error %}
@@ -57,7 +56,6 @@
             </div>
 
             {% endif %}
-
 
             <!-- ================= AI PHOTO QUALITY ================= -->
 
@@ -149,11 +147,13 @@
                 </div>
 
 
+                <!-- ================= LAST SEEN DATE ================= -->
+
                 <div class="input-group">
 
                     <label>Last Seen Date</label>
 
-                    <input type="date" name="last_seen_date">
+                    <input type="date" name="last_seen_date" id="lastSeenDate" required>
 
                 </div>
 
@@ -182,7 +182,7 @@
             <hr>
 
 
-            <!-- ================= Reporter Information ================= -->
+            <!-- ================= REPORTER INFORMATION ================= -->
 
             <h2>Reporter Information</h2>
 
@@ -244,5 +244,25 @@
 {% block extra_js %}
 
 <script src="{{ url_for('static', filename='js/report_missing.js') }}"></script>
+
+<script>
+
+    // Allow only dates before today
+
+    const lastSeenDate = document.getElementById("lastSeenDate");
+
+    const yesterday = new Date();
+
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    const year = yesterday.getFullYear();
+
+    const month = String(yesterday.getMonth() + 1).padStart(2, "0");
+
+    const day = String(yesterday.getDate()).padStart(2, "0");
+
+    lastSeenDate.max = `${year}-${month}-${day}`;
+
+</script>
 
 {% endblock %}

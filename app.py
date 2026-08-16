@@ -3,6 +3,7 @@ import uuid
 from itsdangerous import URLSafeSerializer
 from ai.face_service import get_face_embedding
 import json
+from datetime import datetime, date
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash
@@ -97,6 +98,41 @@ def report_missing():
 
     if request.method == "POST":
 
+        # -----------------------------
+        # Validate last seen date
+        # -----------------------------
+
+        last_seen_date_str = request.form.get("last_seen_date")
+
+        if not last_seen_date_str:
+            return render_template(
+                "report_missing.html",
+                face_error="Please enter the last seen date."
+            )
+
+        try:
+            last_seen_date = datetime.strptime(
+                last_seen_date_str,
+                "%Y-%m-%d"
+            ).date()
+
+            # Last seen date must be before today
+            if last_seen_date >= date.today():
+                return render_template(
+                    "report_missing.html",
+                    face_error="Last seen date must be before today's date."
+                )
+
+        except ValueError:
+            return render_template(
+                "report_missing.html",
+                face_error="Please enter a valid last seen date."
+            )
+
+        # -----------------------------
+        # Get uploaded photo
+        # -----------------------------
+
         photo = request.files.get("photo")
 
         # -----------------------------
@@ -182,7 +218,9 @@ def report_missing():
         # -----------------------------
         # Save database record
         # -----------------------------
+
         report_id = f"ML-{str(uuid.uuid4())[:8].upper()}"
+
         person = MissingPerson(
 
             name=request.form.get("name"),
@@ -368,6 +406,44 @@ def view_missing_profile(id):
 def report_found():
 
     if request.method == "POST":
+
+        # -----------------------------
+        # Validate found date
+        # -----------------------------
+
+        found_date_str = request.form.get("found_date")
+
+        if not found_date_str:
+            return render_template(
+                "report_found.html",
+                face_error="Please enter the found date."
+            )
+
+        try:
+
+            found_date = datetime.strptime(
+                found_date_str,
+                "%Y-%m-%d"
+            ).date()
+
+            # Found date must be before today
+            if found_date >= date.today():
+
+                return render_template(
+                    "report_found.html",
+                    face_error="Found date must be before today's date."
+                )
+
+        except ValueError:
+
+            return render_template(
+                "report_found.html",
+                face_error="Please enter a valid found date."
+            )
+
+        # -----------------------------
+        # Get uploaded photo
+        # -----------------------------
 
         photo = request.files.get("photo")
 
