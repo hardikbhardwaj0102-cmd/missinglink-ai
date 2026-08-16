@@ -543,3 +543,95 @@
 
 
 }
+/* ================= AI MATCH SCORE ================= */
+
+.score {
+
+    margin-top: 18px;
+
+    padding: 18px;
+
+    border-radius: 16px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(37, 99, 235, 0.15),
+            rgba(124, 58, 237, 0.12)
+        );
+
+    border:
+        1px solid rgba(96, 165, 250, 0.25);
+
+    text-align: center;
+
+}
+
+.score-label {
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    color: #94a3b8;
+
+}
+
+.score-value {
+
+    margin-top: 8px;
+
+    font-size: 42px;
+
+    font-weight: 800;
+
+    background:
+        linear-gradient(
+            90deg,
+            #60a5fa,
+            #a78bfa
+        );
+
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+
+}
+
+.score-bar {
+
+    width: 100%;
+
+    height: 8px;
+
+    margin-top: 14px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255, 255, 255, 0.08);
+
+    overflow: hidden;
+
+}
+
+.score-fill {
+
+    width: 0;
+
+    height: 100%;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #2563eb,
+            #7c3aed
+        );
+
+    transition: width 0.8s ease;
+
+}

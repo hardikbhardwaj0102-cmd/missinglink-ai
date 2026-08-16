@@ -8,7 +8,7 @@
 
 <div class="ai-container">
 
-    <!-- Header -->
+    <!-- ================= HEADER ================= -->
 
     <div class="ai-header">
 
@@ -16,13 +16,13 @@
 
         <p>
             Facial comparison completed successfully.
-            The results below are ranked according to similarity.
+            The results below are ranked according to AI similarity.
         </p>
 
     </div>
 
 
-    <!-- Found Person -->
+    <!-- ================= FOUND PERSON ================= -->
 
     <div class="found-person">
 
@@ -36,26 +36,37 @@
 
             <h2>Found Person</h2>
 
-            <p><strong>Estimated Age:</strong> {{ found_person.estimated_age }}</p>
+            <p>
+                <strong>Estimated Age:</strong>
+                {{ found_person.estimated_age }}
+            </p>
 
-            <p><strong>Gender:</strong> {{ found_person.gender }}</p>
+            <p>
+                <strong>Gender:</strong>
+                {{ found_person.gender }}
+            </p>
 
-            <p><strong>Found Location:</strong> {{ found_person.found_location }}</p>
+            <p>
+                <strong>Found Location:</strong>
+                {{ found_person.found_location }}
+            </p>
 
-            <p><strong>Condition:</strong> {{ found_person.condition }}</p>
+            <p>
+                <strong>Condition:</strong>
+                {{ found_person.condition }}
+            </p>
 
         </div>
 
     </div>
 
 
-    <!-- AI Results -->
+    <!-- ================= AI RESULTS ================= -->
 
     <h2 class="section-title">
-
         Top AI Matches
-
     </h2>
+
 
     {% if matches %}
 
@@ -65,68 +76,76 @@
 
         <div class="match-card">
 
+            <!-- ================= MATCH PHOTO ================= -->
+
             <img src="{{ match.person.photo_url }}" alt="{{ match.person.name }}">
 
-            <h3>{{ match.person.name }}</h3>
 
-            <p>
-
-                <strong>Age:</strong>
-
-                {{ match.person.age }}
-
-            </p>
-
-            <p>
-
-                <strong>Last Seen:</strong>
-
-                {{ match.person.last_seen_location }}
-
-            </p>
+            <!-- ================= AI MATCH SCORE ================= -->
 
             <div class="score">
 
-                Match Score
+                <div class="score-label">
+                    AI MATCH SCORE
+                </div>
 
-                <span>
+                <div class="score-value">
+                    {{ match.similarity }}%
+                </div>
 
-                    {{ match.similarity }}
+                <div class="score-bar">
 
-                </span>
+                    <div class="score-fill" data-score="{{ match.similarity }}"></div>
+
+                </div>
 
             </div>
+
+
+            <!-- ================= PERSON DETAILS ================= -->
+
+            <h3>
+                {{ match.person.name }}
+            </h3>
+
+            <p>
+                <strong>Age:</strong>
+                {{ match.person.age }}
+            </p>
+
+            <p>
+                <strong>Last Seen:</strong>
+                {{ match.person.last_seen_location }}
+            </p>
+
+
+            <!-- ================= MATCH STATUS ================= -->
 
             {% if match.similarity >= 75 %}
 
             <div class="status high">
-
                 🟢 High Match
-
             </div>
 
             {% elif match.similarity >= 45 %}
 
             <div class="status medium">
-
                 🟡 Possible Match
-
             </div>
 
             {% else %}
 
             <div class="status low">
-
                 🔴 Low Match
-
             </div>
 
             {% endif %}
 
-            <a href="/missing/{{ match.person.id }}" class="details-btn">
 
+            <!-- ================= PROFILE BUTTON ================= -->
+
+            <a href="{{ url_for('view_missing_profile', id=match.person.id) }}" class="details-btn">
                 View Complete Profile
-
             </a>
 
         </div>
@@ -135,16 +154,19 @@
 
     </div>
 
+
     {% else %}
+
+    <!-- ================= NO RESULTS ================= -->
 
     <div class="no-results">
 
-        <h2>No Matches Found</h2>
+        <h2>
+            No Matches Found
+        </h2>
 
         <p>
-
             AI could not identify any similar faces.
-
         </p>
 
     </div>
@@ -152,5 +174,13 @@
     {% endif %}
 
 </div>
+<script>
+    document.querySelectorAll(".score-fill").forEach(function (bar) {
 
+        const score = parseFloat(bar.dataset.score) || 0;
+
+        bar.style.width = score + "%";
+
+    });
+</script>
 {% endblock %}
