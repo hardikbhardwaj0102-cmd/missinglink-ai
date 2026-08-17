@@ -11,7 +11,7 @@ from brevo.transactional_emails import (
 from datetime import datetime, date
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask import session
 from ai.face_matcher import find_best_matches
 from dotenv import load_dotenv
@@ -884,11 +884,21 @@ def admin_login():
 
     if request.method == "POST":
 
-        username = request.form["username"]
-        password = request.form["password"]
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
 
-        if username == "Hardik" and password == "Hardik@123":
+        admin_username = os.getenv("ADMIN_USERNAME")
+        admin_password_hash = os.getenv("ADMIN_PASSWORD_HASH")
 
+        if not admin_username or not admin_password_hash:
+            app.logger.error("Admin credentials are not configured.")
+            flash("Admin login is temporarily unavailable.", "danger")
+            return render_template("admin_login.html")
+
+        if (
+            username == admin_username
+            and check_password_hash(admin_password_hash, password)
+        ):
             session["admin"] = True
 
             return redirect(url_for("admin_dashboard"))
