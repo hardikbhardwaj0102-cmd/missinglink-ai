@@ -8,7 +8,7 @@ from brevo.transactional_emails import (
     SendTransacEmailRequestSender,
     SendTransacEmailRequestToItem,
 )
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -20,6 +20,8 @@ load_dotenv()
 from config import Config
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+from datetime import timedelta
+
 
 supabase: Client = create_client(
     SUPABASE_URL,
@@ -39,6 +41,21 @@ from models import (
 app = Flask(__name__)
 
 app.config.from_object(Config)
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(hours=2)
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+@app.after_request
+def add_security_headers(response):
+
+    response.headers["Cache-Control"] = (
+        "no-store, no-cache, must-revalidate, "
+        "post-check=0, pre-check=0, max-age=0"
+    )
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
+    return response
 
 brevo_client = Brevo(
     api_key=os.getenv("BREVO_API_KEY")
@@ -659,6 +676,7 @@ def login():
                 }
             )
 
+        session.permanent = True
         session["organization"] = user.id
 
         return redirect(url_for("dashboard"))
@@ -899,6 +917,7 @@ def admin_login():
             username == admin_username
             and check_password_hash(admin_password_hash, password)
         ):
+            session.permanent = True
             session["admin"] = True
 
             return redirect(url_for("admin_dashboard"))
@@ -1096,14 +1115,30 @@ def reject_org(id):
 
 @app.route("/admin/logout")
 def admin_logout():
+    session.clear()
 
-    session.pop("admin", None)
+    response = redirect(url_for("admin_login"))
 
-    return redirect(url_for("admin_login"))
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
+    return response
 @app.route("/logout")
 def logout():
-    session.pop("organization", None)
-    return redirect(url_for("login"))
+
+    session.clear()
+
+    response = redirect(url_for("login"))
+
+    response.headers["Cache-Control"] = (
+        "no-store, no-cache, must-revalidate, "
+        "post-check=0, pre-check=0, max-age=0"
+    )
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+
+    return response
 
 @app.route("/dashboard")
 def dashboard():

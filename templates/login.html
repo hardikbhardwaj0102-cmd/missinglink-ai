@@ -84,21 +84,22 @@
                 Sign in using your verified organization account.
             </p>
 
-            <form method="POST">
+            <form method="POST" autocomplete="off">
 
                 <div class="input-group">
 
                     <label>Email Address</label>
 
-                    <input type="email" name="email" placeholder="organization@example.com" required>
-
+                    <input type="email" name="email" placeholder="organization@example.com" autocomplete="username"
+                        required>
                 </div>
 
                 <div class="input-group">
 
                     <label>Password</label>
 
-                    <input type="password" name="password" placeholder="Enter password" required>
+                    <input type="password" name="password" placeholder="Enter password" autocomplete="new-password"
+                        required>
 
                 </div>
 
@@ -187,6 +188,20 @@
                 alert.classList.add("show");
             }, 100);
 
+        }
+
+    });
+
+</script>
+<script>
+
+    window.addEventListener("pageshow", function (event) {
+
+        if (
+            event.persisted ||
+            window.performance.navigation.type === 2
+        ) {
+            window.location.reload();
         }
 
     });
