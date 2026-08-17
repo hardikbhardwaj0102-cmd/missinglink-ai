@@ -963,28 +963,24 @@ def report_found():
         found_date_str = request.form.get("found_date")
 
         if not found_date_str:
-
             return render_template(
                 "report_found.html",
                 face_error="Please enter the found date."
             )
 
         try:
-
             found_date = datetime.strptime(
                 found_date_str,
                 "%Y-%m-%d"
             ).date()
 
             if found_date >= date.today():
-
                 return render_template(
                     "report_found.html",
                     face_error="Found date must be before today's date."
                 )
 
         except ValueError:
-
             return render_template(
                 "report_found.html",
                 face_error="Please enter a valid found date."
@@ -994,27 +990,109 @@ def report_found():
         # Finder Email
         # ==========================================
 
-        email = request.form.get(
-            "email",
-            ""
-        ).strip()
+        email = request.form.get("email", "").strip()
 
         if not email:
-
             return render_template(
                 "report_found.html",
                 face_error="Please enter your email address."
             )
 
         # ==========================================
-        # Photo Variables
+        # Get Uploaded Photo
         # ==========================================
 
-        filename = ""
+        photo = request.files.get("photo")
 
-        storage_path = ""
+        if not photo or photo.filename == "":
+            return render_template(
+                "report_found.html",
+                face_error="Please upload a photo."
+            )
 
-        embedding_json = None
+        # ==========================================
+        # Generate Filename
+        # ==========================================
+
+        extension = os.path.splitext(photo.filename)[1].lower()
+
+        if extension not in [".jpg", ".jpeg", ".png", ".webp"]:
+            return render_template(
+                "report_found.html",
+                face_error="Please upload a valid image file."
+            )
+
+        filename = str(uuid.uuid4()) + extension
+
+        filepath = os.path.join(
+            app.config["UPLOAD_FOLDER"],
+            filename
+        )
+
+        # ==========================================
+        # Save Photo Temporarily
+        # ==========================================
+
+        try:
+            photo.save(filepath)
+
+        except Exception as e:
+            return render_template(
+                "report_found.html",
+                face_error=f"Unable to process photo: {str(e)}"
+            )
+
+        # ==========================================
+        # AI FACE DETECTION + EMBEDDING
+        # ==========================================
+
+        success, embedding, message = get_face_embedding(filepath)
+
+        if not success:
+
+            if os.path.exists(filepath):
+                os.remove(filepath)
+
+            return render_template(
+                "report_found.html",
+                face_error=message
+            )
+
+        embedding_json = json.dumps(embedding)
+
+        # ==========================================
+        # Upload Photo To Supabase
+        # ==========================================
+
+        storage_path = filename
+
+        try:
+
+            with open(filepath, "rb") as image_file:
+
+                supabase.storage.from_(
+                    "found-person-photos"
+                ).upload(
+                    storage_path,
+                    image_file,
+                    {
+                        "content-type": photo.content_type
+                    }
+                )
+
+            # Remove local temporary file
+            if os.path.exists(filepath):
+                os.remove(filepath)
+
+        except Exception as e:
+
+            if os.path.exists(filepath):
+                os.remove(filepath)
+
+            return render_template(
+                "report_found.html",
+                face_error=f"Photo upload failed: {str(e)}"
+            )
 
         # ==========================================
         # Generate OTP
@@ -1022,21 +1100,17 @@ def report_found():
 
         otp = generate_otp()
 
-        otp_hash = generate_password_hash(
-            otp
-        )
+        otp_hash = generate_password_hash(otp)
 
         otp_expires_at = (
             datetime.utcnow()
             + timedelta(minutes=5)
         )
 
-        pending_token = secrets.token_urlsafe(
-            32
-        )
+        pending_token = secrets.token_urlsafe(32)
 
         # ==========================================
-        # Store Found Report Data
+        # Store Report Data
         # ==========================================
 
         report_data = {
@@ -1106,9 +1180,7 @@ def report_found():
 
             report_type="found",
 
-            report_data=json.dumps(
-                report_data
-            ),
+            report_data=json.dumps(report_data),
 
             photo_path=storage_path,
 
@@ -1123,24 +1195,35 @@ def report_found():
             otp_attempts=0
         )
 
-        db.session.add(
-            pending_report
-        )
+        db.session.add(pending_report)
 
-        db.session.commit()
+        try:
+            db.session.commit()
+
+        except Exception as e:
+
+            db.session.rollback()
+
+            # Cleanup uploaded photo
+            try:
+                supabase.storage.from_(
+                    "found-person-photos"
+                ).remove([storage_path])
+            except Exception:
+                pass
+
+            return render_template(
+                "report_found.html",
+                face_error=f"Unable to save report: {str(e)}"
+            )
 
         # ==========================================
         # Send OTP
         # ==========================================
 
         email_sent = send_otp_email(
-
             to_email=email,
-
-            to_name=request.form.get(
-                "finder_name"
-            ),
-
+            to_name=request.form.get("finder_name"),
             otp=otp
         )
 
@@ -1150,30 +1233,21 @@ def report_found():
 
         if not email_sent:
 
-            db.session.delete(
-                pending_report
-            )
-
+            db.session.delete(pending_report)
             db.session.commit()
 
-            # Remove Supabase photo
+            try:
 
-            if storage_path:
+                supabase.storage.from_(
+                    "found-person-photos"
+                ).remove([storage_path])
 
-                try:
+            except Exception as cleanup_error:
 
-                    supabase.storage.from_(
-                        "found-person-photos"
-                    ).remove([
-                        storage_path
-                    ])
-
-                except Exception as cleanup_error:
-
-                    print(
-                        "SUPABASE CLEANUP ERROR:",
-                        cleanup_error
-                    )
+                print(
+                    "SUPABASE CLEANUP ERROR:",
+                    cleanup_error
+                )
 
             return render_template(
                 "report_found.html",
@@ -1187,18 +1261,14 @@ def report_found():
         # Store Token In Session
         # ==========================================
 
-        session[
-            "pending_report_token"
-        ] = pending_token
+        session["pending_report_token"] = pending_token
 
         # ==========================================
         # Redirect To OTP
         # ==========================================
 
         return redirect(
-            url_for(
-                "verify_report_otp"
-            )
+            url_for("verify_report_otp")
         )
 
     return render_template(

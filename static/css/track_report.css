@@ -453,3 +453,19 @@
         grid-template-columns: 1fr;
     }
 }
+
+.status-line-progress.progress-0 {
+    width: 0%;
+}
+
+.status-line-progress.progress-33 {
+    width: 33.33%;
+}
+
+.status-line-progress.progress-66 {
+    width: 66.66%;
+}
+
+.status-line-progress.progress-100 {
+    width: 100%;
+}
