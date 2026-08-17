@@ -1267,3 +1267,50 @@
 .status-line-progress.progress-100 {
     width: 100%;
 }
+
+/* =========================================================
+   BACK TO HOME
+========================================================= */
+
+.back-home {
+    margin-bottom: 25px;
+}
+
+.back-home a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 10px 18px;
+
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, 0.06);
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+
+    color: #cbd5e1;
+
+    text-decoration: none;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    transition: all 0.3s ease;
+}
+
+.back-home a:hover {
+    color: white;
+
+    background: rgba(59, 130, 246, 0.15);
+
+    border-color: rgba(59, 130, 246, 0.45);
+
+    transform: translateX(-3px);
+
+    box-shadow:
+        0 8px 25px rgba(37, 99, 235, 0.18);
+}
