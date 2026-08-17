@@ -1,0 +1,455 @@
+/* =========================================================
+   MISSINGLINK AI — REPORT TRACKING
+========================================================= */
+
+.tracking-page {
+    min-height: 85vh;
+    padding: 70px 25px;
+    color: white;
+}
+
+.tracking-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.tracking-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.tracking-header h1 {
+    margin: 0 0 10px;
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -1px;
+}
+
+.tracking-header p {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   SEARCH CARD
+========================================================= */
+
+.tracking-search {
+    padding: 24px;
+    margin-bottom: 30px;
+
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 18px;
+
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.18);
+}
+
+.tracking-form {
+    display: flex;
+    gap: 12px;
+}
+
+.tracking-form input {
+    flex: 1;
+
+    height: 52px;
+    padding: 0 17px;
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 11px;
+
+    outline: none;
+
+    background: rgba(0, 0, 0, 0.25);
+    color: white;
+
+    font-size: 15px;
+
+    transition: 0.25s ease;
+}
+
+.tracking-form input::placeholder {
+    color: #6b7280;
+}
+
+.tracking-form input:focus {
+    border-color: rgba(59, 130, 246, 0.8);
+
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+.tracking-form button {
+    height: 52px;
+
+    padding: 0 25px;
+
+    border: none;
+    border-radius: 11px;
+
+    background: linear-gradient(135deg,
+            #2563eb,
+            #3b82f6);
+
+    color: white;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+.tracking-form button:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 10px 25px rgba(37, 99, 235, 0.25);
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.tracking-error {
+    margin-top: 15px;
+
+    padding: 13px 16px;
+
+    border-radius: 10px;
+
+    background: rgba(239, 68, 68, 0.08);
+
+    border: 1px solid rgba(239, 68, 68, 0.22);
+
+    color: #fca5a5;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   REPORT CARD
+========================================================= */
+
+.report-card {
+    padding: 32px;
+
+    background: rgba(255, 255, 255, 0.045);
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    border-radius: 22px;
+
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+
+/* =========================================================
+   REPORT HEADER
+========================================================= */
+
+.report-header {
+    display: flex;
+
+    justify-content: space-between;
+    align-items: center;
+
+    padding-bottom: 22px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.report-header h2 {
+    margin: 0 0 7px;
+
+    font-size: 22px;
+}
+
+.report-id {
+    color: #60a5fa;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* =========================================================
+   STATUS TRACKER
+========================================================= */
+
+.status-tracker {
+    position: relative;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    margin: 55px 10px 50px;
+}
+
+
+/* Connecting line */
+
+.status-line {
+    position: absolute;
+
+    top: 18px;
+
+    left: 9%;
+    right: 9%;
+
+    height: 3px;
+
+    background: rgba(255, 255, 255, 0.10);
+
+    z-index: 0;
+}
+
+
+/* Individual step */
+
+.status-step {
+    position: relative;
+
+    z-index: 1;
+
+    width: 25%;
+
+    text-align: center;
+}
+
+
+/* Status circle */
+
+.status-dot {
+    width: 38px;
+    height: 38px;
+
+    margin: 0 auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #111827;
+
+    border: 2px solid #374151;
+
+    color: #6b7280;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    transition: 0.3s ease;
+}
+
+
+/* Completed */
+
+.status-step.completed .status-dot {
+    background: #2563eb;
+
+    border-color: #60a5fa;
+
+    color: white;
+
+    box-shadow:
+        0 0 18px rgba(37, 99, 235, 0.28);
+}
+
+
+/* Active/current */
+
+.status-step.active .status-dot {
+    background: #f59e0b;
+
+    border-color: #fbbf24;
+
+    color: white;
+
+    box-shadow:
+        0 0 0 5px rgba(245, 158, 11, 0.10),
+        0 0 25px rgba(245, 158, 11, 0.35);
+}
+
+
+/* Labels */
+
+.status-step span {
+    display: block;
+
+    margin-top: 12px;
+
+    color: #6b7280;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    line-height: 1.4;
+}
+
+.status-step.completed span {
+    color: #d1d5db;
+}
+
+.status-step.active span {
+    color: #fbbf24;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   REPORT DETAILS
+========================================================= */
+
+.report-details {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 15px;
+
+    margin-top: 15px;
+}
+
+.detail-box {
+    padding: 17px;
+
+    border-radius: 13px;
+
+    background: rgba(255, 255, 255, 0.035);
+
+    border: 1px solid rgba(255, 255, 255, 0.055);
+
+    transition: 0.25s ease;
+}
+
+.detail-box:hover {
+    background: rgba(255, 255, 255, 0.055);
+
+    transform: translateY(-2px);
+}
+
+.detail-box small {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #6b7280;
+
+    font-size: 12px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+}
+
+.detail-box strong {
+    color: #f3f4f6;
+
+    font-size: 14px;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .tracking-page {
+        padding: 45px 15px;
+    }
+
+    .tracking-header h1 {
+        font-size: 32px;
+    }
+
+    .tracking-form {
+        flex-direction: column;
+    }
+
+    .tracking-form button {
+        width: 100%;
+    }
+
+    .report-card {
+        padding: 22px;
+    }
+
+    .report-header {
+        align-items: flex-start;
+    }
+
+    .status-tracker {
+        flex-direction: column;
+
+        gap: 24px;
+
+        margin-left: 5px;
+    }
+
+    .status-line {
+        top: 19px;
+        bottom: 19px;
+
+        left: 18px;
+
+        width: 3px;
+        height: auto;
+
+        right: auto;
+    }
+
+    .status-step {
+        width: 100%;
+
+        display: flex;
+
+        align-items: center;
+
+        gap: 15px;
+
+        text-align: left;
+    }
+
+    .status-dot {
+        flex-shrink: 0;
+
+        margin: 0;
+    }
+
+    .status-step span {
+        margin-top: 0;
+    }
+
+    .report-details {
+        grid-template-columns: 1fr;
+    }
+}

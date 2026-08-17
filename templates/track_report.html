@@ -1,0 +1,479 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/track_report.css') }}">
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="tracking-page">
+
+    <div class="tracking-container">
+
+
+        <!-- ==================================================
+             HEADER
+        ================================================== -->
+
+        <div class="tracking-header">
+
+            <div class="tracking-icon">
+                ✓
+            </div>
+
+            <h1>
+                Track Your Report
+            </h1>
+
+            <p>
+                Enter your MissingLink AI Report ID to view
+                the latest status of your case.
+            </p>
+
+        </div>
+
+
+        <!-- ==================================================
+             SEARCH
+        ================================================== -->
+
+        <div class="tracking-search">
+
+            <form method="POST" action="{{ url_for('track_report') }}" class="tracking-form">
+
+                <input type="text" name="report_id" placeholder="Enter Report ID (e.g. ML-A82F91C2)"
+                    value="{{ request.form.get('report_id', '') }}" autocomplete="off" required>
+
+                <button type="submit">
+                    Track Report
+                </button>
+
+            </form>
+
+
+            {% if error %}
+
+            <div class="tracking-error">
+
+                <span>!</span>
+
+                {{ error }}
+
+            </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- ==================================================
+             REPORT RESULT
+        ================================================== -->
+
+        {% if report %}
+
+        <div class="report-card">
+
+
+            <!-- ==================================================
+                 REPORT HEADER
+            ================================================== -->
+
+            <div class="report-header">
+
+                <div>
+
+                    <span class="report-label">
+                        REPORT ID
+                    </span>
+
+                    <h2>
+                        {{ report.report_id }}
+                    </h2>
+
+                </div>
+
+
+                <div class="live-status">
+
+                    <span class="live-dot"></span>
+
+                    Live Status
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 STATUS TRACKER
+            ================================================== -->
+
+            {% set statuses = [
+            "submitted",
+            "investigating",
+            "potential_match",
+            "found"
+            ] %}
+
+            {% set current_status = report.status or "submitted" %}
+
+            {% if current_status in statuses %}
+
+            {% set current_index = statuses.index(current_status) %}
+
+            {% else %}
+
+            {% set current_index = 0 %}
+
+            {% endif %}
+
+
+            <div class="status-tracker">
+
+
+                <!-- CONNECTING LINE -->
+
+                <div class="status-line">
+
+                    <div class="status-line-progress" style="width:
+                        {% if current_index == 0 %}
+                            0%
+                        {% elif current_index == 1 %}
+                            33.33%
+                        {% elif current_index == 2 %}
+                            66.66%
+                        {% else %}
+                            100%
+                        {% endif %};"></div>
+
+                </div>
+
+
+                <!-- ==================================================
+                     STEP 1
+                ================================================== -->
+
+                <div class="
+                    status-step
+                    {% if current_index > 0 %}
+                        completed
+                    {% elif current_index == 0 %}
+                        active
+                    {% else %}
+                        pending
+                    {% endif %}
+                ">
+
+                    <div class="status-dot">
+
+                        {% if current_index > 0 %}
+                        ✓
+                        {% else %}
+                        1
+                        {% endif %}
+
+                    </div>
+
+                    <span>
+                        Report Submitted
+                    </span>
+
+                </div>
+
+
+                <!-- ==================================================
+                     STEP 2
+                ================================================== -->
+
+                <div class="
+                    status-step
+                    {% if current_index > 1 %}
+                        completed
+                    {% elif current_index == 1 %}
+                        active
+                    {% else %}
+                        pending
+                    {% endif %}
+                ">
+
+                    <div class="status-dot">
+
+                        {% if current_index > 1 %}
+                        ✓
+                        {% elif current_index == 1 %}
+                        ●
+                        {% else %}
+                        2
+                        {% endif %}
+
+                    </div>
+
+                    <span>
+                        Under Investigation
+                    </span>
+
+                </div>
+
+
+                <!-- ==================================================
+                     STEP 3
+                ================================================== -->
+
+                <div class="
+                    status-step
+                    {% if current_index > 2 %}
+                        completed
+                    {% elif current_index == 2 %}
+                        active
+                    {% else %}
+                        pending
+                    {% endif %}
+                ">
+
+                    <div class="status-dot">
+
+                        {% if current_index > 2 %}
+                        ✓
+                        {% elif current_index == 2 %}
+                        ●
+                        {% else %}
+                        3
+                        {% endif %}
+
+                    </div>
+
+                    <span>
+                        Potential Match Found
+                    </span>
+
+                </div>
+
+
+                <!-- ==================================================
+                     STEP 4
+                ================================================== -->
+
+                <div class="
+                    status-step
+                    {% if current_index > 3 %}
+                        completed
+                    {% elif current_index == 3 %}
+                        active
+                    {% else %}
+                        pending
+                    {% endif %}
+                ">
+
+                    <div class="status-dot">
+
+                        {% if current_index > 3 %}
+                        ✓
+                        {% elif current_index == 3 %}
+                        ●
+                        {% else %}
+                        4
+                        {% endif %}
+
+                    </div>
+
+                    <span>
+                        Person Found
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 CURRENT STATUS MESSAGE
+            ================================================== -->
+
+            <div class="status-message">
+
+                <div class="status-message-icon">
+
+                    {% if report.status == "submitted" %}
+                    ✓
+                    {% elif report.status == "investigating" %}
+                    🔎
+                    {% elif report.status == "potential_match" %}
+                    ✨
+                    {% elif report.status == "found" %}
+                    ✓
+                    {% else %}
+                    ✓
+                    {% endif %}
+
+                </div>
+
+
+                <div>
+
+                    <small>
+                        CURRENT STATUS
+                    </small>
+
+                    <strong>
+
+                        {% if report.status == "submitted" %}
+
+                        Report Submitted
+
+                        {% elif report.status == "investigating" %}
+
+                        Under Investigation
+
+                        {% elif report.status == "potential_match" %}
+
+                        Potential Match Found
+
+                        {% elif report.status == "found" %}
+
+                        Person Found
+
+                        {% else %}
+
+                        Report Submitted
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 REPORT DETAILS
+            ================================================== -->
+
+            <div class="report-details">
+
+
+                {% if report_type == "missing" %}
+
+                <div class="detail-box">
+
+                    <small>
+                        PERSON
+                    </small>
+
+                    <strong>
+                        {{ report.name }}
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <small>
+                        LAST SEEN LOCATION
+                    </small>
+
+                    <strong>
+                        {{ report.last_seen_location or "Not provided" }}
+                    </strong>
+
+                </div>
+
+
+                {% else %}
+
+                <div class="detail-box">
+
+                    <small>
+                        REPORT TYPE
+                    </small>
+
+                    <strong>
+                        Found Person
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <small>
+                        FOUND LOCATION
+                    </small>
+
+                    <strong>
+                        {{ report.found_location or "Not provided" }}
+                    </strong>
+
+                </div>
+
+                {% endif %}
+
+
+                <div class="detail-box">
+
+                    <small>
+                        REPORT DATE
+                    </small>
+
+                    <strong>
+
+                        {% if report.created_at %}
+
+                        {{ report.created_at.strftime("%d %b %Y") }}
+
+                        {% else %}
+
+                        Not available
+
+                        {% endif %}
+
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-box">
+
+                    <small>
+                        REPORT ID
+                    </small>
+
+                    <strong class="detail-report-id">
+                        {{ report.report_id }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- ==================================================
+                 SECURITY NOTE
+            ================================================== -->
+
+            <div class="tracking-note">
+
+                <span>🔒</span>
+
+                <p>
+                    Case information is securely retrieved using
+                    your unique Report ID.
+                </p>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+    </div>
+
+</div>
+
+{% endblock %}

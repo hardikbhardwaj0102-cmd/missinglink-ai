@@ -465,11 +465,15 @@ def verify_report_otp():
     token = session.get("pending_report_token")
 
     if not token:
+
         flash(
             "Your verification session has expired. Please submit the report again.",
             "danger"
         )
-        return redirect(url_for("report_missing"))
+
+        return redirect(
+            url_for("report_missing")
+        )
 
     pending_report = PendingReport.query.filter_by(
         token=token
@@ -477,14 +481,19 @@ def verify_report_otp():
 
     if not pending_report:
 
-        session.pop("pending_report_token", None)
+        session.pop(
+            "pending_report_token",
+            None
+        )
 
         flash(
             "Verification request not found. Please submit the report again.",
             "danger"
         )
 
-        return redirect(url_for("report_missing"))
+        return redirect(
+            url_for("report_missing")
+        )
 
     # ==========================================
     # GET - Show OTP Page
@@ -501,7 +510,10 @@ def verify_report_otp():
     # POST - Verify OTP
     # ==========================================
 
-    otp = request.form.get("otp", "").strip()
+    otp = request.form.get(
+        "otp",
+        ""
+    ).strip()
 
     if not otp or len(otp) != 6 or not otp.isdigit():
 
@@ -512,15 +524,21 @@ def verify_report_otp():
         )
 
     # ==========================================
-    # Check Expiry
+    # Check OTP Expiry
     # ==========================================
 
     if datetime.utcnow() > pending_report.otp_expires_at:
 
-        db.session.delete(pending_report)
+        db.session.delete(
+            pending_report
+        )
+
         db.session.commit()
 
-        session.pop("pending_report_token", None)
+        session.pop(
+            "pending_report_token",
+            None
+        )
 
         return render_template(
             "verify_otp.html",
@@ -532,15 +550,21 @@ def verify_report_otp():
         )
 
     # ==========================================
-    # Check Attempts
+    # Check OTP Attempts
     # ==========================================
 
     if pending_report.otp_attempts >= 5:
 
-        db.session.delete(pending_report)
+        db.session.delete(
+            pending_report
+        )
+
         db.session.commit()
 
-        session.pop("pending_report_token", None)
+        session.pop(
+            "pending_report_token",
+            None
+        )
 
         return render_template(
             "verify_otp.html",
@@ -561,9 +585,12 @@ def verify_report_otp():
     ):
 
         pending_report.otp_attempts += 1
+
         db.session.commit()
 
-        remaining = 5 - pending_report.otp_attempts
+        remaining = (
+            5 - pending_report.otp_attempts
+        )
 
         return render_template(
             "verify_otp.html",
@@ -588,19 +615,37 @@ def verify_report_otp():
 
     if pending_report.report_type == "missing":
 
-        report_id = f"ML-{str(uuid.uuid4())[:8].upper()}"
+        # Generate permanent report ID
+        report_id = (
+            f"ML-{str(uuid.uuid4())[:8].upper()}"
+        )
 
         person = MissingPerson(
 
-            name=report_data.get("name"),
+            # Report Tracking
+            report_id=report_id,
+            status="submitted",
 
-            age=report_data.get("age"),
+            # Missing Person Details
+            name=report_data.get(
+                "name"
+            ),
 
-            gender=report_data.get("gender"),
+            age=report_data.get(
+                "age"
+            ),
 
-            height=report_data.get("height"),
+            gender=report_data.get(
+                "gender"
+            ),
 
-            clothing=report_data.get("clothing"),
+            height=report_data.get(
+                "height"
+            ),
+
+            clothing=report_data.get(
+                "clothing"
+            ),
 
             last_seen_location=report_data.get(
                 "last_seen_location"
@@ -614,10 +659,12 @@ def verify_report_otp():
                 "description"
             ),
 
+            # AI + Photo
             photo_path=pending_report.photo_path,
 
             embedding=pending_report.embedding,
 
+            # Reporter Details
             reporter_name=report_data.get(
                 "reporter_name"
             ),
@@ -635,7 +682,9 @@ def verify_report_otp():
             )
         )
 
-        db.session.add(person)
+        db.session.add(
+            person
+        )
 
     # ==========================================
     # FOUND REPORT
@@ -643,8 +692,18 @@ def verify_report_otp():
 
     elif pending_report.report_type == "found":
 
+        # Generate permanent report ID
+        report_id = (
+            f"ML-{str(uuid.uuid4())[:8].upper()}"
+        )
+
         found_person = FoundPerson(
 
+            # Report Tracking
+            report_id=report_id,
+            status="submitted",
+
+            # Found Person Details
             estimated_age=report_data.get(
                 "estimated_age"
             ),
@@ -681,10 +740,12 @@ def verify_report_otp():
                 "description"
             ),
 
+            # AI + Photo
             embedding=pending_report.embedding,
 
             photo_path=pending_report.photo_path,
 
+            # Finder Details
             finder_name=report_data.get(
                 "finder_name"
             ),
@@ -706,12 +767,13 @@ def verify_report_otp():
             )
         )
 
-        db.session.add(found_person)
+        db.session.add(
+            found_person
+        )
 
-        # Get ID before commit
-        db.session.flush()
-
-        report_id = f"ML-F-{found_person.id:06d}"
+    # ==========================================
+    # INVALID REPORT TYPE
+    # ==========================================
 
     else:
 
@@ -732,12 +794,18 @@ def verify_report_otp():
     # Delete Temporary Report
     # ==========================================
 
-    db.session.delete(pending_report)
+    db.session.delete(
+        pending_report
+    )
 
     session.pop(
         "pending_report_token",
         None
     )
+
+    # ==========================================
+    # Save Report
+    # ==========================================
 
     db.session.commit()
 
@@ -947,95 +1015,6 @@ def report_found():
         storage_path = ""
 
         embedding_json = None
-
-        photo = request.files.get("photo")
-
-        # ==========================================
-        # Photo + AI Processing
-        # ==========================================
-
-        if photo and photo.filename != "":
-
-            extension = os.path.splitext(
-                photo.filename
-            )[1]
-
-            filename = (
-                str(uuid.uuid4())
-                + extension
-            )
-
-            filepath = os.path.join(
-                app.config["UPLOAD_FOLDER"],
-                filename
-            )
-
-            # Temporary local save
-
-            photo.save(filepath)
-
-            # ==========================================
-            # AI Face Detection
-            # ==========================================
-
-            success, embedding, message = get_face_embedding(
-                filepath
-            )
-
-            if not success:
-
-                if os.path.exists(filepath):
-                    os.remove(filepath)
-
-                return render_template(
-                    "report_found.html",
-                    face_error=message
-                )
-
-            embedding_json = json.dumps(
-                embedding
-            )
-
-            # ==========================================
-            # Upload To Supabase
-            # ==========================================
-
-            try:
-
-                storage_path = (
-                    f"found-person-photos/{filename}"
-                )
-
-                with open(
-                    filepath,
-                    "rb"
-                ) as image_file:
-
-                    supabase.storage.from_(
-                        "found-person-photos"
-                    ).upload(
-                        storage_path,
-                        image_file,
-                        {
-                            "content-type":
-                            photo.content_type
-                        }
-                    )
-
-                if os.path.exists(filepath):
-                    os.remove(filepath)
-
-            except Exception as e:
-
-                if os.path.exists(filepath):
-                    os.remove(filepath)
-
-                return render_template(
-                    "report_found.html",
-                    face_error=(
-                        f"Photo upload failed: {str(e)}"
-                    )
-                )
 
         # ==========================================
         # Generate OTP
@@ -1837,6 +1816,211 @@ def dashboard():
         found_count=found_count
 
     )
+# ==========================================
+# UPDATE REPORT STATUS
+# ==========================================
+
+@app.route("/update-report-status", methods=["POST"])
+def update_report_status():
+
+    # ==========================================
+    # ORGANIZATION LOGIN CHECK
+    # ==========================================
+
+    if not session.get("organization"):
+
+        return {
+            "success": False,
+            "message": "Authentication required."
+        }, 401
+
+    # ==========================================
+    # GET REQUEST DATA
+    # ==========================================
+
+    data = request.get_json(silent=True) or request.form
+
+    report_id = data.get(
+        "report_id",
+        ""
+    ).strip()
+
+    new_status = data.get(
+        "status",
+        ""
+    ).strip()
+
+    report_type = data.get(
+        "report_type",
+        ""
+    ).strip()
+
+    # ==========================================
+    # VALIDATE REPORT ID
+    # ==========================================
+
+    if not report_id:
+
+        return {
+            "success": False,
+            "message": "Report ID is required."
+        }, 400
+
+    # ==========================================
+    # ALLOWED STATUSES
+    # ==========================================
+
+    allowed_statuses = {
+        "submitted",
+        "investigating",
+        "potential_match",
+        "found"
+    }
+
+    if new_status not in allowed_statuses:
+
+        return {
+            "success": False,
+            "message": "Invalid report status."
+        }, 400
+
+    # ==========================================
+    # FIND REPORT
+    # ==========================================
+
+    report = None
+
+    if report_type == "missing":
+
+        report = MissingPerson.query.filter_by(
+            report_id=report_id
+        ).first()
+
+    elif report_type == "found":
+
+        report = FoundPerson.query.filter_by(
+            report_id=report_id
+        ).first()
+
+    else:
+
+        # Fallback search if report_type wasn't supplied
+
+        report = MissingPerson.query.filter_by(
+            report_id=report_id
+        ).first()
+
+        if not report:
+
+            report = FoundPerson.query.filter_by(
+                report_id=report_id
+            ).first()
+
+    # ==========================================
+    # REPORT NOT FOUND
+    # ==========================================
+
+    if not report:
+
+        return {
+            "success": False,
+            "message": "Report not found."
+        }, 404
+
+    # ==========================================
+    # UPDATE STATUS
+    # ==========================================
+
+    report.status = new_status
+
+    # ==========================================
+    # SAVE
+    # ==========================================
+
+    try:
+
+        db.session.commit()
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "STATUS UPDATE ERROR:",
+            e
+        )
+
+        return {
+            "success": False,
+            "message": "Unable to update report status."
+        }, 500
+
+    # ==========================================
+    # SUCCESS
+    # ==========================================
+
+    return {
+        "success": True,
+        "message": "Report status updated successfully.",
+        "report_id": report_id,
+        "status": new_status
+    }, 200
+# ==========================================
+# REPORT STATUS TRACKING
+# ==========================================
+
+@app.route("/track-report", methods=["GET", "POST"])
+def track_report():
+
+    report = None
+    report_type = None
+    error = None
+
+    if request.method == "POST":
+
+        report_id = request.form.get(
+            "report_id",
+            ""
+        ).strip().upper()
+
+        if not report_id:
+
+            error = "Please enter your Report ID."
+
+        else:
+
+            # Search missing reports
+            report = MissingPerson.query.filter_by(
+                report_id=report_id
+            ).first()
+
+            if report:
+
+                report_type = "missing"
+
+            else:
+
+                # Search found reports
+                report = FoundPerson.query.filter_by(
+                    report_id=report_id
+                ).first()
+
+                if report:
+                    report_type = "found"
+
+            if not report:
+
+                error = (
+                    "No report was found with this Report ID. "
+                    "Please check the ID and try again."
+                )
+
+    return render_template(
+        "track_report.html",
+        report=report,
+        report_type=report_type,
+        error=error
+    )
 @app.route("/admin/clear-data")
 def clear_data():
 
@@ -1852,7 +2036,7 @@ def clear_data():
         MissingPerson.query.delete()
         FoundPerson.query.delete()
         Organization.query.delete()
-
+        PendingReport.query.delete()
         db.session.commit()
 
         # ==========================================

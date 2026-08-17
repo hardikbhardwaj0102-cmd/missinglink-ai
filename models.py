@@ -7,7 +7,13 @@ db = SQLAlchemy()
 class MissingPerson(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
-
+    # Report Tracking
+    report_id = db.Column(db.String(20), unique=True, nullable=False)
+    status = db.Column(
+        db.String(30),
+        nullable=False,
+        default="submitted"
+    )
     # Missing Person Details
     name = db.Column(db.String(100), nullable=False)
     age = db.Column(db.Integer)
@@ -35,7 +41,13 @@ class MissingPerson(db.Model):
 class FoundPerson(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
-
+    # Report Tracking
+    report_id = db.Column(db.String(20), unique=True, nullable=False)
+    status = db.Column(
+        db.String(30),
+        nullable=False,
+        default="submitted"
+    )
     # Found Person Details
     estimated_age = db.Column(db.Integer)
 
@@ -103,7 +115,7 @@ class PendingReport(db.Model):
         db.DateTime,
         default=datetime.utcnow
     )
-    
+
 class Organization(db.Model):
 
     __tablename__ = "organizations"
