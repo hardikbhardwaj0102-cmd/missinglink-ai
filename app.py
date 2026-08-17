@@ -8,6 +8,7 @@ from brevo.transactional_emails import (
     SendTransacEmailRequestSender,
     SendTransacEmailRequestToItem,
 )
+import secrets
 from datetime import datetime, date, timedelta
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
@@ -31,6 +32,7 @@ from models import (
     db,
     MissingPerson,
     FoundPerson,
+    PendingReport,
     Organization
 )
 
@@ -86,6 +88,75 @@ def send_email(to_email, to_name, subject, html_content):
     except Exception as e:
         print("BREVO EMAIL ERROR:", e)
         return False
+# ==========================================
+# OTP VERIFICATION
+# ==========================================
+
+def generate_otp():
+    return str(secrets.randbelow(900000) + 100000)
+
+
+def send_otp_email(to_email, to_name, otp):
+
+    return send_email(
+        to_email=to_email,
+        to_name=to_name or "User",
+        subject="MissingLink AI - Email Verification OTP",
+        html_content=f"""
+            <div style="
+                font-family: Arial, sans-serif;
+                max-width: 600px;
+                margin: auto;
+                padding: 30px;
+                color: #1f2937;
+            ">
+
+                <h2 style="color:#2563eb;">
+                    MissingLink AI
+                </h2>
+
+                <p>Hello {to_name or "User"},</p>
+
+                <p>
+                    We received a request to submit a report
+                    on MissingLink AI using this email address.
+                </p>
+
+                <p>
+                    Your verification code is:
+                </p>
+
+                <div style="
+                    font-size: 32px;
+                    font-weight: bold;
+                    letter-spacing: 8px;
+                    text-align: center;
+                    padding: 20px;
+                    margin: 20px 0;
+                    background: #f3f4f6;
+                    border-radius: 10px;
+                    color: #2563eb;
+                ">
+                    {otp}
+                </div>
+
+                <p>
+                    This OTP will expire in <strong>5 minutes</strong>.
+                </p>
+
+                <p>
+                    If you did not request this verification,
+                    you can safely ignore this email.
+                </p>
+
+                <p>
+                    Regards,<br>
+                    <strong>MissingLink AI Team</strong>
+                </p>
+
+            </div>
+        """
+    )
 # Upload folders
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 app.config["ID_CARD_FOLDER"] = "static/id_cards"
@@ -113,14 +184,18 @@ def home():
 # Report Missing
 # ==========================================
 
+# ==========================================
+# Report Missing
+# ==========================================
+
 @app.route("/report-missing", methods=["GET", "POST"])
 def report_missing():
 
     if request.method == "POST":
 
-        # -----------------------------
-        # Validate last seen date
-        # -----------------------------
+        # ==========================================
+        # Validate Last Seen Date
+        # ==========================================
 
         last_seen_date_str = request.form.get("last_seen_date")
 
@@ -131,41 +206,58 @@ def report_missing():
             )
 
         try:
+
             last_seen_date = datetime.strptime(
                 last_seen_date_str,
                 "%Y-%m-%d"
             ).date()
 
-            # Last seen date must be before today
             if last_seen_date >= date.today():
+
                 return render_template(
                     "report_missing.html",
                     face_error="Last seen date must be before today's date."
                 )
 
         except ValueError:
+
             return render_template(
                 "report_missing.html",
                 face_error="Please enter a valid last seen date."
             )
 
-        # -----------------------------
-        # Get uploaded photo
-        # -----------------------------
+        # ==========================================
+        # Reporter Email
+        # ==========================================
+
+        email = request.form.get("email", "").strip()
+
+        if not email:
+
+            return render_template(
+                "report_missing.html",
+                face_error="Please enter your email address."
+            )
+
+        # ==========================================
+        # Get Uploaded Photo
+        # ==========================================
 
         photo = request.files.get("photo")
 
-        # -----------------------------
-        # Validate photo
-        # -----------------------------
-
         if not photo or photo.filename == "":
+
             return render_template(
                 "report_missing.html",
                 face_error="Please upload a photo."
             )
 
+        # ==========================================
+        # Generate Filename
+        # ==========================================
+
         extension = os.path.splitext(photo.filename)[1]
+
         filename = str(uuid.uuid4()) + extension
 
         filepath = os.path.join(
@@ -173,15 +265,15 @@ def report_missing():
             filename
         )
 
-        # -----------------------------
-        # Temporary local save
-        # -----------------------------
+        # ==========================================
+        # Temporary Local Save
+        # ==========================================
 
         photo.save(filepath)
 
-        # -----------------------------
+        # ==========================================
         # AI Face Detection
-        # -----------------------------
+        # ==========================================
 
         success, embedding, message = get_face_embedding(filepath)
 
@@ -195,15 +287,11 @@ def report_missing():
                 face_error=message
             )
 
-        # -----------------------------
-        # Convert embedding
-        # -----------------------------
-
         embedding_json = json.dumps(embedding)
 
-        # -----------------------------
-        # Upload image to Supabase
-        # -----------------------------
+        # ==========================================
+        # Upload Image To Supabase
+        # ==========================================
 
         try:
 
@@ -221,7 +309,6 @@ def report_missing():
                     }
                 )
 
-            # Remove temporary local file
             if os.path.exists(filepath):
                 os.remove(filepath)
 
@@ -235,63 +322,364 @@ def report_missing():
                 face_error=f"Photo upload failed: {str(e)}"
             )
 
-        # -----------------------------
-        # Save database record
-        # -----------------------------
+        # ==========================================
+        # Generate OTP
+        # ==========================================
 
-        report_id = f"ML-{str(uuid.uuid4())[:8].upper()}"
+        otp = generate_otp()
 
-        person = MissingPerson(
+        otp_hash = generate_password_hash(otp)
 
-            name=request.form.get("name"),
+        otp_expires_at = datetime.utcnow() + timedelta(minutes=5)
 
-            age=request.form.get("age"),
+        pending_token = secrets.token_urlsafe(32)
 
-            gender=request.form.get("gender"),
+        # ==========================================
+        # Store Report Data Temporarily
+        # ==========================================
 
-            height=request.form.get("height"),
+        report_data = {
 
-            clothing=request.form.get("clothing"),
+            "name": request.form.get("name"),
 
-            last_seen_location=request.form.get(
+            "age": request.form.get("age"),
+
+            "gender": request.form.get("gender"),
+
+            "height": request.form.get("height"),
+
+            "clothing": request.form.get("clothing"),
+
+            "last_seen_location": request.form.get(
                 "last_seen_location"
             ),
 
-            last_seen_date=request.form.get(
+            "last_seen_date": request.form.get(
                 "last_seen_date"
             ),
 
-            description=request.form.get(
+            "description": request.form.get(
                 "description"
             ),
+
+            "reporter_name": request.form.get(
+                "reporter_name"
+            ),
+
+            "relationship": request.form.get(
+                "relationship"
+            ),
+
+            "phone": request.form.get(
+                "phone"
+            ),
+
+            "email": email
+        }
+
+        pending_report = PendingReport(
+
+            token=pending_token,
+
+            report_type="missing",
+
+            report_data=json.dumps(report_data),
 
             photo_path=storage_path,
 
             embedding=embedding_json,
 
-            reporter_name=request.form.get(
+            email=email,
+
+            otp_hash=otp_hash,
+
+            otp_expires_at=otp_expires_at,
+
+            otp_attempts=0
+        )
+
+        db.session.add(pending_report)
+
+        db.session.commit()
+
+        # ==========================================
+        # Send OTP
+        # ==========================================
+
+        email_sent = send_otp_email(
+            to_email=email,
+            to_name=request.form.get("reporter_name"),
+            otp=otp
+        )
+
+        if not email_sent:
+
+            db.session.delete(pending_report)
+
+            db.session.commit()
+
+            # Remove uploaded Supabase image
+            try:
+
+                supabase.storage.from_(
+                    "missing-person-photos"
+                ).remove([storage_path])
+
+            except Exception as cleanup_error:
+
+                print(
+                    "SUPABASE CLEANUP ERROR:",
+                    cleanup_error
+                )
+
+            return render_template(
+                "report_missing.html",
+                face_error=(
+                    "Unable to send verification email. "
+                    "Please try again."
+                )
+            )
+
+        # ==========================================
+        # Store Pending Token In Session
+        # ==========================================
+
+        session["pending_report_token"] = pending_token
+
+        # ==========================================
+        # Redirect To OTP Verification
+        # ==========================================
+
+        return redirect(
+            url_for("verify_report_otp")
+        )
+
+    return render_template("report_missing.html")
+# ==========================================
+# Verify Report OTP
+# ==========================================
+
+@app.route("/verify-report-otp", methods=["GET", "POST"])
+def verify_report_otp():
+
+    token = session.get("pending_report_token")
+
+    if not token:
+        flash(
+            "Your verification session has expired. Please submit the report again.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("report_missing")
+        )
+
+    pending_report = PendingReport.query.filter_by(
+        token=token
+    ).first()
+
+    if not pending_report:
+
+        session.pop(
+            "pending_report_token",
+            None
+        )
+
+        flash(
+            "Verification request not found. Please submit the report again.",
+            "danger"
+        )
+
+        return redirect(
+            url_for("report_missing")
+        )
+
+    # ==========================================
+    # POST - Verify OTP
+    # ==========================================
+
+    if request.method == "POST":
+
+        otp = request.form.get(
+            "otp",
+            ""
+        ).strip()
+
+        if not otp or len(otp) != 6 or not otp.isdigit():
+
+            return render_template(
+                "verify_otp.html",
+                email=pending_report.email,
+                otp_error="Please enter the 6-digit OTP."
+            )
+
+        # ==========================================
+        # Check Expiry
+        # ==========================================
+
+        if datetime.utcnow() > pending_report.otp_expires_at:
+
+            db.session.delete(pending_report)
+            db.session.commit()
+
+            session.pop(
+                "pending_report_token",
+                None
+            )
+
+            return render_template(
+                "verify_otp.html",
+                email=pending_report.email,
+                otp_error=(
+                    "This OTP has expired. "
+                    "Please submit the report again."
+                )
+            )
+
+        # ==========================================
+        # Check Attempts
+        # ==========================================
+
+        if pending_report.otp_attempts >= 5:
+
+            db.session.delete(pending_report)
+            db.session.commit()
+
+            session.pop(
+                "pending_report_token",
+                None
+            )
+
+            return render_template(
+                "verify_otp.html",
+                email=pending_report.email,
+                otp_error=(
+                    "Too many incorrect attempts. "
+                    "Please submit the report again."
+                )
+            )
+
+        # ==========================================
+        # Verify OTP
+        # ==========================================
+
+        if not check_password_hash(
+            pending_report.otp_hash,
+            otp
+        ):
+
+            pending_report.otp_attempts += 1
+
+            db.session.commit()
+
+            remaining = 5 - pending_report.otp_attempts
+
+            return render_template(
+                "verify_otp.html",
+                email=pending_report.email,
+                otp_error=(
+                    f"Incorrect OTP. "
+                    f"{remaining} attempts remaining."
+                )
+            )
+
+        # ==========================================
+        # OTP VERIFIED
+        # ==========================================
+
+        report_data = json.loads(
+            pending_report.report_data
+        )
+
+        # ==========================================
+        # Generate Report ID
+        # ==========================================
+
+        report_id = f"ML-{str(uuid.uuid4())[:8].upper()}"
+
+        # ==========================================
+        # Create Missing Person
+        # ==========================================
+
+        person = MissingPerson(
+
+            name=report_data.get("name"),
+
+            age=report_data.get("age"),
+
+            gender=report_data.get("gender"),
+
+            height=report_data.get("height"),
+
+            clothing=report_data.get("clothing"),
+
+            last_seen_location=report_data.get(
+                "last_seen_location"
+            ),
+
+            last_seen_date=report_data.get(
+                "last_seen_date"
+            ),
+
+            description=report_data.get(
+                "description"
+            ),
+
+            photo_path=pending_report.photo_path,
+
+            embedding=pending_report.embedding,
+
+            reporter_name=report_data.get(
                 "reporter_name"
             ),
 
-            relationship=request.form.get(
+            relationship=report_data.get(
                 "relationship"
             ),
 
-            phone=request.form.get("phone"),
+            phone=report_data.get(
+                "phone"
+            ),
 
-            email=request.form.get("email")
+            email=report_data.get(
+                "email"
+            )
         )
 
         db.session.add(person)
 
+        # Delete temporary pending report
+
+        db.session.delete(
+            pending_report
+        )
+
+        # Remove session token
+
+        session.pop(
+            "pending_report_token",
+            None
+        )
+
         db.session.commit()
+
+        # ==========================================
+        # Success
+        # ==========================================
 
         return render_template(
             "success.html",
             report_id=report_id
         )
 
-    return render_template("report_missing.html")
+    # ==========================================
+    # GET - Show OTP Page
+    # ==========================================
+
+    return render_template(
+        "verify_otp.html",
+        email=pending_report.email
+    )
 @app.route("/ai-match/<int:found_id>")
 def ai_match(found_id):
 

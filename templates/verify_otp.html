@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/verify_otp.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<div class="otp-page">
+
+    <div class="otp-card">
+
+        <div class="otp-icon">
+            ✉
+        </div>
+
+        <h1>Verify Your Email</h1>
+
+        <p class="otp-description">
+            We've sent a 6-digit verification code to
+        </p>
+
+        <div class="otp-email">
+            {{ email }}
+        </div>
+
+        {% if otp_error %}
+        <div class="otp-error">
+            {{ otp_error }}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+
+            <div class="otp-input-group">
+
+                <label for="otp">
+                    Enter Verification Code
+                </label>
+
+                <input type="text" id="otp" name="otp" maxlength="6" inputmode="numeric" autocomplete="one-time-code"
+                    placeholder="000000" required autofocus>
+
+            </div>
+
+            <button type="submit" class="verify-otp-btn">
+                Verify Email
+            </button>
+
+        </form>
+
+        <div class="otp-info">
+            <span>🔒</span>
+            Your verification code expires in 5 minutes.
+        </div>
+
+        <a href="{{ url_for('report_missing') }}" class="back-report-btn">
+            ← Back to Report
+        </a>
+
+    </div>
+
+</div>
+
+{% endblock %}

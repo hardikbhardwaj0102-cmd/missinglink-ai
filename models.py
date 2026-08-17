@@ -71,7 +71,39 @@ class FoundPerson(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class PendingReport(db.Model):
 
+    __tablename__ = "pending_reports"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    # Unique verification identifier
+    token = db.Column(db.String(100), unique=True, nullable=False)
+
+    # missing / found
+    report_type = db.Column(db.String(20), nullable=False)
+
+    # Temporary report data
+    report_data = db.Column(db.Text, nullable=False)
+
+    # Temporary uploaded photo + embedding
+    photo_path = db.Column(db.String(300))
+    embedding = db.Column(db.Text)
+
+    # Email verification
+    email = db.Column(db.String(150), nullable=False)
+
+    otp_hash = db.Column(db.String(255), nullable=False)
+
+    otp_expires_at = db.Column(db.DateTime, nullable=False)
+
+    otp_attempts = db.Column(db.Integer, default=0)
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+    
 class Organization(db.Model):
 
     __tablename__ = "organizations"
