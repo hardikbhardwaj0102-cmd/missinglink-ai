@@ -1890,6 +1890,10 @@ def dashboard():
 # UPDATE REPORT STATUS
 # ==========================================
 
+# ==========================================
+# UPDATE REPORT STATUS
+# ==========================================
+
 @app.route("/update-report-status", methods=["POST"])
 def update_report_status():
 
@@ -1974,7 +1978,7 @@ def update_report_status():
 
     else:
 
-        # Fallback search if report_type wasn't supplied
+        # Fallback search
 
         report = MissingPerson.query.filter_by(
             report_id=report_id
@@ -1998,14 +2002,26 @@ def update_report_status():
         }, 404
 
     # ==========================================
-    # UPDATE STATUS
+    # CHECK IF STATUS ACTUALLY CHANGED
+    # ==========================================
+
+    old_status = report.status
+
+    if old_status == new_status:
+
+        return {
+            "success": True,
+            "message": "Status is already set to this value.",
+            "report_id": report_id,
+            "status": new_status,
+            "email_sent": False
+        }, 200
+
+    # ==========================================
+    # UPDATE DATABASE STATUS
     # ==========================================
 
     report.status = new_status
-
-    # ==========================================
-    # SAVE
-    # ==========================================
 
     try:
 
@@ -2026,14 +2042,254 @@ def update_report_status():
         }, 500
 
     # ==========================================
-    # SUCCESS
+    # STATUS DISPLAY NAMES
+    # ==========================================
+
+    status_labels = {
+
+        "submitted":
+            "Report Submitted",
+
+        "investigating":
+            "Under Investigation",
+
+        "potential_match":
+            "Potential Match Found",
+
+        "found":
+            "Person Found"
+    }
+
+    old_status_label = status_labels.get(
+        old_status,
+        old_status.replace("_", " ").title()
+        if old_status
+        else "Unknown"
+    )
+
+    new_status_label = status_labels.get(
+        new_status,
+        new_status.replace("_", " ").title()
+    )
+
+    # ==========================================
+    # GET REPORTER / FINDER INFORMATION
+    # ==========================================
+
+    recipient_email = getattr(
+        report,
+        "email",
+        None
+    )
+
+    if report_type == "missing" or isinstance(
+        report,
+        MissingPerson
+    ):
+
+        recipient_name = getattr(
+            report,
+            "reporter_name",
+            None
+        )
+
+        report_category = "Missing Person Report"
+
+    else:
+
+        recipient_name = getattr(
+            report,
+            "finder_name",
+            None
+        )
+
+        report_category = "Found Person Report"
+
+    # ==========================================
+    # SEND STATUS UPDATE EMAIL
+    # ==========================================
+
+    email_sent = False
+
+    if recipient_email:
+
+        email_sent = send_email(
+
+            to_email=recipient_email,
+
+            to_name=recipient_name or "User",
+
+            subject=(
+                f"MissingLink AI - Report Status Updated "
+                f"({report_id})"
+            ),
+
+            html_content=f"""
+
+            <div style="
+                font-family: Arial, sans-serif;
+                max-width: 650px;
+                margin: auto;
+                padding: 35px;
+                background: #f8fafc;
+                color: #1f2937;
+            ">
+
+                <div style="
+                    background: #ffffff;
+                    border-radius: 14px;
+                    padding: 30px;
+                    border: 1px solid #e5e7eb;
+                ">
+
+                    <h2 style="
+                        color: #2563eb;
+                        margin-top: 0;
+                    ">
+                        MissingLink AI
+                    </h2>
+
+                    <p>
+                        Hello
+                        <strong>
+                            {recipient_name or "User"}
+                        </strong>,
+                    </p>
+
+                    <p>
+                        We wanted to let you know that there
+                        has been an update to your
+                        <strong>{report_category}</strong>.
+                    </p>
+
+                    <!-- REPORT ID -->
+
+                    <div style="
+                        background: #f1f5f9;
+                        padding: 15px 18px;
+                        border-radius: 10px;
+                        margin: 20px 0;
+                    ">
+
+                        <strong>
+                            Report ID:
+                        </strong>
+
+                        <span style="
+                            color: #2563eb;
+                            font-weight: bold;
+                        ">
+                            {report_id}
+                        </span>
+
+                    </div>
+
+
+                    <!-- PREVIOUS STATUS -->
+
+                    <p>
+                        <strong>
+                            Previous Status:
+                        </strong>
+
+                        {old_status_label}
+                    </p>
+
+
+                    <!-- NEW STATUS -->
+
+                    <p>
+                        <strong>
+                            Current Status:
+                        </strong>
+
+                        <span style="
+                            color: #2563eb;
+                            font-weight: bold;
+                        ">
+                            {new_status_label}
+                        </span>
+                    </p>
+
+
+                    <div style="
+                        margin: 25px 0;
+                        padding: 18px;
+                        background: #eff6ff;
+                        border-left: 4px solid #2563eb;
+                        border-radius: 8px;
+                    ">
+
+                        <p style="
+                            margin: 0;
+                            line-height: 1.6;
+                        ">
+
+                            Your report has been updated in
+                            the MissingLink AI system.
+
+                            Our team will continue monitoring
+                            the case and further updates will
+                            be reflected in your report.
+
+                        </p>
+
+                    </div>
+
+
+                    <p>
+                        You can use your
+                        <strong>Report ID</strong>
+                        to track the latest status of your
+                        case.
+                    </p>
+
+
+                    <p style="
+                        margin-top: 30px;
+                    ">
+
+                        Regards,<br>
+
+                        <strong>
+                            MissingLink AI Team
+                        </strong>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+            """
+
+        )
+
+    else:
+
+        print(
+            f"STATUS EMAIL SKIPPED: "
+            f"No email associated with report {report_id}"
+        )
+
+    # ==========================================
+    # FINAL RESPONSE
     # ==========================================
 
     return {
+
         "success": True,
-        "message": "Report status updated successfully.",
+
+        "message": (
+            "Report status updated successfully."
+        ),
+
         "report_id": report_id,
-        "status": new_status
+
+        "status": new_status,
+
+        "email_sent": email_sent
+
     }, 200
 # ==========================================
 # REPORT STATUS TRACKING

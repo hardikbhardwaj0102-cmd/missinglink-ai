@@ -15,13 +15,11 @@
     <div class="dashboard-header">
 
         <div>
-
             <h1>MissingLink AI Dashboard</h1>
 
             <p class="subtitle">
                 Monitor missing and found person reports in one place.
             </p>
-
         </div>
 
         <div class="dashboard-actions">
@@ -61,38 +59,23 @@
     <div class="stats">
 
         <div class="stat-card">
-
             <h2>{{ missing_count }}</h2>
-
             <p>Missing Reports</p>
-
         </div>
 
-
         <div class="stat-card">
-
             <h2>{{ found_count }}</h2>
-
             <p>Found Reports</p>
-
         </div>
 
-
         <div class="stat-card">
-
             <h2>{{ missing_count + found_count }}</h2>
-
             <p>Total Cases</p>
-
         </div>
 
-
         <div class="stat-card">
-
             <h2>AI</h2>
-
             <p>Matching Ready</p>
-
         </div>
 
     </div>
@@ -164,11 +147,15 @@
                     </p>
 
 
+                    <!-- AGE -->
+
                     <p>
                         <strong>Age:</strong>
                         {{ person.age or "N/A" }}
                     </p>
 
+
+                    <!-- LOCATION -->
 
                     <p>
                         <strong>Location:</strong>
@@ -193,23 +180,28 @@
                                     potential-match
                                 {% elif person.status == 'found' %}
                                     found
-                                {% endif %}
-                            ">
+                                {% endif %}">
 
                             {% if person.status == "submitted" %}
+
                             Report Submitted
 
                             {% elif person.status == "investigating" %}
+
                             Under Investigation
 
                             {% elif person.status == "potential_match" %}
+
                             Potential Match Found
 
                             {% elif person.status == "found" %}
+
                             Person Found
 
                             {% else %}
+
                             Report Submitted
+
                             {% endif %}
 
                         </span>
@@ -222,6 +214,8 @@
                     <form action="{{ url_for('update_report_status') }}" method="POST" class="status-form">
 
                         <input type="hidden" name="report_id" value="{{ person.report_id }}">
+
+                        <input type="hidden" name="report_type" value="missing">
 
 
                         <label for="status-{{ person.id }}">
@@ -354,11 +348,15 @@
                     </p>
 
 
+                    <!-- ESTIMATED AGE -->
+
                     <p>
                         <strong>Estimated Age:</strong>
                         {{ person.estimated_age or "N/A" }}
                     </p>
 
+
+                    <!-- LOCATION -->
 
                     <p>
                         <strong>Location:</strong>
@@ -383,23 +381,28 @@
                                     potential-match
                                 {% elif person.status == 'found' %}
                                     found
-                                {% endif %}
-                            ">
+                                {% endif %}">
 
                             {% if person.status == "submitted" %}
+
                             Report Submitted
 
                             {% elif person.status == "investigating" %}
+
                             Under Investigation
 
                             {% elif person.status == "potential_match" %}
+
                             Potential Match Found
 
                             {% elif person.status == "found" %}
+
                             Person Found
 
                             {% else %}
+
                             Report Submitted
+
                             {% endif %}
 
                         </span>
@@ -412,6 +415,8 @@
                     <form action="{{ url_for('update_report_status') }}" method="POST" class="status-form">
 
                         <input type="hidden" name="report_id" value="{{ person.report_id }}">
+
+                        <input type="hidden" name="report_type" value="found">
 
 
                         <label for="found-status-{{ person.id }}">
@@ -524,5 +529,214 @@
 {% block extra_js %}
 
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const statusForms = document.querySelectorAll(".status-form");
+
+        statusForms.forEach(function (form) {
+
+            form.addEventListener("submit", async function (event) {
+
+                event.preventDefault();
+
+                const button = form.querySelector(".status-update-btn");
+                const select = form.querySelector("select");
+
+                const reportIdInput = form.querySelector(
+                    'input[name="report_id"]'
+                );
+
+                const reportTypeInput = form.querySelector(
+                    'input[name="report_type"]'
+                );
+
+                if (!button || !select || !reportIdInput || !reportTypeInput) {
+                    return;
+                }
+
+                const reportId = reportIdInput.value;
+                const reportType = reportTypeInput.value;
+                const status = select.value;
+
+                const card = form.closest(".case-card");
+
+                const badge = card
+                    ? card.querySelector(".status-section .badge")
+                    : null;
+
+                const originalText = button.textContent;
+
+                /*
+                 * Prevent duplicate requests
+                 */
+
+                if (button.disabled) {
+                    return;
+                }
+
+                button.disabled = true;
+                button.textContent = "Updating...";
+
+
+                try {
+
+                    const response = await fetch(
+                        "{{ url_for('update_report_status') }}",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Accept": "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                report_id: reportId,
+                                status: status,
+                                report_type: reportType
+                            })
+                        }
+                    );
+
+
+                    const result = await response.json();
+
+
+                    if (!response.ok || !result.success) {
+
+                        throw new Error(
+                            result.message ||
+                            "Unable to update report status."
+                        );
+
+                    }
+
+
+                    /*
+                     * Status labels
+                     */
+
+                    const statusLabels = {
+
+                        submitted: "Report Submitted",
+
+                        investigating: "Under Investigation",
+
+                        potential_match: "Potential Match Found",
+
+                        found: "Person Found"
+
+                    };
+
+
+                    /*
+                     * Update badge
+                     */
+
+                    if (badge) {
+
+                        badge.textContent =
+                            statusLabels[status] || "Report Submitted";
+
+
+                        /*
+                         * Remove previous status classes
+                         */
+
+                        badge.classList.remove(
+                            "submitted",
+                            "investigating",
+                            "potential-match",
+                            "found"
+                        );
+
+
+                        /*
+                         * Add new status class
+                         */
+
+                        if (status === "potential_match") {
+
+                            badge.classList.add("potential-match");
+
+                        } else {
+
+                            badge.classList.add(status);
+
+                        }
+
+                    }
+
+
+                    /*
+                     * Button success state
+                     */
+
+                    button.textContent = "✓ Updated";
+
+
+                    /*
+                     * Small success effect
+                     */
+
+                    if (card) {
+
+                        card.classList.add("status-updated");
+
+                        setTimeout(function () {
+
+                            card.classList.remove("status-updated");
+
+                        }, 800);
+
+                    }
+
+
+                    /*
+                     * Restore button
+                     */
+
+                    setTimeout(function () {
+
+                        button.textContent = originalText;
+                        button.disabled = false;
+
+                    }, 1500);
+
+
+                } catch (error) {
+
+                    console.error(
+                        "STATUS UPDATE ERROR:",
+                        error
+                    );
+
+
+                    /*
+                     * Restore previous button state
+                     */
+
+                    button.textContent = "Update Failed";
+
+
+                    setTimeout(function () {
+
+                        button.textContent = originalText;
+                        button.disabled = false;
+
+                    }, 2000);
+
+                }
+
+            });
+
+        });
+
+    });
+
+</script>
 
 {% endblock %}
