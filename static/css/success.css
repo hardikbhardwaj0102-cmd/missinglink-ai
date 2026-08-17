@@ -209,3 +209,154 @@
     transform: translateY(-4px);
 
 }
+
+/* ==========================================
+   DOWNLOAD REPORT
+========================================== */
+
+.download-section {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    margin: 25px 0;
+
+    padding: 20px;
+
+    border-radius: 16px;
+
+    background: rgba(15, 23, 42, 0.65);
+
+    border: 1px solid rgba(148, 163, 184, 0.14);
+
+    text-align: left;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+
+.download-icon {
+    width: 50px;
+    height: 50px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background: rgba(37, 99, 235, 0.12);
+
+    border: 1px solid rgba(96, 165, 250, 0.20);
+
+    font-size: 22px;
+}
+
+
+.download-content {
+    flex: 1;
+}
+
+
+.download-content h3 {
+    margin: 0 0 5px;
+
+    color: #f8fafc;
+
+    font-size: 16px;
+}
+
+
+.download-content p {
+    margin: 0 0 14px;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+}
+
+
+/* ==========================================
+   DOWNLOAD BUTTON
+========================================== */
+
+.btn-download {
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 11px 18px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(135deg,
+            #2563eb,
+            #1d4ed8);
+
+    border: 1px solid rgba(96, 165, 250, 0.30);
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 8px 20px rgba(37, 99, 235, 0.22);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        filter 0.25s ease;
+}
+
+
+.btn-download:hover {
+
+    transform: translateY(-2px);
+
+    filter: brightness(1.08);
+
+    box-shadow:
+        0 12px 28px rgba(37, 99, 235, 0.32);
+}
+
+
+.btn-download:active {
+    transform: translateY(0);
+}
+
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+    .download-section {
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+    .download-content {
+        width: 100%;
+    }
+
+    .btn-download {
+        width: 100%;
+    }
+
+}
