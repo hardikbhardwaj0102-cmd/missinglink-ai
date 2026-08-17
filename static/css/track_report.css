@@ -1314,3 +1314,32 @@
     box-shadow:
         0 8px 25px rgba(37, 99, 235, 0.18);
 }
+
+/* =========================================================
+   PURE BLACK BACKGROUND OVERLAY
+========================================================= */
+
+.tracking-page {
+    position: relative;
+    isolation: isolate;
+}
+
+.tracking-page::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+
+    z-index: -1;
+    pointer-events: none;
+
+    background:
+        linear-gradient(180deg,
+            rgba(0, 0, 0, 0.58) 0%,
+            rgba(0, 0, 0, 0.68) 50%,
+            rgba(0, 0, 0, 0.78) 100%);
+}
+
+/* Remove any colored glow */
+.tracking-page::after {
+    display: none;
+}
