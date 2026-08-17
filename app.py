@@ -9,8 +9,20 @@ from brevo.transactional_emails import (
     SendTransacEmailRequestToItem,
 )
 from io import BytesIO
+from flask import send_file
+from reportlab.lib import colors
+from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.pagesizes import A4
-from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import mm
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Paragraph,
+    Spacer,
+    Table,
+    TableStyle,
+    HRFlowable
+)
 from flask import send_file
 import secrets
 from datetime import datetime, date, timedelta
@@ -2335,189 +2347,450 @@ def download_report(report_id):
         return redirect(url_for("home"))
 
     # ==========================================
-    # CREATE REPORT CONTENT
+    # PDF BUFFER
     # ==========================================
 
-    report_date = datetime.now().strftime("%d %B %Y, %I:%M %p")
+    buffer = BytesIO()
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=18 * mm,
+        leftMargin=18 * mm,
+        topMargin=18 * mm,
+        bottomMargin=18 * mm
+    )
+
+    # ==========================================
+    # COLORS
+    # ==========================================
+
+    NAVY = colors.HexColor("#07111f")
+    BLUE = colors.HexColor("#2563eb")
+    LIGHT_BLUE = colors.HexColor("#eff6ff")
+    LIGHT_GRAY = colors.HexColor("#f3f4f6")
+    DARK = colors.HexColor("#111827")
+    GRAY = colors.HexColor("#6b7280")
+    BORDER = colors.HexColor("#dbe3ef")
+    GREEN = colors.HexColor("#16a34a")
+
+    # ==========================================
+    # STYLES
+    # ==========================================
+
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle(
+        "TitleStyle",
+        parent=styles["Title"],
+        fontName="Helvetica-Bold",
+        fontSize=24,
+        leading=28,
+        textColor=NAVY,
+        alignment=TA_CENTER,
+        spaceAfter=6
+    )
+
+    subtitle_style = ParagraphStyle(
+        "SubtitleStyle",
+        parent=styles["Normal"],
+        fontName="Helvetica",
+        fontSize=10,
+        leading=14,
+        textColor=GRAY,
+        alignment=TA_CENTER,
+        spaceAfter=18
+    )
+
+    section_style = ParagraphStyle(
+        "SectionStyle",
+        parent=styles["Heading2"],
+        fontName="Helvetica-Bold",
+        fontSize=13,
+        leading=16,
+        textColor=NAVY,
+        spaceBefore=12,
+        spaceAfter=8
+    )
+
+    label_style = ParagraphStyle(
+        "LabelStyle",
+        parent=styles["Normal"],
+        fontName="Helvetica-Bold",
+        fontSize=9,
+        textColor=GRAY,
+        leading=12
+    )
+
+    value_style = ParagraphStyle(
+        "ValueStyle",
+        parent=styles["Normal"],
+        fontName="Helvetica",
+        fontSize=10,
+        textColor=DARK,
+        leading=14
+    )
+
+    footer_style = ParagraphStyle(
+        "FooterStyle",
+        parent=styles["Normal"],
+        fontName="Helvetica",
+        fontSize=8,
+        textColor=GRAY,
+        alignment=TA_CENTER,
+        leading=11
+    )
+
+    # ==========================================
+    # HELPER
+    # ==========================================
+
+    def safe(value):
+        if value is None or str(value).strip() == "":
+            return "Not provided"
+
+        return str(value)
+
+    def detail_table(rows):
+
+        data = []
+
+        for label, value in rows:
+            data.append([
+                Paragraph(label, label_style),
+                Paragraph(safe(value), value_style)
+            ])
+
+        table = Table(
+            data,
+            colWidths=[45 * mm, 120 * mm],
+            hAlign="LEFT"
+        )
+
+        table.setStyle(
+            TableStyle([
+                ("BACKGROUND", (0, 0), (0, -1), LIGHT_GRAY),
+                ("BOX", (0, 0), (-1, -1), 0.6, BORDER),
+                ("INNERGRID", (0, 0), (-1, -1), 0.4, BORDER),
+
+                ("VALIGN", (0, 0), (-1, -1), "TOP"),
+
+                ("LEFTPADDING", (0, 0), (-1, -1), 8),
+                ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+                ("TOPPADDING", (0, 0), (-1, -1), 7),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 7),
+            ])
+        )
+
+        return table
+
+    # ==========================================
+    # BUILD PDF
+    # ==========================================
+
+    story = []
+
+    # ------------------------------------------
+    # HEADER
+    # ------------------------------------------
+
+    story.append(
+        Paragraph(
+            "MissingLink AI",
+            title_style
+        )
+    )
+
+    story.append(
+        Paragraph(
+            "Missing & Found Person Report",
+            subtitle_style
+        )
+    )
+
+    story.append(
+        HRFlowable(
+            width="100%",
+            thickness=1,
+            color=BLUE,
+            spaceAfter=14
+        )
+    )
+
+    # ------------------------------------------
+    # REPORT SUMMARY
+    # ------------------------------------------
+
+    report_date = datetime.now().strftime(
+        "%d %B %Y, %I:%M %p"
+    )
+
+    summary_data = [
+        [
+            Paragraph("REPORT TYPE", label_style),
+            Paragraph(report_type, value_style)
+        ],
+        [
+            Paragraph("REPORT ID", label_style),
+            Paragraph(safe(report.report_id), value_style)
+        ],
+        [
+            Paragraph("STATUS", label_style),
+            Paragraph(
+                safe(report.status).replace(
+                    "_", " "
+                ).title(),
+                value_style
+            )
+        ],
+        [
+            Paragraph("GENERATED", label_style),
+            Paragraph(report_date, value_style)
+        ]
+    ]
+
+    summary_table = Table(
+        summary_data,
+        colWidths=[45 * mm, 120 * mm]
+    )
+
+    summary_table.setStyle(
+        TableStyle([
+            ("BACKGROUND", (0, 0), (0, -1), LIGHT_BLUE),
+            ("BOX", (0, 0), (-1, -1), 0.8, BLUE),
+            ("INNERGRID", (0, 0), (-1, -1), 0.4, BORDER),
+
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+
+            ("LEFTPADDING", (0, 0), (-1, -1), 9),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 9),
+            ("TOPPADDING", (0, 0), (-1, -1), 8),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 8),
+        ])
+    )
+
+    story.append(summary_table)
+
+    # ==========================================
+    # MISSING PERSON
+    # ==========================================
 
     if report_type == "Missing Person":
 
-        content = f"""
-MissingLink AI
-==================================================
+        story.append(
+            Paragraph(
+                "Missing Person Details",
+                section_style
+            )
+        )
 
-REPORT TYPE
-{report_type}
+        story.append(
+            detail_table([
+                ("Name", report.name),
+                ("Age", report.age),
+                ("Gender", report.gender),
+                ("Height", report.height),
+                ("Clothing", report.clothing),
+                ("Last Seen Location", report.last_seen_location),
+                ("Last Seen Date", report.last_seen_date),
+                ("Description", report.description),
+            ])
+        )
 
-REPORT ID
-{report.report_id}
+        story.append(
+            Paragraph(
+                "Reporter Details",
+                section_style
+            )
+        )
 
-STATUS
-{report.status.replace("_", " ").title()}
+        story.append(
+            detail_table([
+                ("Reporter Name", report.reporter_name),
+                ("Relationship", report.relationship),
+                ("Phone", report.phone),
+                ("Email", report.email),
+            ])
+        )
 
---------------------------------------------------
-MISSING PERSON DETAILS
---------------------------------------------------
-
-Name:
-{report.name or "Not provided"}
-
-Age:
-{report.age or "Not provided"}
-
-Gender:
-{report.gender or "Not provided"}
-
-Height:
-{report.height or "Not provided"}
-
-Clothing:
-{report.clothing or "Not provided"}
-
-Last Seen Location:
-{report.last_seen_location or "Not provided"}
-
-Last Seen Date:
-{report.last_seen_date or "Not provided"}
-
-Description:
-{report.description or "Not provided"}
-
---------------------------------------------------
-REPORTER DETAILS
---------------------------------------------------
-
-Reporter Name:
-{report.reporter_name or "Not provided"}
-
-Relationship:
-{report.relationship or "Not provided"}
-
-Phone:
-{report.phone or "Not provided"}
-
-Email:
-{report.email or "Not provided"}
-
---------------------------------------------------
-REPORT INFORMATION
---------------------------------------------------
-
-Generated:
-{report_date}
-
-This report was generated by MissingLink AI.
-
-Please keep your Report ID safe:
-{report.report_id}
-
-Use the Report ID to track the status of your report.
-
-==================================================
-MissingLink AI
-Helping connect missing and found persons faster.
-==================================================
-"""
+    # ==========================================
+    # FOUND PERSON
+    # ==========================================
 
     else:
 
-        content = f"""
-MissingLink AI
-==================================================
+        story.append(
+            Paragraph(
+                "Found Person Details",
+                section_style
+            )
+        )
 
-REPORT TYPE
-{report_type}
+        story.append(
+            detail_table([
+                ("Estimated Age", report.estimated_age),
+                ("Gender", report.gender),
+                ("Height", report.height),
+                ("Clothing", report.clothing),
+                ("Found Location", report.found_location),
+                ("Found Date", report.found_date),
+                ("Found Time", report.found_time),
+                ("Condition", report.condition),
+                ("Description", report.description),
+            ])
+        )
 
-REPORT ID
-{report.report_id}
+        story.append(
+            Paragraph(
+                "Finder Details",
+                section_style
+            )
+        )
 
-STATUS
-{report.status.replace("_", " ").title()}
-
---------------------------------------------------
-FOUND PERSON DETAILS
---------------------------------------------------
-
-Estimated Age:
-{report.estimated_age or "Not provided"}
-
-Gender:
-{report.gender or "Not provided"}
-
-Height:
-{report.height or "Not provided"}
-
-Clothing:
-{report.clothing or "Not provided"}
-
-Found Location:
-{report.found_location or "Not provided"}
-
-Found Date:
-{report.found_date or "Not provided"}
-
-Found Time:
-{report.found_time or "Not provided"}
-
-Condition:
-{report.condition or "Not provided"}
-
-Description:
-{report.description or "Not provided"}
-
---------------------------------------------------
-FINDER DETAILS
---------------------------------------------------
-
-Finder Name:
-{report.finder_name or "Not provided"}
-
-Phone:
-{report.phone or "Not provided"}
-
-Email:
-{report.email or "Not provided"}
-
-Organization:
-{report.organization or "Not provided"}
-
-Police Station:
-{report.police_station or "Not provided"}
-
---------------------------------------------------
-REPORT INFORMATION
---------------------------------------------------
-
-Generated:
-{report_date}
-
-This report was generated by MissingLink AI.
-
-Please keep your Report ID safe:
-{report.report_id}
-
-Use the Report ID to track the status of your report.
-
-==================================================
-MissingLink AI
-Helping connect missing and found persons faster.
-==================================================
-"""
+        story.append(
+            detail_table([
+                ("Finder Name", report.finder_name),
+                ("Phone", report.phone),
+                ("Email", report.email),
+                ("Organization", report.organization),
+                ("Police Station", report.police_station),
+            ])
+        )
 
     # ==========================================
-    # CREATE DOWNLOAD RESPONSE
+    # TRACKING INFORMATION
     # ==========================================
 
-    from flask import Response
+    story.append(
+        Paragraph(
+            "Report Tracking",
+            section_style
+        )
+    )
 
-    filename = f"MissingLink_Report_{report.report_id}.txt"
+    tracking_data = [
+        [
+            Paragraph(
+                "Keep your Report ID safe. It can be used to track the status of this submission.",
+                value_style
+            )
+        ],
+        [
+            Paragraph(
+                f"<b>Report ID:</b> {safe(report.report_id)}",
+                value_style
+            )
+        ]
+    ]
 
-    return Response(
-        content,
-        mimetype="text/plain",
-        headers={
-            "Content-Disposition": f'attachment; filename="{filename}"'
-        }
+    tracking_table = Table(
+        tracking_data,
+        colWidths=[165 * mm]
+    )
+
+    tracking_table.setStyle(
+        TableStyle([
+            ("BACKGROUND", (0, 0), (-1, -1), LIGHT_BLUE),
+            ("BOX", (0, 0), (-1, -1), 0.8, BLUE),
+
+            ("LEFTPADDING", (0, 0), (-1, -1), 10),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+            ("TOPPADDING", (0, 0), (-1, -1), 9),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 9),
+        ])
+    )
+
+    story.append(tracking_table)
+
+    story.append(Spacer(1, 18))
+
+    # ==========================================
+    # FOOTER MESSAGE
+    # ==========================================
+
+    story.append(
+        HRFlowable(
+            width="100%",
+            thickness=0.6,
+            color=BORDER,
+            spaceAfter=10
+        )
+    )
+
+    story.append(
+        Paragraph(
+            "This report was generated by MissingLink AI.",
+            footer_style
+        )
+    )
+
+    story.append(
+        Paragraph(
+            "Helping connect missing and found persons faster.",
+            footer_style
+        )
+    )
+
+    story.append(
+        Spacer(1, 5)
+    )
+
+    story.append(
+        Paragraph(
+            "Please retain this document for your records.",
+            footer_style
+        )
+    )
+
+    # ==========================================
+    # PAGE NUMBER
+    # ==========================================
+
+    def add_page_number(canvas, doc):
+
+        canvas.saveState()
+
+        canvas.setFont(
+            "Helvetica",
+            8
+        )
+
+        canvas.setFillColor(GRAY)
+
+        canvas.drawCentredString(
+            A4[0] / 2,
+            8 * mm,
+            f"MissingLink AI  •  Page {doc.page}"
+        )
+
+        canvas.restoreState()
+
+    # ==========================================
+    # GENERATE PDF
+    # ==========================================
+
+    doc.build(
+        story,
+        onFirstPage=add_page_number,
+        onLaterPages=add_page_number
+    )
+
+    # ==========================================
+    # SEND PDF
+    # ==========================================
+
+    buffer.seek(0)
+
+    filename = (
+        f"MissingLink_Report_"
+        f"{report.report_id}.pdf"
+    )
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=filename,
+        mimetype="application/pdf"
     )
 # ==========================================
 # REPORT STATUS TRACKING
