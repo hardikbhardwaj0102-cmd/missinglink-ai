@@ -3,7 +3,11 @@ import uuid
 from itsdangerous import URLSafeSerializer
 from ai.face_service import get_face_embedding
 import json
-import resend
+from brevo import Brevo
+from brevo.transactional_emails import (
+    SendTransacEmailRequestSender,
+    SendTransacEmailRequestToItem,
+)
 from datetime import datetime, date
 from flask import Flask, render_template, request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
@@ -36,11 +40,35 @@ app = Flask(__name__)
 
 app.config.from_object(Config)
 
-resend.api_key = os.getenv("RESEND_API_KEY")
+brevo_client = Brevo(
+    api_key=os.getenv("BREVO_API_KEY")
+)
 
 serializer = URLSafeSerializer(app.config["SECRET_KEY"])
 
+def send_email(to_email, to_name, subject, html_content):
+    try:
+        result = brevo_client.transactional_emails.send_transac_email(
+            subject=subject,
+            html_content=html_content,
+            sender=SendTransacEmailRequestSender(
+                name=os.getenv("BREVO_SENDER_NAME", "MissingLink AI"),
+                email=os.getenv("BREVO_SENDER_EMAIL"),
+            ),
+            to=[
+                SendTransacEmailRequestToItem(
+                    email=to_email,
+                    name=to_name
+                )
+            ]
+        )
 
+        print("BREVO EMAIL SENT:", result.message_id)
+        return True
+
+    except Exception as e:
+        print("BREVO EMAIL ERROR:", e)
+        return False
 # Upload folders
 app.config["UPLOAD_FOLDER"] = "static/uploads"
 app.config["ID_CARD_FOLDER"] = "static/id_cards"
@@ -938,65 +966,52 @@ def approve_org(id):
     org.verified = True
     db.session.commit()
     # Approve organization
-       # Send approval email
-    try:
+    # Send approval email
+    email_sent = send_email(
+        to_email=org.email,
+        to_name=org.full_name,
+        subject="MissingLink AI - Organization Approved",
+        html_content=f"""
+            <h2>MissingLink AI</h2>
 
-        resend.Emails.send({
-            "from": os.getenv(
-                "RESEND_FROM_EMAIL",
-                "onboarding@resend.dev"
-            ),
+            <p>Hello {org.full_name},</p>
 
-            "to": [org.email],
+            <p>
+                We are pleased to inform you that your organization
+                registration with MissingLink AI has been approved.
+            </p>
 
-            "subject": "MissingLink AI - Organization Approved",
+            <p>
+                <strong>Organization:</strong> {org.organization}
+            </p>
 
-            "html": f"""
-                <h2>MissingLink AI</h2>
+            <p>
+                You can now log in to your MissingLink AI account
+                and access the features available to verified
+                organizations.
+            </p>
 
-                <p>Hello {org.full_name},</p>
+            <p>
+                Thank you for joining MissingLink AI.
+            </p>
 
-                <p>
-                    We are pleased to inform you that your organization
-                    registration with MissingLink AI has been approved.
-                </p>
+            <p>
+                Regards,<br>
+                MissingLink AI Team
+            </p>
+        """
+    )
 
-                <p>
-                    <strong>Organization:</strong> {org.organization}
-                </p>
-
-                <p>
-                    You can now log in to your MissingLink AI account
-                    and access the features available to verified
-                    organizations.
-                </p>
-
-                <p>
-                    Thank you for joining MissingLink AI.
-                </p>
-
-                <p>
-                    Regards,<br>
-                    MissingLink AI Team
-                </p>
-            """
-        })
-
-    except Exception as e:
-
-        print("APPROVAL EMAIL ERROR:", e)
-
+    if not email_sent:
         flash(
-            f"Organization approved, but email could not be sent: {str(e)}",
+            "Organization approved, but approval email could not be sent.",
             "warning"
         )
-
-        return redirect(url_for("admin_dashboard"))
-
-    flash(
-        "Organization approved successfully and approval email sent.",
-        "success"
-    )
+    else:
+        flash(
+            "Organization approved successfully and approval email sent.",
+            "success"
+        )
 
     return redirect(url_for("admin_dashboard"))
 
@@ -1018,72 +1033,56 @@ def reject_org(id):
     db.session.commit()
 
     # Send rejection email
-        # Send rejection email
-    try:
+    email_sent = send_email(
+        to_email=email,
+        to_name=full_name,
+        subject="MissingLink AI - Organization Registration Update",
+        html_content=f"""
+            <h2>MissingLink AI</h2>
 
-        resend.Emails.send({
+            <p>Hello {full_name},</p>
 
-            "from": os.getenv(
-                "RESEND_FROM_EMAIL",
-                "onboarding@resend.dev"
-            ),
+            <p>
+                Thank you for registering your organization
+                with MissingLink AI.
+            </p>
 
-            "to": [email],
+            <p>
+                After reviewing your registration and submitted
+                information, we regret to inform you that your
+                organization registration could not be approved
+                at this time.
+            </p>
 
-            "subject": "MissingLink AI - Organization Registration Update",
+            <p>
+                <strong>Organization:</strong> {organization_name}
+            </p>
 
-            "html": f"""
-                <h2>MissingLink AI</h2>
+            <p>
+                If you believe this decision was made in error
+                or would like further clarification, please
+                contact the MissingLink AI administration team.
+            </p>
 
-                <p>Hello {full_name},</p>
+            <p>
+                Regards,<br>
+                MissingLink AI Team
+            </p>
+        """
+    )
 
-                <p>
-                    Thank you for registering your organization
-                    with MissingLink AI.
-                </p>
-
-                <p>
-                    After reviewing your registration and submitted
-                    information, we regret to inform you that your
-                    organization registration could not be approved
-                    at this time.
-                </p>
-
-                <p>
-                    <strong>Organization:</strong> {organization_name}
-                </p>
-
-                <p>
-                    If you believe this decision was made in error
-                    or would like further clarification, please
-                    contact the MissingLink AI administration team.
-                </p>
-
-                <p>
-                    Regards,<br>
-                    MissingLink AI Team
-                </p>
-            """
-        })
-
-    except Exception as e:
-
-        print("REJECTION EMAIL ERROR:", e)
-
+    if not email_sent:
         flash(
-            f"Organization rejected, but email could not be sent: {str(e)}",
+            "Organization rejected, but rejection email could not be sent.",
+            "warning"
+        )
+    else:
+        flash(
+            "Organization rejected and rejection email sent.",
             "warning"
         )
 
-        return redirect(url_for("admin_dashboard"))
-
-    flash(
-        "Organization rejected and rejection email sent.",
-        "warning"
-    )
-
     return redirect(url_for("admin_dashboard"))
-
 
 @app.route("/admin/logout")
 def admin_logout():
