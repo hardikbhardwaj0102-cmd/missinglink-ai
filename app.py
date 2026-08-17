@@ -583,23 +583,21 @@ def verify_report_otp():
                 )
             )
 
-        # ==========================================
-        # OTP VERIFIED
-        # ==========================================
+            # ==========================================
+    # OTP VERIFIED
+    # ==========================================
 
-        report_data = json.loads(
-            pending_report.report_data
-        )
+    report_data = json.loads(
+        pending_report.report_data
+    )
 
-        # ==========================================
-        # Generate Report ID
-        # ==========================================
+    # ==========================================
+    # MISSING REPORT
+    # ==========================================
+
+    if pending_report.report_type == "missing":
 
         report_id = f"ML-{str(uuid.uuid4())[:8].upper()}"
-
-        # ==========================================
-        # Create Missing Person
-        # ==========================================
 
         person = MissingPerson(
 
@@ -648,30 +646,120 @@ def verify_report_otp():
 
         db.session.add(person)
 
-        # Delete temporary pending report
+    # ==========================================
+    # FOUND REPORT
+    # ==========================================
 
-        db.session.delete(
-            pending_report
+    elif pending_report.report_type == "found":
+
+        found_person = FoundPerson(
+
+            estimated_age=report_data.get(
+                "estimated_age"
+            ),
+
+            gender=report_data.get(
+                "gender"
+            ),
+
+            height=report_data.get(
+                "height"
+            ),
+
+            clothing=report_data.get(
+                "clothing"
+            ),
+
+            found_location=report_data.get(
+                "found_location"
+            ),
+
+            found_date=report_data.get(
+                "found_date"
+            ),
+
+            found_time=report_data.get(
+                "found_time"
+            ),
+
+            condition=report_data.get(
+                "condition"
+            ),
+
+            description=report_data.get(
+                "description"
+            ),
+
+            embedding=pending_report.embedding,
+
+            photo_path=pending_report.photo_path,
+
+            finder_name=report_data.get(
+                "finder_name"
+            ),
+
+            phone=report_data.get(
+                "phone"
+            ),
+
+            email=report_data.get(
+                "email"
+            ),
+
+            organization=report_data.get(
+                "organization"
+            ),
+
+            police_station=report_data.get(
+                "police_station"
+            )
         )
 
-        # Remove session token
+        db.session.add(found_person)
+
+        # We generate the ID after database insertion
+        db.session.flush()
+
+        report_id = f"ML-F-{found_person.id:06d}"
+
+    else:
+
+        db.session.rollback()
 
         session.pop(
             "pending_report_token",
             None
         )
 
-        db.session.commit()
-
-        # ==========================================
-        # Success
-        # ==========================================
-
         return render_template(
-            "success.html",
-            report_id=report_id
+            "verify_otp.html",
+            email=pending_report.email,
+            otp_error="Invalid report type."
         )
 
+    # ==========================================
+    # Delete Temporary Report
+    # ==========================================
+
+    db.session.delete(
+        pending_report
+    )
+
+    session.pop(
+        "pending_report_token",
+        None
+    )
+
+    db.session.commit()
+
+    # ==========================================
+    # Success
+    # ==========================================
+
+    return render_template(
+        "success.html",
+        report_id=report_id
+    )
     # ==========================================
     # GET - Show OTP Page
     # ==========================================
@@ -810,18 +898,23 @@ def view_missing_profile(id):
 # Report Found
 # ==========================================
 
+# ==========================================
+# Report Found
+# ==========================================
+
 @app.route("/report-found", methods=["GET", "POST"])
 def report_found():
 
     if request.method == "POST":
 
-        # -----------------------------
-        # Validate found date
-        # -----------------------------
+        # ==========================================
+        # Validate Found Date
+        # ==========================================
 
         found_date_str = request.form.get("found_date")
 
         if not found_date_str:
+
             return render_template(
                 "report_found.html",
                 face_error="Please enter the found date."
@@ -834,7 +927,6 @@ def report_found():
                 "%Y-%m-%d"
             ).date()
 
-            # Found date must be before today
             if found_date >= date.today():
 
                 return render_template(
@@ -849,25 +941,48 @@ def report_found():
                 face_error="Please enter a valid found date."
             )
 
-        # -----------------------------
-        # Get uploaded photo
-        # -----------------------------
+        # ==========================================
+        # Finder Email
+        # ==========================================
+
+        email = request.form.get(
+            "email",
+            ""
+        ).strip()
+
+        if not email:
+
+            return render_template(
+                "report_found.html",
+                face_error="Please enter your email address."
+            )
+
+        # ==========================================
+        # Photo Variables
+        # ==========================================
+
+        filename = ""
+
+        storage_path = ""
+
+        embedding_json = None
 
         photo = request.files.get("photo")
 
-        filename = ""
-        storage_path = ""
-        embedding_json = None
-
-        # -----------------------------
+        # ==========================================
         # Photo + AI Processing
-        # -----------------------------
+        # ==========================================
 
         if photo and photo.filename != "":
 
-            extension = os.path.splitext(photo.filename)[1]
+            extension = os.path.splitext(
+                photo.filename
+            )[1]
 
-            filename = str(uuid.uuid4()) + extension
+            filename = (
+                str(uuid.uuid4())
+                + extension
+            )
 
             filepath = os.path.join(
                 app.config["UPLOAD_FOLDER"],
@@ -875,13 +990,16 @@ def report_found():
             )
 
             # Temporary local save
+
             photo.save(filepath)
 
-            # -----------------------------
+            # ==========================================
             # AI Face Detection
-            # -----------------------------
+            # ==========================================
 
-            success, embedding, message = get_face_embedding(filepath)
+            success, embedding, message = get_face_embedding(
+                filepath
+            )
 
             if not success:
 
@@ -893,17 +1011,24 @@ def report_found():
                     face_error=message
                 )
 
-            embedding_json = json.dumps(embedding)
+            embedding_json = json.dumps(
+                embedding
+            )
 
-            # -----------------------------
-            # Upload to Supabase
-            # -----------------------------
+            # ==========================================
+            # Upload To Supabase
+            # ==========================================
 
             try:
 
-                storage_path = f"found-person-photos/{filename}"
+                storage_path = (
+                    f"found-person-photos/{filename}"
+                )
 
-                with open(filepath, "rb") as image_file:
+                with open(
+                    filepath,
+                    "rb"
+                ) as image_file:
 
                     supabase.storage.from_(
                         "found-person-photos"
@@ -911,11 +1036,11 @@ def report_found():
                         storage_path,
                         image_file,
                         {
-                            "content-type": photo.content_type
+                            "content-type":
+                            photo.content_type
                         }
                     )
 
-                # Delete temporary local file
                 if os.path.exists(filepath):
                     os.remove(filepath)
 
@@ -926,95 +1051,199 @@ def report_found():
 
                 return render_template(
                     "report_found.html",
-                    face_error=f"Photo upload failed: {str(e)}"
+                    face_error=(
+                        f"Photo upload failed: {str(e)}"
+                    )
                 )
 
-        # -----------------------------
-        # Save Found Person
-        # -----------------------------
+        # ==========================================
+        # Generate OTP
+        # ==========================================
 
-        found_person = FoundPerson(
+        otp = generate_otp()
 
-            estimated_age=request.form.get(
+        otp_hash = generate_password_hash(
+            otp
+        )
+
+        otp_expires_at = (
+            datetime.utcnow()
+            + timedelta(minutes=5)
+        )
+
+        pending_token = secrets.token_urlsafe(
+            32
+        )
+
+        # ==========================================
+        # Store Found Report Data
+        # ==========================================
+
+        report_data = {
+
+            "estimated_age": request.form.get(
                 "estimated_age"
             ),
 
-            gender=request.form.get(
+            "gender": request.form.get(
                 "gender"
             ),
 
-            height=request.form.get(
+            "height": request.form.get(
                 "height"
             ),
 
-            clothing=request.form.get(
+            "clothing": request.form.get(
                 "clothing"
             ),
 
-            found_location=request.form.get(
+            "found_location": request.form.get(
                 "found_location"
             ),
 
-            found_date=request.form.get(
+            "found_date": request.form.get(
                 "found_date"
             ),
 
-            found_time=request.form.get(
+            "found_time": request.form.get(
                 "found_time"
             ),
 
-            condition=request.form.get(
+            "condition": request.form.get(
                 "condition"
             ),
 
-            description=request.form.get(
+            "description": request.form.get(
                 "description"
             ),
 
-            embedding=embedding_json,
-
-            photo_path=storage_path,
-
-            finder_name=request.form.get(
+            "finder_name": request.form.get(
                 "finder_name"
             ),
 
-            phone=request.form.get(
+            "phone": request.form.get(
                 "phone"
             ),
 
-            email=request.form.get(
-                "email"
-            ),
+            "email": email,
 
-            organization=request.form.get(
+            "organization": request.form.get(
                 "organization"
             ),
 
-            police_station=request.form.get(
+            "police_station": request.form.get(
                 "police_station"
+            )
+        }
+
+        # ==========================================
+        # Create Pending Report
+        # ==========================================
+
+        pending_report = PendingReport(
+
+            token=pending_token,
+
+            report_type="found",
+
+            report_data=json.dumps(
+                report_data
+            ),
+
+            photo_path=storage_path,
+
+            embedding=embedding_json,
+
+            email=email,
+
+            otp_hash=otp_hash,
+
+            otp_expires_at=otp_expires_at,
+
+            otp_attempts=0
+        )
+
+        db.session.add(
+            pending_report
+        )
+
+        db.session.commit()
+
+        # ==========================================
+        # Send OTP
+        # ==========================================
+
+        email_sent = send_otp_email(
+
+            to_email=email,
+
+            to_name=request.form.get(
+                "finder_name"
+            ),
+
+            otp=otp
+        )
+
+        # ==========================================
+        # Email Failed
+        # ==========================================
+
+        if not email_sent:
+
+            db.session.delete(
+                pending_report
+            )
+
+            db.session.commit()
+
+            # Remove Supabase photo
+
+            if storage_path:
+
+                try:
+
+                    supabase.storage.from_(
+                        "found-person-photos"
+                    ).remove([
+                        storage_path
+                    ])
+
+                except Exception as cleanup_error:
+
+                    print(
+                        "SUPABASE CLEANUP ERROR:",
+                        cleanup_error
+                    )
+
+            return render_template(
+                "report_found.html",
+                face_error=(
+                    "Unable to send verification email. "
+                    "Please try again."
+                )
+            )
+
+        # ==========================================
+        # Store Token In Session
+        # ==========================================
+
+        session[
+            "pending_report_token"
+        ] = pending_token
+
+        # ==========================================
+        # Redirect To OTP
+        # ==========================================
+
+        return redirect(
+            url_for(
+                "verify_report_otp"
             )
         )
 
-        db.session.add(found_person)
-        db.session.commit()
-
-        # -----------------------------
-        # Generate Report ID
-        # -----------------------------
-
-        report_id = f"ML-F-{found_person.id:06d}"
-
-        # -----------------------------
-        # Success Page
-        # -----------------------------
-
-        return render_template(
-            "success.html",
-            report_id=report_id
-        )
-
-    return render_template("report_found.html")
+    return render_template(
+        "report_found.html"
+    )
 # ==========================================
 # Login
 # ==========================================
