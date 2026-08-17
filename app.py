@@ -469,10 +469,7 @@ def verify_report_otp():
             "Your verification session has expired. Please submit the report again.",
             "danger"
         )
-
-        return redirect(
-            url_for("report_missing")
-        )
+        return redirect(url_for("report_missing"))
 
     pending_report = PendingReport.query.filter_by(
         token=token
@@ -480,110 +477,104 @@ def verify_report_otp():
 
     if not pending_report:
 
-        session.pop(
-            "pending_report_token",
-            None
-        )
+        session.pop("pending_report_token", None)
 
         flash(
             "Verification request not found. Please submit the report again.",
             "danger"
         )
 
-        return redirect(
-            url_for("report_missing")
+        return redirect(url_for("report_missing"))
+
+    # ==========================================
+    # GET - Show OTP Page
+    # ==========================================
+
+    if request.method == "GET":
+
+        return render_template(
+            "verify_otp.html",
+            email=pending_report.email
         )
 
     # ==========================================
     # POST - Verify OTP
     # ==========================================
 
-    if request.method == "POST":
+    otp = request.form.get("otp", "").strip()
 
-        otp = request.form.get(
-            "otp",
-            ""
-        ).strip()
+    if not otp or len(otp) != 6 or not otp.isdigit():
 
-        if not otp or len(otp) != 6 or not otp.isdigit():
+        return render_template(
+            "verify_otp.html",
+            email=pending_report.email,
+            otp_error="Please enter the 6-digit OTP."
+        )
 
-            return render_template(
-                "verify_otp.html",
-                email=pending_report.email,
-                otp_error="Please enter the 6-digit OTP."
+    # ==========================================
+    # Check Expiry
+    # ==========================================
+
+    if datetime.utcnow() > pending_report.otp_expires_at:
+
+        db.session.delete(pending_report)
+        db.session.commit()
+
+        session.pop("pending_report_token", None)
+
+        return render_template(
+            "verify_otp.html",
+            email=pending_report.email,
+            otp_error=(
+                "This OTP has expired. "
+                "Please submit the report again."
             )
+        )
 
-        # ==========================================
-        # Check Expiry
-        # ==========================================
+    # ==========================================
+    # Check Attempts
+    # ==========================================
 
-        if datetime.utcnow() > pending_report.otp_expires_at:
+    if pending_report.otp_attempts >= 5:
 
-            db.session.delete(pending_report)
-            db.session.commit()
+        db.session.delete(pending_report)
+        db.session.commit()
 
-            session.pop(
-                "pending_report_token",
-                None
+        session.pop("pending_report_token", None)
+
+        return render_template(
+            "verify_otp.html",
+            email=pending_report.email,
+            otp_error=(
+                "Too many incorrect attempts. "
+                "Please submit the report again."
             )
+        )
 
-            return render_template(
-                "verify_otp.html",
-                email=pending_report.email,
-                otp_error=(
-                    "This OTP has expired. "
-                    "Please submit the report again."
-                )
+    # ==========================================
+    # Verify OTP
+    # ==========================================
+
+    if not check_password_hash(
+        pending_report.otp_hash,
+        otp
+    ):
+
+        pending_report.otp_attempts += 1
+        db.session.commit()
+
+        remaining = 5 - pending_report.otp_attempts
+
+        return render_template(
+            "verify_otp.html",
+            email=pending_report.email,
+            otp_error=(
+                f"Incorrect OTP. "
+                f"{remaining} attempts remaining."
             )
+        )
 
-        # ==========================================
-        # Check Attempts
-        # ==========================================
-
-        if pending_report.otp_attempts >= 5:
-
-            db.session.delete(pending_report)
-            db.session.commit()
-
-            session.pop(
-                "pending_report_token",
-                None
-            )
-
-            return render_template(
-                "verify_otp.html",
-                email=pending_report.email,
-                otp_error=(
-                    "Too many incorrect attempts. "
-                    "Please submit the report again."
-                )
-            )
-
-        # ==========================================
-        # Verify OTP
-        # ==========================================
-
-        if not check_password_hash(
-            pending_report.otp_hash,
-            otp
-        ):
-
-            pending_report.otp_attempts += 1
-
-            db.session.commit()
-
-            remaining = 5 - pending_report.otp_attempts
-
-            return render_template(
-                "verify_otp.html",
-                email=pending_report.email,
-                otp_error=(
-                    f"Incorrect OTP. "
-                    f"{remaining} attempts remaining."
-                )
-            )
-
-            # ==========================================
+    # ==========================================
     # OTP VERIFIED
     # ==========================================
 
@@ -717,7 +708,7 @@ def verify_report_otp():
 
         db.session.add(found_person)
 
-        # We generate the ID after database insertion
+        # Get ID before commit
         db.session.flush()
 
         report_id = f"ML-F-{found_person.id:06d}"
@@ -741,9 +732,7 @@ def verify_report_otp():
     # Delete Temporary Report
     # ==========================================
 
-    db.session.delete(
-        pending_report
-    )
+    db.session.delete(pending_report)
 
     session.pop(
         "pending_report_token",
@@ -753,20 +742,12 @@ def verify_report_otp():
     db.session.commit()
 
     # ==========================================
-    # Success
+    # SUCCESS
     # ==========================================
 
     return render_template(
         "success.html",
         report_id=report_id
-    )
-    # ==========================================
-    # GET - Show OTP Page
-    # ==========================================
-
-    return render_template(
-        "verify_otp.html",
-        email=pending_report.email
     )
 @app.route("/ai-match/<int:found_id>")
 def ai_match(found_id):
