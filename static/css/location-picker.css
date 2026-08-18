@@ -1,0 +1,714 @@
+/* =========================================================
+   MISSINGLINK AI
+   LOCATION SEARCH
+========================================================= */
+
+.location-picker {
+
+    width: 100%;
+
+    margin-top: 24px;
+
+    padding: 22px;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(255, 255, 255, 0.025);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 18px;
+
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.location-picker-header {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 14px;
+
+    margin-bottom: 18px;
+
+}
+
+
+.location-picker-icon {
+
+    width: 44px;
+
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        rgba(37, 99, 235, 0.12);
+
+    font-size: 20px;
+
+}
+
+
+.location-picker-title {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: 18px;
+
+    font-weight: 600;
+
+}
+
+
+.location-picker-subtitle {
+
+    margin: 5px 0 0;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.location-search-wrapper {
+
+    position: relative;
+
+    width: 100%;
+
+}
+
+
+.location-search-icon {
+
+    position: absolute;
+
+    left: 15px;
+
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    font-size: 15px;
+
+    z-index: 2;
+
+    pointer-events: none;
+
+}
+
+
+.location-search {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding:
+        14px 16px 14px 43px;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.10);
+
+    border-radius: 12px;
+
+    background:
+        rgba(15, 23, 42, 0.90);
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        0.2s ease;
+
+}
+
+
+.location-search::placeholder {
+
+    color: #64748b;
+
+}
+
+
+.location-search:hover {
+
+    border-color:
+        rgba(255, 255, 255, 0.16);
+
+}
+
+
+.location-search:focus {
+
+    border-color:
+        rgba(59, 130, 246, 0.60);
+
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.10);
+
+}
+
+
+/* =========================================================
+   RESULTS
+========================================================= */
+
+.location-search-results {
+
+    position: absolute;
+
+    top:
+        calc(100% + 7px);
+
+    left: 0;
+
+    right: 0;
+
+    z-index: 9999;
+
+    overflow: hidden;
+
+    border:
+        1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 12px;
+
+    background:
+        #111827;
+
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.45);
+
+}
+
+
+/* =========================================================
+   RESULT ITEM
+========================================================= */
+
+.location-result {
+
+    width: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding:
+        13px 15px;
+
+    border: none;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, 0.05);
+
+    background: transparent;
+
+    color: #e2e8f0;
+
+    text-align: left;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease;
+
+}
+
+
+.location-result:last-child {
+
+    border-bottom: none;
+
+}
+
+
+.location-result:hover {
+
+    background:
+        rgba(59, 130, 246, 0.10);
+
+}
+
+
+.location-result-icon {
+
+    flex-shrink: 0;
+
+    font-size: 16px;
+
+}
+
+
+.location-result-text {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+}
+
+
+.location-result-text strong {
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+}
+
+
+.location-result-text small {
+
+    overflow: hidden;
+
+    color: #94a3b8;
+
+    font-size: 11px;
+
+    line-height: 1.4;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+}
+
+
+/* =========================================================
+   SEARCHING
+========================================================= */
+
+.location-searching {
+
+    padding: 14px;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.location-result.empty {
+
+    justify-content: center;
+
+    color: #94a3b8;
+
+    cursor: default;
+
+}
+
+
+.location-result.empty:hover {
+
+    background: transparent;
+
+}
+
+
+/* =========================================================
+   SELECTED LOCATION
+========================================================= */
+
+.location-selected {
+
+    display: none;
+
+    margin-top: 14px;
+
+    padding: 15px;
+
+    border:
+        1px solid rgba(34, 197, 94, 0.18);
+
+    border-radius: 12px;
+
+    background:
+        rgba(34, 197, 94, 0.06);
+
+}
+
+
+.location-selected.active {
+
+    display: block;
+
+}
+
+
+.location-selected-status {
+
+    margin-bottom: 7px;
+
+    color: #4ade80;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+}
+
+
+.location-selected-name {
+
+    color: #e2e8f0;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+
+}
+
+
+.location-coordinates {
+
+    margin-top: 7px;
+
+    color: #94a3b8;
+
+    font-family:
+        monospace;
+
+    font-size: 11px;
+
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.location-error {
+
+    display: none;
+
+    margin-top: 12px;
+
+    padding: 11px 13px;
+
+    border:
+        1px solid rgba(239, 68, 68, 0.18);
+
+    border-radius: 10px;
+
+    background:
+        rgba(239, 68, 68, 0.07);
+
+    color: #fca5a5;
+
+    font-size: 12px;
+
+    line-height: 1.5;
+
+}
+
+
+.location-error.active {
+
+    display: block;
+
+}
+
+
+/* =========================================================
+   CURRENT LOCATION
+========================================================= */
+
+.location-current-btn {
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 13px 16px;
+
+    border:
+        1px solid rgba(59, 130, 246, 0.25);
+
+    border-radius: 11px;
+
+    background:
+        rgba(37, 99, 235, 0.08);
+
+    color: #60a5fa;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    transition:
+        0.2s ease;
+
+}
+
+
+.location-current-btn:hover {
+
+    background:
+        rgba(37, 99, 235, 0.14);
+
+    border-color:
+        rgba(59, 130, 246, 0.40);
+
+}
+
+
+.location-current-btn:disabled {
+
+    opacity: 0.55;
+
+    cursor: wait;
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .location-picker {
+
+        padding: 16px;
+
+        border-radius: 15px;
+
+    }
+
+
+    .location-picker-title {
+
+        font-size: 16px;
+
+    }
+
+
+    .location-picker-subtitle {
+
+        font-size: 12px;
+
+    }
+
+
+    .location-search {
+
+        font-size: 13px;
+
+    }
+
+
+    .location-result-text small {
+
+        white-space: normal;
+
+    }
+
+}
+
+.location-picker-subtitle {
+    color: white;
+}
+
+/* =========================================================
+   USE MY CURRENT LOCATION
+   EMERALD VERSION
+========================================================= */
+
+.location-current-btn {
+
+    width: 100%;
+    min-height: 52px;
+
+    margin-top: 14px;
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    box-sizing: border-box;
+
+    border: 1px solid rgba(52, 211, 153, 0.25);
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(135deg,
+            rgba(16, 185, 129, 0.14),
+            rgba(34, 197, 94, 0.06));
+
+    color: #6ee7b7;
+
+    font-family: inherit;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    position: relative;
+
+    overflow: hidden;
+
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.2s ease;
+}
+
+
+/* Location icon */
+
+.location-current-btn span:first-child {
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(52, 211, 153, 0.12);
+
+    color: #34d399;
+
+    font-size: 18px;
+
+    transition:
+        background 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+/* Hover */
+
+.location-current-btn:hover {
+
+    background:
+        linear-gradient(135deg,
+            rgba(16, 185, 129, 0.20),
+            rgba(34, 197, 94, 0.09));
+
+    border-color:
+        rgba(52, 211, 153, 0.45);
+
+    color: #a7f3d0;
+
+    box-shadow:
+        0 8px 25px rgba(16, 185, 129, 0.12);
+
+    transform:
+        translateY(-1px);
+}
+
+
+.location-current-btn:hover span:first-child {
+
+    background:
+        rgba(52, 211, 153, 0.20);
+
+    transform:
+        scale(1.08);
+}
+
+
+/* Click */
+
+.location-current-btn:active {
+
+    transform:
+        translateY(0);
+
+    box-shadow:
+        0 3px 10px rgba(16, 185, 129, 0.08);
+}
+
+
+/* Disabled */
+
+.location-current-btn:disabled {
+
+    opacity: 0.55;
+
+    cursor: wait;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* Mobile */
+
+@media (max-width: 600px) {
+
+    .location-current-btn {
+
+        min-height: 48px;
+
+        font-size: 13px;
+
+        border-radius: 11px;
+    }
+
+}

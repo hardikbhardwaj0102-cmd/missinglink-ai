@@ -216,6 +216,7 @@ def report_missing():
         last_seen_date_str = request.form.get("last_seen_date")
 
         if not last_seen_date_str:
+
             return render_template(
                 "report_missing.html",
                 face_error="Please enter the last seen date."
@@ -256,6 +257,71 @@ def report_missing():
             )
 
         # ==========================================
+        # LOCATION DATA
+        # ==========================================
+
+        last_seen_location = request.form.get(
+            "last_seen_location",
+            ""
+        ).strip()
+
+        last_seen_latitude = request.form.get(
+            "last_seen_latitude",
+            ""
+        ).strip()
+
+        last_seen_longitude = request.form.get(
+            "last_seen_longitude",
+            ""
+        ).strip()
+
+        # ==========================================
+        # Validate Location Coordinates
+        # ==========================================
+
+        if last_seen_latitude and last_seen_longitude:
+
+            try:
+
+                last_seen_latitude = float(
+                    last_seen_latitude
+                )
+
+                last_seen_longitude = float(
+                    last_seen_longitude
+                )
+
+                # Latitude validation
+
+                if not -90 <= last_seen_latitude <= 90:
+
+                    return render_template(
+                        "report_missing.html",
+                        face_error="Invalid location latitude."
+                    )
+
+                # Longitude validation
+
+                if not -180 <= last_seen_longitude <= 180:
+
+                    return render_template(
+                        "report_missing.html",
+                        face_error="Invalid location longitude."
+                    )
+
+            except ValueError:
+
+                return render_template(
+                    "report_missing.html",
+                    face_error="Invalid location coordinates."
+                )
+
+        else:
+
+            last_seen_latitude = None
+            last_seen_longitude = None
+
+        # ==========================================
         # Get Uploaded Photo
         # ==========================================
 
@@ -272,7 +338,9 @@ def report_missing():
         # Generate Filename
         # ==========================================
 
-        extension = os.path.splitext(photo.filename)[1]
+        extension = os.path.splitext(
+            photo.filename
+        )[1]
 
         filename = str(uuid.uuid4()) + extension
 
@@ -291,7 +359,9 @@ def report_missing():
         # AI Face Detection
         # ==========================================
 
-        success, embedding, message = get_face_embedding(filepath)
+        success, embedding, message = get_face_embedding(
+            filepath
+        )
 
         if not success:
 
@@ -303,7 +373,9 @@ def report_missing():
                 face_error=message
             )
 
-        embedding_json = json.dumps(embedding)
+        embedding_json = json.dumps(
+            embedding
+        )
 
         # ==========================================
         # Upload Image To Supabase
@@ -311,7 +383,9 @@ def report_missing():
 
         try:
 
-            storage_path = f"missing-person-photos/{filename}"
+            storage_path = (
+                f"missing-person-photos/{filename}"
+            )
 
             with open(filepath, "rb") as image_file:
 
@@ -344,9 +418,14 @@ def report_missing():
 
         otp = generate_otp()
 
-        otp_hash = generate_password_hash(otp)
+        otp_hash = generate_password_hash(
+            otp
+        )
 
-        otp_expires_at = datetime.utcnow() + timedelta(minutes=5)
+        otp_expires_at = (
+            datetime.utcnow()
+            + timedelta(minutes=5)
+        )
 
         pending_token = secrets.token_urlsafe(32)
 
@@ -366,9 +445,17 @@ def report_missing():
 
             "clothing": request.form.get("clothing"),
 
-            "last_seen_location": request.form.get(
-                "last_seen_location"
-            ),
+            # ======================================
+            # LOCATION
+            # ======================================
+
+            "last_seen_location": last_seen_location,
+
+            "last_seen_latitude": last_seen_latitude,
+
+            "last_seen_longitude": last_seen_longitude,
+
+            # ======================================
 
             "last_seen_date": request.form.get(
                 "last_seen_date"
@@ -377,6 +464,10 @@ def report_missing():
             "description": request.form.get(
                 "description"
             ),
+
+            # ======================================
+            # REPORTER
+            # ======================================
 
             "reporter_name": request.form.get(
                 "reporter_name"
@@ -393,13 +484,19 @@ def report_missing():
             "email": email
         }
 
+        # ==========================================
+        # Create Pending Report
+        # ==========================================
+
         pending_report = PendingReport(
 
             token=pending_token,
 
             report_type="missing",
 
-            report_data=json.dumps(report_data),
+            report_data=json.dumps(
+                report_data
+            ),
 
             photo_path=storage_path,
 
@@ -414,7 +511,9 @@ def report_missing():
             otp_attempts=0
         )
 
-        db.session.add(pending_report)
+        db.session.add(
+            pending_report
+        )
 
         db.session.commit()
 
@@ -423,23 +522,35 @@ def report_missing():
         # ==========================================
 
         email_sent = send_otp_email(
+
             to_email=email,
-            to_name=request.form.get("reporter_name"),
+
+            to_name=request.form.get(
+                "reporter_name"
+            ),
+
             otp=otp
         )
 
         if not email_sent:
 
-            db.session.delete(pending_report)
+            db.session.delete(
+                pending_report
+            )
 
             db.session.commit()
 
+            # ======================================
             # Remove uploaded Supabase image
+            # ======================================
+
             try:
 
                 supabase.storage.from_(
                     "missing-person-photos"
-                ).remove([storage_path])
+                ).remove(
+                    [storage_path]
+                )
 
             except Exception as cleanup_error:
 
@@ -460,17 +571,27 @@ def report_missing():
         # Store Pending Token In Session
         # ==========================================
 
-        session["pending_report_token"] = pending_token
+        session[
+            "pending_report_token"
+        ] = pending_token
 
         # ==========================================
         # Redirect To OTP Verification
         # ==========================================
 
         return redirect(
-            url_for("verify_report_otp")
+            url_for(
+                "verify_report_otp"
+            )
         )
 
-    return render_template("report_missing.html")
+    # ==========================================
+    # GET REQUEST
+    # ==========================================
+
+    return render_template(
+        "report_missing.html"
+    )
 # ==========================================
 # Verify Report OTP
 # ==========================================
@@ -663,8 +784,17 @@ def verify_report_otp():
                 "clothing"
             ),
 
+            # Location
             last_seen_location=report_data.get(
                 "last_seen_location"
+            ),
+
+            last_seen_latitude=report_data.get(
+                "last_seen_latitude"
+            ),
+
+            last_seen_longitude=report_data.get(
+                "last_seen_longitude"
             ),
 
             last_seen_date=report_data.get(
@@ -697,7 +827,6 @@ def verify_report_otp():
                 "email"
             )
         )
-
         db.session.add(
             person
         )
@@ -736,8 +865,17 @@ def verify_report_otp():
                 "clothing"
             ),
 
+            # Location
             found_location=report_data.get(
                 "found_location"
+            ),
+
+            found_latitude=report_data.get(
+                "found_latitude"
+            ),
+
+            found_longitude=report_data.get(
+                "found_longitude"
             ),
 
             found_date=report_data.get(
@@ -985,18 +1123,21 @@ def report_found():
             )
 
         try:
+
             found_date = datetime.strptime(
                 found_date_str,
                 "%Y-%m-%d"
             ).date()
 
             if found_date >= date.today():
+
                 return render_template(
                     "report_found.html",
                     face_error="Found date must be before today's date."
                 )
 
         except ValueError:
+
             return render_template(
                 "report_found.html",
                 face_error="Please enter a valid found date."
@@ -1006,13 +1147,82 @@ def report_found():
         # Finder Email
         # ==========================================
 
-        email = request.form.get("email", "").strip()
+        email = request.form.get(
+            "email",
+            ""
+        ).strip()
 
         if not email:
+
             return render_template(
                 "report_found.html",
                 face_error="Please enter your email address."
             )
+
+        # ==========================================
+        # LOCATION DATA
+        # ==========================================
+
+        found_location = request.form.get(
+            "found_location",
+            ""
+        ).strip()
+
+        found_latitude = request.form.get(
+            "found_latitude",
+            ""
+        ).strip()
+
+        found_longitude = request.form.get(
+            "found_longitude",
+            ""
+        ).strip()
+
+        # ==========================================
+        # Validate Coordinates
+        # ==========================================
+
+        if found_latitude and found_longitude:
+
+            try:
+
+                found_latitude = float(
+                    found_latitude
+                )
+
+                found_longitude = float(
+                    found_longitude
+                )
+
+                # Latitude range
+
+                if not -90 <= found_latitude <= 90:
+
+                    return render_template(
+                        "report_found.html",
+                        face_error="Invalid location latitude."
+                    )
+
+                # Longitude range
+
+                if not -180 <= found_longitude <= 180:
+
+                    return render_template(
+                        "report_found.html",
+                        face_error="Invalid location longitude."
+                    )
+
+            except ValueError:
+
+                return render_template(
+                    "report_found.html",
+                    face_error="Invalid location coordinates."
+                )
+
+        else:
+
+            found_latitude = None
+            found_longitude = None
 
         # ==========================================
         # Get Uploaded Photo
@@ -1021,6 +1231,7 @@ def report_found():
         photo = request.files.get("photo")
 
         if not photo or photo.filename == "":
+
             return render_template(
                 "report_found.html",
                 face_error="Please upload a photo."
@@ -1030,15 +1241,25 @@ def report_found():
         # Generate Filename
         # ==========================================
 
-        extension = os.path.splitext(photo.filename)[1].lower()
+        extension = os.path.splitext(
+            photo.filename
+        )[1].lower()
 
-        if extension not in [".jpg", ".jpeg", ".png", ".webp"]:
+        if extension not in [
+            ".jpg",
+            ".jpeg",
+            ".png",
+            ".webp"
+        ]:
+
             return render_template(
                 "report_found.html",
                 face_error="Please upload a valid image file."
             )
 
-        filename = str(uuid.uuid4()) + extension
+        filename = str(
+            uuid.uuid4()
+        ) + extension
 
         filepath = os.path.join(
             app.config["UPLOAD_FOLDER"],
@@ -1050,9 +1271,11 @@ def report_found():
         # ==========================================
 
         try:
+
             photo.save(filepath)
 
         except Exception as e:
+
             return render_template(
                 "report_found.html",
                 face_error=f"Unable to process photo: {str(e)}"
@@ -1062,7 +1285,9 @@ def report_found():
         # AI FACE DETECTION + EMBEDDING
         # ==========================================
 
-        success, embedding, message = get_face_embedding(filepath)
+        success, embedding, message = get_face_embedding(
+            filepath
+        )
 
         if not success:
 
@@ -1074,7 +1299,9 @@ def report_found():
                 face_error=message
             )
 
-        embedding_json = json.dumps(embedding)
+        embedding_json = json.dumps(
+            embedding
+        )
 
         # ==========================================
         # Upload Photo To Supabase
@@ -1084,7 +1311,10 @@ def report_found():
 
         try:
 
-            with open(filepath, "rb") as image_file:
+            with open(
+                filepath,
+                "rb"
+            ) as image_file:
 
                 supabase.storage.from_(
                     "found-person-photos"
@@ -1097,12 +1327,15 @@ def report_found():
                 )
 
             # Remove local temporary file
+
             if os.path.exists(filepath):
+
                 os.remove(filepath)
 
         except Exception as e:
 
             if os.path.exists(filepath):
+
                 os.remove(filepath)
 
             return render_template(
@@ -1116,20 +1349,28 @@ def report_found():
 
         otp = generate_otp()
 
-        otp_hash = generate_password_hash(otp)
+        otp_hash = generate_password_hash(
+            otp
+        )
 
         otp_expires_at = (
             datetime.utcnow()
             + timedelta(minutes=5)
         )
 
-        pending_token = secrets.token_urlsafe(32)
+        pending_token = secrets.token_urlsafe(
+            32
+        )
 
         # ==========================================
         # Store Report Data
         # ==========================================
 
         report_data = {
+
+            # ======================================
+            # FOUND PERSON
+            # ======================================
 
             "estimated_age": request.form.get(
                 "estimated_age"
@@ -1147,9 +1388,17 @@ def report_found():
                 "clothing"
             ),
 
-            "found_location": request.form.get(
-                "found_location"
-            ),
+            # ======================================
+            # LOCATION
+            # ======================================
+
+            "found_location": found_location,
+
+            "found_latitude": found_latitude,
+
+            "found_longitude": found_longitude,
+
+            # ======================================
 
             "found_date": request.form.get(
                 "found_date"
@@ -1166,6 +1415,10 @@ def report_found():
             "description": request.form.get(
                 "description"
             ),
+
+            # ======================================
+            # FINDER
+            # ======================================
 
             "finder_name": request.form.get(
                 "finder_name"
@@ -1196,7 +1449,9 @@ def report_found():
 
             report_type="found",
 
-            report_data=json.dumps(report_data),
+            report_data=json.dumps(
+                report_data
+            ),
 
             photo_path=storage_path,
 
@@ -1211,9 +1466,12 @@ def report_found():
             otp_attempts=0
         )
 
-        db.session.add(pending_report)
+        db.session.add(
+            pending_report
+        )
 
         try:
+
             db.session.commit()
 
         except Exception as e:
@@ -1221,11 +1479,17 @@ def report_found():
             db.session.rollback()
 
             # Cleanup uploaded photo
+
             try:
+
                 supabase.storage.from_(
                     "found-person-photos"
-                ).remove([storage_path])
+                ).remove(
+                    [storage_path]
+                )
+
             except Exception:
+
                 pass
 
             return render_template(
@@ -1238,8 +1502,13 @@ def report_found():
         # ==========================================
 
         email_sent = send_otp_email(
+
             to_email=email,
-            to_name=request.form.get("finder_name"),
+
+            to_name=request.form.get(
+                "finder_name"
+            ),
+
             otp=otp
         )
 
@@ -1249,14 +1518,19 @@ def report_found():
 
         if not email_sent:
 
-            db.session.delete(pending_report)
+            db.session.delete(
+                pending_report
+            )
+
             db.session.commit()
 
             try:
 
                 supabase.storage.from_(
                     "found-person-photos"
-                ).remove([storage_path])
+                ).remove(
+                    [storage_path]
+                )
 
             except Exception as cleanup_error:
 
@@ -1277,15 +1551,23 @@ def report_found():
         # Store Token In Session
         # ==========================================
 
-        session["pending_report_token"] = pending_token
+        session[
+            "pending_report_token"
+        ] = pending_token
 
         # ==========================================
         # Redirect To OTP
         # ==========================================
 
         return redirect(
-            url_for("verify_report_otp")
+            url_for(
+                "verify_report_otp"
+            )
         )
+
+    # ==========================================
+    # GET REQUEST
+    # ==========================================
 
     return render_template(
         "report_found.html"

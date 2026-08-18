@@ -1,14 +1,22 @@
 {% extends 'base.html' %}
 
 {% block extra_css %}
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/report_missing.css') }}">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/location-picker.css') }}">
+
 {% endblock %}
+
 
 {% block content %}
 
 <form action="/report-missing" method="POST" enctype="multipart/form-data" class="report-page">
 
-    <!-- ================= LEFT SIDE ================= -->
+
+    <!-- =====================================================
+         LEFT SIDE
+    ====================================================== -->
 
     <div class="upload-section">
 
@@ -18,24 +26,40 @@
                 📷
             </div>
 
-            <h2>Upload Photo</h2>
+
+            <h2>
+                Upload Photo
+            </h2>
+
 
             <p id="para">
-                Upload a clear front-facing image for the best AI matching accuracy.
+                Upload a clear front-facing image for the best
+                AI matching accuracy.
             </p>
+
+
+            <!-- PHOTO UPLOAD -->
 
             <label for="photoInput" class="upload-box">
 
-                <img id="previewImage" src="{{ url_for('static', filename='images/upload-placeholder.png') }}"
-                    alt="Preview">
+                <img id="previewImage" src="{{ url_for(
+                        'static',
+                        filename='images/upload-placeholder.png'
+                    ) }}" alt="Preview">
 
-                <span>Click to Upload</span>
+                <span>
+                    Click to Upload
+                </span>
 
             </label>
 
+
             <input type="file" id="photoInput" name="photo" accept="image/*" required>
 
-            <!-- ================= FACE ERROR ================= -->
+
+            <!-- =================================================
+                 FACE ERROR
+            ================================================== -->
 
             {% if face_error %}
 
@@ -45,11 +69,17 @@
                     !
                 </div>
 
+
                 <div class="face-error-content">
 
-                    <strong>Photo Validation Failed</strong>
+                    <strong>
+                        Photo Validation Failed
+                    </strong>
 
-                    <p>{{ face_error }}</p>
+
+                    <p>
+                        {{ face_error }}
+                    </p>
 
                 </div>
 
@@ -57,11 +87,17 @@
 
             {% endif %}
 
-            <!-- ================= AI PHOTO QUALITY ================= -->
+
+            <!-- =================================================
+                 AI PHOTO QUALITY
+            ================================================== -->
 
             <div class="ai-score">
 
-                <h3>AI Photo Quality</h3>
+                <h3>
+                    AI Photo Quality
+                </h3>
+
 
                 <div class="progress">
 
@@ -69,7 +105,10 @@
 
                 </div>
 
-                <p>Waiting for image...</p>
+
+                <p>
+                    Waiting for image...
+                </p>
 
             </div>
 
@@ -78,80 +117,130 @@
     </div>
 
 
-    <!-- ================= RIGHT SIDE ================= -->
+    <!-- =====================================================
+         RIGHT SIDE
+    ====================================================== -->
 
     <div class="form-section">
 
         <div class="form-card">
 
-            <h1>Report Missing Person</h1>
+
+            <!-- =================================================
+                 PAGE HEADER
+            ================================================== -->
+
+            <h1>
+                Report Missing Person
+            </h1>
+
 
             <p id="para">
-                Fill in all available details. More accurate information
-                helps improve AI matching.
+                Fill in all available details.
+                More accurate information helps improve
+                AI matching.
             </p>
 
 
-            <!-- ================= Personal Details ================= -->
+            <!-- =================================================
+                 PERSONAL DETAILS
+            ================================================== -->
 
             <div class="form-grid">
 
+
+                <!-- FULL NAME -->
+
                 <div class="input-group">
 
-                    <label>Full Name</label>
+                    <label>
+                        Full Name
+                    </label>
+
 
                     <input type="text" name="name" placeholder="Enter full name" required>
 
                 </div>
 
 
+                <!-- AGE -->
+
                 <div class="input-group">
 
-                    <label>Age</label>
+                    <label>
+                        Age
+                    </label>
 
-                    <input type="number" name="age" placeholder="Age" required>
+
+                    <input type="number" name="age" placeholder="Age" min="0" max="120" required>
 
                 </div>
 
 
+                <!-- GENDER -->
+
                 <div class="input-group">
 
-                    <label>Gender</label>
+                    <label>
+                        Gender
+                    </label>
+
 
                     <select name="gender">
 
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
+                        <option value="Male">
+                            Male
+                        </option>
+
+                        <option value="Female">
+                            Female
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
 
                     </select>
 
                 </div>
 
 
+                <!-- HEIGHT -->
+
                 <div class="input-group">
 
-                    <label>Height</label>
+                    <label>
+                        Height
+                    </label>
+
 
                     <input type="text" name="height" placeholder="e.g. 165 cm">
 
                 </div>
 
 
+                <!-- CLOTHING -->
+
                 <div class="input-group">
 
-                    <label>Clothing</label>
+                    <label>
+                        Clothing
+                    </label>
+
 
                     <input type="text" name="clothing" placeholder="Blue Shirt, Black Jeans">
 
                 </div>
 
 
-                <!-- ================= LAST SEEN DATE ================= -->
+                <!-- LAST SEEN DATE -->
 
                 <div class="input-group">
 
-                    <label>Last Seen Date</label>
+                    <label>
+                        Last Seen Date
+                    </label>
+
 
                     <input type="date" name="last_seen_date" id="lastSeenDate" required>
 
@@ -160,64 +249,191 @@
             </div>
 
 
-            <div class="input-group">
+            <!-- =================================================
+                 LAST SEEN LOCATION
+            ================================================== -->
 
-                <label>Last Seen Location</label>
-
-                <input type="text" name="last_seen_location" placeholder="Enter last known location">
-
-            </div>
+            <div class="location-picker">
 
 
-            <div class="input-group">
+                <!-- LOCATION HEADER -->
 
-                <label>Description</label>
-
-                <textarea rows="5" name="description"
-                    placeholder="Mention distinguishing marks, appearance, behaviour, or any helpful information."></textarea>
-
-            </div>
+                <div class="location-picker-header">
 
 
-            <hr>
+
+                    <div>
+
+                        <h3 class="location-picker-title">
+                            Last Seen Location
+                        </h3>
 
 
-            <!-- ================= REPORTER INFORMATION ================= -->
+                        <p class="location-picker-subtitle">
+                            Search for the place where the person
+                            was last seen. Select a location from
+                            the suggestions to automatically
+                            capture its coordinates.
+                        </p>
 
-            <h2>Reporter Information</h2>
-
-            <div class="form-grid">
-
-                <div class="input-group">
-
-                    <label>Your Name</label>
-
-                    <input type="text" name="reporter_name" required>
+                    </div>
 
                 </div>
 
 
+                <!-- =================================================
+                     LOCATION SEARCH
+                ================================================== -->
+
+                <div class="location-search-wrapper">
+
+
+
+                    <input type="text" id="lastSeenLocationSearch" class="location-search"
+                        placeholder="Search address, area, landmark or city..." autocomplete="off">
+
+
+                    <!-- SEARCH RESULTS -->
+
+                    <div id="lastSeenLocationResults" class="location-search-results">
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     SELECTED LOCATION
+                ================================================== -->
+
+                <div id="lastSeenLocationSelected" class="location-selected">
+
+
+                    <div class="location-selected-status">
+
+                        ✓ Location Selected
+
+                    </div>
+
+
+                    <div id="lastSeenLocationName" class="location-selected-name">
+                    </div>
+
+
+                    <div id="lastSeenCoordinates" class="location-coordinates">
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     LOCATION ERROR
+                ================================================== -->
+
+                <div id="lastSeenLocationError" class="location-error">
+                </div>
+
+
+                <!-- =================================================
+                     HIDDEN LOCATION VALUES
+                ================================================= -->
+
+                <input type="hidden" name="last_seen_location" id="lastSeenLocationValue">
+
+
+                <input type="hidden" name="last_seen_latitude" id="lastSeenLatitude">
+
+
+                <input type="hidden" name="last_seen_longitude" id="lastSeenLongitude">
+
+
+                <!-- =================================================
+                     CURRENT LOCATION
+                ================================================== -->
+
+                <button type="button" id="lastSeenCurrentLocation" class="location-current-btn">
+
+                    <span>
+                        ⌖
+                    </span>
+
+                    <span>
+                        Use My Current Location
+                    </span>
+
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 DIVIDER
+            ================================================== -->
+
+            <hr>
+
+
+            <!-- =================================================
+                 REPORTER INFORMATION
+            ================================================== -->
+
+            <h2>
+                Reporter Information
+            </h2>
+
+
+            <div class="form-grid">
+
+
+                <!-- REPORTER NAME -->
+
                 <div class="input-group">
 
-                    <label>Relationship</label>
+                    <label>
+                        Your Name
+                    </label>
+
+
+                    <input type="text" name="reporter_name" placeholder="Enter your name" required>
+
+                </div>
+
+
+                <!-- RELATIONSHIP -->
+
+                <div class="input-group">
+
+                    <label>
+                        Relationship
+                    </label>
+
 
                     <input type="text" name="relationship" placeholder="Father, Mother, Friend">
 
                 </div>
 
 
+                <!-- PHONE -->
+
                 <div class="input-group">
 
-                    <label>Phone</label>
+                    <label>
+                        Phone
+                    </label>
+
 
                     <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
 
                 </div>
 
 
+                <!-- EMAIL -->
+
                 <div class="input-group">
 
-                    <label>Email</label>
+                    <label>
+                        Email
+                    </label>
+
 
                     <input type="email" name="email" placeholder="example@email.com">
 
@@ -226,11 +442,16 @@
             </div>
 
 
+            <!-- =================================================
+                 SUBMIT
+            ================================================== -->
+
             <button type="submit" class="submit-btn">
 
                 Submit Report
 
             </button>
+
 
         </div>
 
@@ -241,28 +462,84 @@
 {% endblock %}
 
 
+
 {% block extra_js %}
 
-<script src="{{ url_for('static', filename='js/report_missing.js') }}"></script>
+
+<!-- =========================================================
+     EXISTING MISSING REPORT JAVASCRIPT
+========================================================= -->
+
+<script src="{{ url_for(
+    'static',
+    filename='js/report_missing.js'
+) }}"></script>
+
+
+
+<!-- =========================================================
+     LOCATION SEARCH JAVASCRIPT
+========================================================= -->
+
+<script src="{{ url_for(
+    'static',
+    filename='js/location-picker.js'
+) }}"></script>
+
+
 
 <script>
 
-    // Allow only dates before today
+    /* =========================================================
+       LAST SEEN DATE
+       Only allow dates before today
+    ========================================================= */
 
-    const lastSeenDate = document.getElementById("lastSeenDate");
+    const lastSeenDate =
+        document.getElementById(
+            "lastSeenDate"
+        );
 
-    const yesterday = new Date();
 
-    yesterday.setDate(yesterday.getDate() - 1);
+    if (lastSeenDate) {
 
-    const year = yesterday.getFullYear();
+        const yesterday =
+            new Date();
 
-    const month = String(yesterday.getMonth() + 1).padStart(2, "0");
 
-    const day = String(yesterday.getDate()).padStart(2, "0");
+        yesterday.setDate(
+            yesterday.getDate() - 1
+        );
 
-    lastSeenDate.max = `${year}-${month}-${day}`;
+
+        const year =
+            yesterday.getFullYear();
+
+
+        const month =
+            String(
+                yesterday.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        const day =
+            String(
+                yesterday.getDate()
+            ).padStart(
+                2,
+                "0"
+            );
+
+
+        lastSeenDate.max =
+            `${year}-${month}-${day}`;
+
+    }
 
 </script>
+
 
 {% endblock %}

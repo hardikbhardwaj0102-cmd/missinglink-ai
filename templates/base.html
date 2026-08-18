@@ -2,26 +2,51 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>MissingLink AI</title>
 
-    <!-- Google Font -->
+
+    <!-- ==========================================
+         GOOGLE FONT
+         ========================================== -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
+
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
-    <!-- Main CSS -->
+
+    <!-- ==========================================
+         LEAFLET MAP CSS
+         ========================================== -->
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIINfQ3qzJ8Kqj4s2rY0l9n6XK5l5x8r0=" crossorigin="">
+
+
+    <!-- ==========================================
+         MAIN CSS
+         ========================================== -->
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+
+    <!-- ==========================================
+         PAGE-SPECIFIC CSS
+         ========================================== -->
 
     {% block extra_css %}{% endblock %}
 
 </head>
 
+
 <body>
+
 
     <!-- ==========================================
          FLASH MESSAGES
@@ -44,6 +69,7 @@
     {% endwith %}
 
 
+
     <!-- ==========================================
          MAIN CONTENT
          ========================================== -->
@@ -51,11 +77,23 @@
     {% block content %}{% endblock %}
 
 
+
     <!-- ==========================================
-         EXTRA JAVASCRIPT
+         LEAFLET MAP JS
+         ========================================== -->
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="">
+        </script>
+
+
+
+    <!-- ==========================================
+         PAGE-SPECIFIC JAVASCRIPT
          ========================================== -->
 
     {% block extra_js %}{% endblock %}
+
 
 </body>
 
