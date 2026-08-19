@@ -110,7 +110,9 @@
                         {{ person.last_seen_location }}
                     ">
 
-                <!-- IMAGE -->
+                <!-- =================================================
+                         IMAGE
+                    ================================================== -->
 
                 {% if person.photo_url %}
 
@@ -125,7 +127,9 @@
                 {% endif %}
 
 
-                <!-- CASE INFORMATION -->
+                <!-- =================================================
+                         CASE INFORMATION
+                    ================================================== -->
 
                 <div class="case-info">
 
@@ -163,7 +167,9 @@
                     </p>
 
 
-                    <!-- CURRENT STATUS -->
+                    <!-- =================================================
+                             CURRENT STATUS
+                        ================================================== -->
 
                     <div class="status-section">
 
@@ -209,7 +215,9 @@
                     </div>
 
 
-                    <!-- STATUS UPDATE -->
+                    <!-- =================================================
+                             STATUS UPDATE FORM
+                        ================================================== -->
 
                     <form action="{{ url_for('update_report_status') }}" method="POST" class="status-form">
 
@@ -251,15 +259,26 @@
                         <button type="submit" class="status-update-btn">
                             Update Status
                         </button>
-                        <form method="POST" action="{{ url_for(
+
+                    </form>
+
+
+                    <!-- =================================================
+                             DELETE REPORT FORM
+                             IMPORTANT:
+                             This is OUTSIDE the status form.
+                        ================================================== -->
+
+                    <form method="POST" action="{{ url_for(
                                 'delete_report',
                                 report_type='missing',
                                 id=person.id
-                            ) }}" onsubmit="return confirmDelete('{{ person.report_id }}');" style="display:inline;">
-                            <button type="submit" class="delete-report-btn">
-                                Delete Report
-                            </button>
-                        </form>
+                            ) }}" class="delete-form" onsubmit="return confirmDelete('{{ person.report_id }}');">
+
+                        <button type="submit" class="delete-report-btn">
+                            Delete Report
+                        </button>
+
                     </form>
 
                 </div>
@@ -319,7 +338,9 @@
                         {{ person.police_station }}
                     ">
 
-                <!-- IMAGE -->
+                <!-- =================================================
+                         IMAGE
+                    ================================================== -->
 
                 {% if person.photo_url %}
 
@@ -334,7 +355,9 @@
                 {% endif %}
 
 
-                <!-- CASE INFORMATION -->
+                <!-- =================================================
+                         CASE INFORMATION
+                    ================================================== -->
 
                 <div class="case-info">
 
@@ -372,7 +395,9 @@
                     </p>
 
 
-                    <!-- CURRENT STATUS -->
+                    <!-- =================================================
+                             CURRENT STATUS
+                        ================================================== -->
 
                     <div class="status-section">
 
@@ -418,7 +443,9 @@
                     </div>
 
 
-                    <!-- STATUS UPDATE -->
+                    <!-- =================================================
+                             STATUS UPDATE FORM
+                        ================================================== -->
 
                     <form action="{{ url_for('update_report_status') }}" method="POST" class="status-form">
 
@@ -460,19 +487,32 @@
                         <button type="submit" class="status-update-btn">
                             Update Status
                         </button>
-                        <form method="POST" action="{{ url_for(
-        'delete_report',
-        report_type='found',
-        id=person.id
-    ) }}" onsubmit="return confirmDelete('{{ person.report_id }}');" style="display:inline;">
-                            <button type="submit" class="delete-report-btn">
-                                Delete Report
-                            </button>
-                        </form>
+
                     </form>
 
 
-                    <!-- AI MATCH -->
+                    <!-- =================================================
+                             DELETE REPORT FORM
+                             IMPORTANT:
+                             This is OUTSIDE the status form.
+                        ================================================== -->
+
+                    <form method="POST" action="{{ url_for(
+                                'delete_report',
+                                report_type='found',
+                                id=person.id
+                            ) }}" class="delete-form" onsubmit="return confirmDelete('{{ person.report_id }}');">
+
+                        <button type="submit" class="delete-report-btn">
+                            Delete Report
+                        </button>
+
+                    </form>
+
+
+                    <!-- =================================================
+                             AI MATCH
+                        ================================================== -->
 
                     <a href="{{ url_for('ai_match', found_id=person.id) }}" class="ai-match-btn ai-loader-link">
                         AI Face Match
@@ -538,9 +578,9 @@
 {% endblock %}
 
 
-<!-- =====================================================
+<!-- =========================================================
      JAVASCRIPT
-====================================================== -->
+========================================================= -->
 
 {% block extra_js %}
 
@@ -550,7 +590,14 @@
 
     document.addEventListener("DOMContentLoaded", function () {
 
+        /*
+         * =========================================================
+         * STATUS UPDATE
+         * =========================================================
+         */
+
         const statusForms = document.querySelectorAll(".status-form");
+
 
         statusForms.forEach(function (form) {
 
@@ -558,42 +605,65 @@
 
                 event.preventDefault();
 
+
                 const button = form.querySelector(".status-update-btn");
+
                 const select = form.querySelector("select");
+
 
                 const reportIdInput = form.querySelector(
                     'input[name="report_id"]'
                 );
 
+
                 const reportTypeInput = form.querySelector(
                     'input[name="report_type"]'
                 );
 
-                if (!button || !select || !reportIdInput || !reportTypeInput) {
+
+                if (
+                    !button ||
+                    !select ||
+                    !reportIdInput ||
+                    !reportTypeInput
+                ) {
+
                     return;
+
                 }
 
+
                 const reportId = reportIdInput.value;
+
                 const reportType = reportTypeInput.value;
+
                 const status = select.value;
 
+
                 const card = form.closest(".case-card");
+
 
                 const badge = card
                     ? card.querySelector(".status-section .badge")
                     : null;
 
+
                 const originalText = button.textContent;
+
 
                 /*
                  * Prevent duplicate requests
                  */
 
                 if (button.disabled) {
+
                     return;
+
                 }
 
+
                 button.disabled = true;
+
                 button.textContent = "Updating...";
 
 
@@ -602,18 +672,27 @@
                     const response = await fetch(
                         "{{ url_for('update_report_status') }}",
                         {
+
                             method: "POST",
 
                             headers: {
+
                                 "Content-Type": "application/json",
+
                                 "Accept": "application/json"
+
                             },
 
                             body: JSON.stringify({
+
                                 report_id: reportId,
+
                                 status: status,
+
                                 report_type: reportType
+
                             })
+
                         }
                     );
 
@@ -621,7 +700,10 @@
                     const result = await response.json();
 
 
-                    if (!response.ok || !result.success) {
+                    if (
+                        !response.ok ||
+                        !result.success
+                    ) {
 
                         throw new Error(
                             result.message ||
@@ -632,34 +714,43 @@
 
 
                     /*
-                     * Status labels
+                     * =====================================================
+                     * STATUS LABELS
+                     * =====================================================
                      */
 
                     const statusLabels = {
 
-                        submitted: "Report Submitted",
+                        submitted:
+                            "Report Submitted",
 
-                        investigating: "Under Investigation",
+                        investigating:
+                            "Under Investigation",
 
-                        potential_match: "Potential Match Found",
+                        potential_match:
+                            "Potential Match Found",
 
-                        found: "Person Found"
+                        found:
+                            "Person Found"
 
                     };
 
 
                     /*
-                     * Update badge
+                     * =====================================================
+                     * UPDATE BADGE
+                     * =====================================================
                      */
 
                     if (badge) {
 
                         badge.textContent =
-                            statusLabels[status] || "Report Submitted";
+                            statusLabels[status] ||
+                            "Report Submitted";
 
 
                         /*
-                         * Remove previous status classes
+                         * Remove old classes
                          */
 
                         badge.classList.remove(
@@ -671,12 +762,14 @@
 
 
                         /*
-                         * Add new status class
+                         * Add new class
                          */
 
                         if (status === "potential_match") {
 
-                            badge.classList.add("potential-match");
+                            badge.classList.add(
+                                "potential-match"
+                            );
 
                         } else {
 
@@ -688,23 +781,30 @@
 
 
                     /*
-                     * Button success state
+                     * =====================================================
+                     * SUCCESS STATE
+                     * =====================================================
                      */
 
                     button.textContent = "✓ Updated";
 
 
                     /*
-                     * Small success effect
+                     * Small success animation
                      */
 
                     if (card) {
 
-                        card.classList.add("status-updated");
+                        card.classList.add(
+                            "status-updated"
+                        );
+
 
                         setTimeout(function () {
 
-                            card.classList.remove("status-updated");
+                            card.classList.remove(
+                                "status-updated"
+                            );
 
                         }, 800);
 
@@ -717,7 +817,9 @@
 
                     setTimeout(function () {
 
-                        button.textContent = originalText;
+                        button.textContent =
+                            originalText;
+
                         button.disabled = false;
 
                     }, 1500);
@@ -732,15 +834,18 @@
 
 
                     /*
-                     * Restore previous button state
+                     * Error state
                      */
 
-                    button.textContent = "Update Failed";
+                    button.textContent =
+                        "Update Failed";
 
 
                     setTimeout(function () {
 
-                        button.textContent = originalText;
+                        button.textContent =
+                            originalText;
+
                         button.disabled = false;
 
                     }, 2000);
@@ -751,21 +856,73 @@
 
         });
 
+
+        /*
+         * =========================================================
+         * DELETE FORM PROTECTION
+         * =========================================================
+         *
+         * Explicitly prevent the delete form from being treated
+         * as a status form.
+         *
+         * The delete request is handled normally by Flask.
+         * =========================================================
+         */
+
+        const deleteForms =
+            document.querySelectorAll(".delete-form");
+
+
+        deleteForms.forEach(function (form) {
+
+            form.addEventListener("submit", function (event) {
+
+                /*
+                 * Stop this event from bubbling to any parent.
+                 *
+                 * This is extra protection against accidental
+                 * status updates.
+                 */
+
+                event.stopPropagation();
+
+            });
+
+        });
+
     });
+
+
+    /*
+     * =========================================================
+     * DELETE CONFIRMATION
+     * =========================================================
+     */
 
     function confirmDelete(reportId) {
 
         return confirm(
-            "Delete report " + reportId + "?\n\n" +
+
+            "Delete report " +
+            reportId +
+            "?\n\n" +
+
             "This will permanently delete:\n" +
+
             "• The report information\n" +
+
             "• The AI face embedding\n" +
+
             "• The uploaded photo\n" +
+
             "• All associated database data\n\n" +
+
             "This action cannot be undone."
+
         );
 
     }
 
 </script>
+
 {% endblock %}

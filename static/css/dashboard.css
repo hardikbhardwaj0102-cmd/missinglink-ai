@@ -1424,3 +1424,25 @@ body {
 .delete-report-btn:active {
     transform: translateY(0);
 }
+
+.delete-form {
+    margin-top: 10px;
+}
+
+.delete-report-btn {
+    width: 100%;
+    padding: 11px 16px;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.delete-report-btn:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.5);
+    transform: translateY(-1px);
+}
