@@ -6,147 +6,348 @@
 
 {% block content %}
 
-<div class="ai-container">
+<div class="ai-page">
 
-    <!-- ================= HEADER ================= -->
+    <!-- =====================================================
+         HEADER
+    ====================================================== -->
 
     <div class="ai-header">
 
-        <h1>🤖 AI Face Matching Results</h1>
+        <div>
+            <div class="ai-badge">
+                🤖 AI ANALYSIS COMPLETE
+            </div>
 
-        <p>
-            Facial comparison completed successfully.
-            The results below are ranked according to AI similarity.
-        </p>
+            <h1>Face Matching Analysis</h1>
+
+            <p>
+                AI-powered facial comparison has been completed.
+                Candidates are ranked by facial similarity.
+            </p>
+        </div>
+
+        <div class="analysis-status">
+            <span class="status-dot"></span>
+            Analysis Completed
+        </div>
 
     </div>
 
 
-    <!-- ================= FOUND PERSON ================= -->
+    <!-- =====================================================
+         FOUND PERSON SUMMARY
+    ====================================================== -->
 
-    <div class="found-person">
+    <div class="found-panel">
 
-        <div class="found-image">
+        <div class="found-photo">
 
             <img src="{{ found_person.photo_url }}" alt="Found Person">
 
         </div>
 
-        <div class="found-info">
+        <div class="found-details">
 
-            <h2>Found Person</h2>
+            <div class="panel-label">
+                FOUND PERSON
+            </div>
 
-            <p>
-                <strong>Estimated Age:</strong>
-                {{ found_person.estimated_age }}
-            </p>
+            <h2>Person Under Investigation</h2>
 
-            <p>
-                <strong>Gender:</strong>
-                {{ found_person.gender }}
-            </p>
+            <div class="info-grid">
 
-            <p>
-                <strong>Found Location:</strong>
-                {{ found_person.found_location }}
-            </p>
+                <div>
+                    <span>Estimated Age</span>
+                    <strong>
+                        {{ found_person.estimated_age or "Unknown" }}
+                    </strong>
+                </div>
 
-            <p>
-                <strong>Condition:</strong>
-                {{ found_person.condition }}
-            </p>
+                <div>
+                    <span>Gender</span>
+                    <strong>
+                        {{ found_person.gender or "Unknown" }}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Location Found</span>
+                    <strong>
+                        {{ found_person.found_location or "Unknown" }}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Condition</span>
+                    <strong>
+                        {{ found_person.condition or "Unknown" }}
+                    </strong>
+                </div>
+
+            </div>
 
         </div>
 
     </div>
 
 
-    <!-- ================= AI RESULTS ================= -->
-
-    <h2 class="section-title">
-        Top AI Matches
-    </h2>
-
+    <!-- =====================================================
+         AI SUMMARY
+    ====================================================== -->
 
     {% if matches %}
 
-    <div class="match-grid">
+    {% set top_match = matches[0] %}
+
+    <div class="ai-summary">
+
+        <div class="summary-icon">
+            🧠
+        </div>
+
+        <div class="summary-content">
+
+            <span class="summary-label">
+                TOP AI CANDIDATE
+            </span>
+
+            <h2>
+                {{ top_match.person.name }}
+            </h2>
+
+            <p>
+                The highest facial similarity was detected with this
+                missing-person record.
+            </p>
+
+        </div>
+
+        <div class="summary-score">
+
+            <span>AI CONFIDENCE</span>
+
+            <strong>
+                {{ top_match.similarity }}%
+            </strong>
+
+            <div class="summary-bar">
+
+                <div class="summary-fill" data-score="{{ top_match.similarity }}">
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         IMPORTANT NOTICE
+    ====================================================== -->
+
+    <div class="ai-warning">
+
+        <span class="warning-icon">⚠️</span>
+
+        <div>
+            <strong>AI-assisted result</strong>
+
+            <p>
+                Facial similarity indicates a potential match and
+                should not be treated as final identity verification.
+                Human or authorized authority verification is required.
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MATCHES
+    ====================================================== -->
+
+    <div class="section-header">
+
+        <div>
+
+            <span class="section-label">
+                AI CANDIDATES
+            </span>
+
+            <h2>Ranked Matches</h2>
+
+        </div>
+
+        <div class="match-count">
+            {{ matches|length }} candidates
+        </div>
+
+    </div>
+
+
+    <div class="match-list">
 
         {% for match in matches %}
 
-        <div class="match-card">
+        <div class="match-card {% if loop.first %}top-match{% endif %}">
 
-            <!-- ================= MATCH PHOTO ================= -->
+            <!-- =================================================
+                 RANK
+            ================================================== -->
 
-            <img src="{{ match.person.photo_url }}" alt="{{ match.person.name }}">
+            <div class="rank">
+
+                {% if loop.first %}
+                🏆
+                {% else %}
+                #{{ loop.index }}
+                {% endif %}
+
+            </div>
 
 
-            <!-- ================= AI MATCH SCORE ================= -->
+            <!-- =================================================
+                 PHOTO
+            ================================================== -->
 
-            <div class="score">
+            <div class="candidate-photo">
 
-                <div class="score-label">
-                    AI MATCH SCORE
+                <img src="{{ match.person.photo_url }}" alt="{{ match.person.name }}">
+
+            </div>
+
+
+            <!-- =================================================
+                 PERSON INFORMATION
+            ================================================== -->
+
+            <div class="candidate-info">
+
+                <div class="candidate-heading">
+
+                    <h3>
+                        {{ match.person.name }}
+                    </h3>
+
+                    {% if loop.first %}
+                    <span class="top-label">
+                        TOP MATCH
+                    </span>
+                    {% endif %}
+
                 </div>
 
-                <div class="score-value">
+
+                <div class="candidate-details">
+
+                    <div>
+                        <span>Age</span>
+                        <strong>
+                            {{ match.person.age or "Unknown" }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Gender</span>
+                        <strong>
+                            {{ match.person.gender or "Unknown" }}
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Last Seen</span>
+                        <strong>
+                            {{ match.person.last_seen_location or "Unknown" }}
+                        </strong>
+                    </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     STATUS
+                ================================================== -->
+
+                {% if match.similarity >= 75 %}
+
+                <div class="match-status high">
+                    <span>●</span>
+                    High Similarity
+                </div>
+
+                {% elif match.similarity >= 45 %}
+
+                <div class="match-status medium">
+                    <span>●</span>
+                    Possible Match
+                </div>
+
+                {% else %}
+
+                <div class="match-status low">
+                    <span>●</span>
+                    Low Similarity
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- =================================================
+                 SCORE
+            ================================================== -->
+
+            <div class="candidate-score">
+
+                <span class="score-label">
+                    AI MATCH
+                </span>
+
+                <strong>
                     {{ match.similarity }}%
-                </div>
+                </strong>
 
                 <div class="score-bar">
 
-                    <div class="score-fill" data-score="{{ match.similarity }}"></div>
+                    <div class="score-fill" data-score="{{ match.similarity }}">
+                    </div>
 
                 </div>
 
+                {% if match.cosine_similarity is defined %}
+
+                <div class="raw-score">
+
+                    Raw similarity:
+                    <strong>
+                        {{ match.cosine_similarity }}
+                    </strong>
+
+                </div>
+
+                {% endif %}
+
             </div>
 
 
-            <!-- ================= PERSON DETAILS ================= -->
+            <!-- =================================================
+                 ACTION
+            ================================================== -->
 
-            <h3>
-                {{ match.person.name }}
-            </h3>
+            <div class="candidate-action">
 
-            <p>
-                <strong>Age:</strong>
-                {{ match.person.age }}
-            </p>
+                <a href="{{ url_for(
+                        'view_missing_profile',
+                        id=match.person.id
+                    ) }}" class="details-btn">
+                    View Profile
+                    <span>→</span>
+                </a>
 
-            <p>
-                <strong>Last Seen:</strong>
-                {{ match.person.last_seen_location }}
-            </p>
-
-
-            <!-- ================= MATCH STATUS ================= -->
-
-            {% if match.similarity >= 75 %}
-
-            <div class="status high">
-                🟢 High Match
             </div>
-
-            {% elif match.similarity >= 45 %}
-
-            <div class="status medium">
-                🟡 Possible Match
-            </div>
-
-            {% else %}
-
-            <div class="status low">
-                🔴 Low Match
-            </div>
-
-            {% endif %}
-
-
-            <!-- ================= PROFILE BUTTON ================= -->
-
-            <a href="{{ url_for('view_missing_profile', id=match.person.id) }}" class="details-btn">
-                View Complete Profile
-            </a>
 
         </div>
 
@@ -157,30 +358,112 @@
 
     {% else %}
 
-    <!-- ================= NO RESULTS ================= -->
+    <!-- =====================================================
+         NO MATCHES
+    ====================================================== -->
 
     <div class="no-results">
 
-        <h2>
-            No Matches Found
-        </h2>
+        <div class="no-results-icon">
+            🔍
+        </div>
+
+        <h2>No Potential Matches Found</h2>
 
         <p>
-            AI could not identify any similar faces.
+            The AI system could not identify a sufficiently similar
+            face among the available missing-person records.
         </p>
+
+        <div class="no-results-note">
+            Try uploading a clearer image with the person's face
+            clearly visible.
+        </div>
 
     </div>
 
     {% endif %}
 
+
+    <!-- =====================================================
+         AI METHODOLOGY
+    ====================================================== -->
+
+    <div class="methodology">
+
+        <div class="methodology-title">
+            🧠 How MissingLink AI Calculates Matches
+        </div>
+
+        <div class="methodology-grid">
+
+            <div>
+                <strong>01</strong>
+                <span>Face Detection</span>
+                <p>
+                    The system detects the face in the uploaded image.
+                </p>
+            </div>
+
+            <div>
+                <strong>02</strong>
+                <span>Face Embedding</span>
+                <p>
+                    InsightFace converts the face into a numerical
+                    representation.
+                </p>
+            </div>
+
+            <div>
+                <strong>03</strong>
+                <span>Similarity Analysis</span>
+                <p>
+                    Facial embeddings are compared using cosine
+                    similarity.
+                </p>
+            </div>
+
+            <div>
+                <strong>04</strong>
+                <span>Candidate Ranking</span>
+                <p>
+                    Candidates are ranked from highest to lowest
+                    similarity.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
 </div>
+
+
+<!-- =========================================================
+     SCORE ANIMATION
+========================================================= -->
+
 <script>
-    document.querySelectorAll(".score-fill").forEach(function (bar) {
 
-        const score = parseFloat(bar.dataset.score) || 0;
+    document.addEventListener("DOMContentLoaded", function () {
 
-        bar.style.width = score + "%";
+        document.querySelectorAll(".score-fill, .summary-fill")
+            .forEach(function (bar) {
+
+                const score =
+                    parseFloat(bar.dataset.score) || 0;
+
+                setTimeout(function () {
+
+                    bar.style.width =
+                        Math.min(Math.max(score, 0), 100) + "%";
+
+                }, 150);
+
+            });
 
     });
+
 </script>
+
 {% endblock %}

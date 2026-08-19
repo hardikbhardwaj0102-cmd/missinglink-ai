@@ -1,621 +1,996 @@
-/* ================= GLOBAL AI PAGE ================= */
+/* ============================================================
+   MISSINGLINK AI — FACE MATCHING RESULTS
+============================================================ */
 
-.ai-container {
+.ai-page {
 
     min-height: 100vh;
 
-    padding: 50px;
+    padding: 45px 6% 70px;
 
-    color: white;
+    color: #f8fafc;
 
     position: relative;
 
     overflow: hidden;
 
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 }
 
 
-/* AI Background */
+/* ============================================================
+   BACKGROUND
+============================================================ */
 
-.ai-container::before {
+.ai-page::before {
 
     content: "";
 
-    position: absolute;
+    position: fixed;
 
     inset: 0;
 
     background:
-        linear-gradient(rgba(5, 12, 25, 0.88),
-            rgba(5, 12, 25, 0.95)),
+        linear-gradient(rgba(4, 10, 22, .91),
+            rgba(4, 10, 22, .97)),
         url("/static/images/ai-bg.jpg");
 
     background-size: cover;
 
     background-position: center;
 
-    background-attachment: fixed;
-
-    z-index: -2;
-
+    z-index: -3;
 }
 
 
-
-/* Glow effects */
-
-.ai-container::after {
+.ai-page::after {
 
     content: "";
 
-    position: absolute;
+    position: fixed;
 
-    width: 500px;
+    width: 650px;
 
-    height: 500px;
+    height: 650px;
 
-    background: rgba(37, 99, 235, 0.25);
+    right: -250px;
 
-    filter: blur(120px);
+    top: 5%;
 
-    top: 10%;
+    background:
+        rgba(37, 99, 235, .20);
 
-    right: -150px;
+    filter: blur(140px);
 
-    z-index: -1;
+    border-radius: 50%;
 
+    z-index: -2;
 }
 
 
-
-/* ================= HEADER ================= */
-
+/* ============================================================
+   HEADER
+============================================================ */
 
 .ai-header {
 
-    text-align: center;
+    max-width: 1250px;
 
-    margin-bottom: 50px;
+    margin: 0 auto 42px;
 
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 30px;
+}
+
+
+.ai-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 7px 13px;
+
+    border-radius: 999px;
+
+    background:
+        rgba(37, 99, 235, .14);
+
+    border:
+        1px solid rgba(96, 165, 250, .25);
+
+    color: #93c5fd;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+
+    margin-bottom: 14px;
 }
 
 
 .ai-header h1 {
 
-    font-size: 45px;
+    margin: 0;
 
-    font-weight: 800;
+    font-size: clamp(34px, 4vw, 48px);
 
-    letter-spacing: 1px;
+    line-height: 1.1;
 
-    background: linear-gradient(90deg,
+    font-weight: 850;
+
+    letter-spacing: -.8px;
+
+    background:
+        linear-gradient(90deg,
             #60a5fa,
-            #a78bfa);
+            #c4b5fd);
 
     -webkit-background-clip: text;
 
-    color: transparent;
-
+    -webkit-text-fill-color: transparent;
 }
 
 
 .ai-header p {
 
-    margin-top: 15px;
+    max-width: 680px;
 
-    color: #cbd5e1;
+    margin: 14px 0 0;
 
-    font-size: 17px;
+    color: #94a3b8;
 
+    font-size: 16px;
+
+    line-height: 1.7;
 }
 
 
-
-/* ================= FOUND PERSON ================= */
-
-
-.found-person {
+.analysis-status {
 
     display: flex;
 
-    gap: 35px;
+    align-items: center;
 
-    padding: 30px;
+    gap: 9px;
 
-    border-radius: 25px;
+    white-space: nowrap;
 
+    padding: 11px 16px;
+
+    border-radius: 12px;
 
     background:
-        rgba(255, 255, 255, 0.08);
-
-
-    backdrop-filter: blur(20px);
-
+        rgba(34, 197, 94, .08);
 
     border:
+        1px solid rgba(34, 197, 94, .20);
 
-        1px solid rgba(255, 255, 255, 0.15);
+    color: #86efac;
 
+    font-size: 13px;
 
-    box-shadow:
-
-        0 20px 50px rgba(0, 0, 0, 0.35);
-
-
-    margin-bottom: 50px;
-
+    font-weight: 700;
 }
 
 
+.status-dot {
 
-.found-image img {
+    width: 8px;
+
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #4ade80;
+
+    box-shadow:
+        0 0 12px rgba(74, 222, 128, .8);
+}
 
 
-    width: 240px;
+/* ============================================================
+   FOUND PERSON PANEL
+============================================================ */
 
-    height: 240px;
+.found-panel {
+
+    max-width: 1250px;
+
+    margin: 0 auto 30px;
+
+    display: flex;
+
+    gap: 30px;
+
+    padding: 26px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(135deg,
+            rgba(255, 255, 255, .075),
+            rgba(255, 255, 255, .035));
+
+    border:
+        1px solid rgba(255, 255, 255, .11);
+
+    backdrop-filter: blur(22px);
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, .28);
+}
+
+
+.found-photo {
+
+    flex: 0 0 190px;
+
+    height: 190px;
+
+    overflow: hidden;
+
+    border-radius: 18px;
+
+    border:
+        2px solid rgba(96, 165, 250, .35);
+}
+
+
+.found-photo img {
+
+    width: 100%;
+
+    height: 100%;
 
     object-fit: cover;
 
-    border-radius: 20px;
-
-
-    border: 3px solid rgba(96, 165, 250, 0.5);
-
-
+    display: block;
 }
 
 
+.found-details {
 
-.found-info h2 {
+    flex: 1;
 
-    font-size: 30px;
-
-    margin-bottom: 20px;
-
+    padding: 8px 5px;
 }
 
 
+.panel-label {
 
-.found-info p {
+    color: #60a5fa;
 
-    color: #d1d5db;
+    font-size: 11px;
 
-    font-size: 17px;
+    font-weight: 800;
 
-    margin: 12px 0;
+    letter-spacing: 2px;
 
+    margin-bottom: 7px;
 }
 
 
+.found-details h2 {
 
-/* ================= TITLE ================= */
+    margin: 0 0 24px;
 
+    font-size: 27px;
 
-.section-title {
-
-    font-size: 35px;
-
-    margin-bottom: 30px;
-
+    font-weight: 750;
 }
 
 
-
-/* ================= GRID ================= */
-
-
-.match-grid {
+.info-grid {
 
     display: grid;
 
     grid-template-columns:
+        repeat(4, 1fr);
 
-        repeat(auto-fit, minmax(300px, 1fr));
-
-    gap: 30px;
-
+    gap: 15px;
 }
 
 
-
-/* ================= MATCH CARD ================= */
-
-
-.match-card {
-
-
-    background:
-
-        rgba(255, 255, 255, 0.09);
-
-
-    backdrop-filter: blur(18px);
-
-
-    border-radius: 25px;
-
-
-    padding: 25px;
-
-
-    border:
-
-        1px solid rgba(255, 255, 255, 0.15);
-
-
-    transition: .4s;
-
-
-    box-shadow:
-
-        0 15px 40px rgba(0, 0, 0, .35);
-
-}
-
-
-
-.match-card:hover {
-
-
-    transform:
-
-        translateY(-12px);
-
-
-    border-color: #60a5fa;
-
-
-    box-shadow:
-
-        0 25px 60px rgba(37, 99, 235, .25);
-
-}
-
-
-
-.match-card img {
-
-
-    width: 100%;
-
-    height: 280px;
-
-    object-fit: cover;
-
-    border-radius: 18px;
-
-
-}
-
-
-
-/* Name */
-
-
-.match-card h3 {
-
-
-    margin-top: 20px;
-
-    font-size: 25px;
-
-
-}
-
-
-
-/* Details */
-
-
-.match-card p {
-
-    color: #cbd5e1;
-
-    margin: 8px 0;
-
-}
-
-
-
-/* ================= SCORE ================= */
-
-
-.score {
-
-
-    margin-top: 25px;
-
-    padding: 20px;
-
-
-    border-radius: 15px;
-
-
-    background:
-
-        rgba(0, 0, 0, .25);
-
-
-    text-align: center;
-
-}
-
-
-
-.score span {
-
-
-    display: block;
-
-    font-size: 45px;
-
-    font-weight: 800;
-
-
-    margin-top: 8px;
-
-
-    color: #60a5fa;
-
-}
-
-
-
-/* ================= STATUS ================= */
-
-
-.status {
-
-
-    margin-top: 18px;
-
-    padding: 12px;
-
-
-    border-radius: 12px;
-
-    text-align: center;
-
-    font-weight: 700;
-
-}
-
-
-
-.high {
-
-
-    background:
-
-        rgba(34, 197, 94, .18);
-
-
-    color: #4ade80;
-
-}
-
-
-
-.medium {
-
-
-    background:
-
-        rgba(234, 179, 8, .18);
-
-
-    color: #facc15;
-
-}
-
-
-
-.low {
-
-
-    background:
-
-        rgba(239, 68, 68, .18);
-
-
-    color: #f87171;
-
-}
-
-
-
-/* ================= BUTTON ================= */
-
-
-.details-btn {
-
-
-    margin-top: 25px;
-
-
-    display: block;
-
+.info-grid div {
 
     padding: 14px;
 
-
-    border-radius: 14px;
-
-
-    text-align: center;
-
+    border-radius: 13px;
 
     background:
+        rgba(255, 255, 255, .035);
 
-        linear-gradient(135deg,
-            #2563eb,
-            #7c3aed);
-
-
-    color: white;
-
-
-    text-decoration: none;
-
-
-    font-weight: 600;
-
-
-    transition: .3s;
-
-
+    border:
+        1px solid rgba(255, 255, 255, .06);
 }
 
 
+.info-grid span {
 
-.details-btn:hover {
+    display: block;
 
+    color: #64748b;
 
-    transform: scale(1.05);
+    font-size: 11px;
 
+    text-transform: uppercase;
 
+    letter-spacing: 1px;
+
+    margin-bottom: 6px;
 }
 
 
+.info-grid strong {
 
-/* ================= EMPTY ================= */
+    display: block;
+
+    color: #e2e8f0;
+
+    font-size: 14px;
+
+    font-weight: 650;
+
+    overflow-wrap: anywhere;
+}
 
 
-.no-results {
+/* ============================================================
+   AI SUMMARY / TOP MATCH
+============================================================ */
 
+.ai-summary {
 
-    padding: 60px;
+    max-width: 1250px;
 
+    margin: 0 auto 20px;
 
-    text-align: center;
+    display: flex;
 
+    align-items: center;
+
+    gap: 22px;
+
+    padding: 24px 27px;
+
+    border-radius: 22px;
 
     background:
+        linear-gradient(110deg,
+            rgba(37, 99, 235, .16),
+            rgba(124, 58, 237, .13));
 
-        rgba(255, 255, 255, .08);
+    border:
+        1px solid rgba(96, 165, 250, .27);
 
-
-    backdrop-filter: blur(15px);
-
-
-    border-radius: 25px;
-
-
+    box-shadow:
+        0 20px 55px rgba(37, 99, 235, .09);
 }
 
 
+.summary-icon {
 
-/* ================= MOBILE ================= */
+    width: 58px;
 
+    height: 58px;
 
-@media(max-width:700px) {
+    flex-shrink: 0;
 
+    display: grid;
 
-    .ai-container {
-
-        padding: 20px;
-
-    }
-
-
-    .found-person {
-
-        flex-direction: column;
-
-    }
-
-
-    .found-image img {
-
-        width: 100%;
-
-        height: 320px;
-
-    }
-
-
-    .ai-header h1 {
-
-        font-size: 32px;
-
-    }
-
-
-}
-/* ================= AI MATCH SCORE ================= */
-
-.score {
-
-    margin-top: 18px;
-
-    padding: 18px;
+    place-items: center;
 
     border-radius: 16px;
 
     background:
-        linear-gradient(
-            135deg,
-            rgba(37, 99, 235, 0.15),
-            rgba(124, 58, 237, 0.12)
-        );
+        rgba(96, 165, 250, .13);
 
-    border:
-        1px solid rgba(96, 165, 250, 0.25);
-
-    text-align: center;
-
+    font-size: 26px;
 }
 
-.score-label {
 
-    font-size: 12px;
+.summary-content {
 
-    font-weight: 700;
-
-    letter-spacing: 2px;
-
-    color: #94a3b8;
-
+    flex: 1;
 }
 
-.score-value {
 
-    margin-top: 8px;
+.summary-label {
 
-    font-size: 42px;
+    color: #93c5fd;
+
+    font-size: 10px;
 
     font-weight: 800;
 
+    letter-spacing: 2px;
+}
+
+
+.summary-content h2 {
+
+    margin: 5px 0 4px;
+
+    font-size: 23px;
+}
+
+
+.summary-content p {
+
+    margin: 0;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+}
+
+
+.summary-score {
+
+    width: 230px;
+
+    text-align: right;
+}
+
+
+.summary-score>span {
+
+    display: block;
+
+    color: #94a3b8;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+}
+
+
+.summary-score strong {
+
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 38px;
+
+    line-height: 1;
+
     background:
-        linear-gradient(
-            90deg,
+        linear-gradient(90deg,
             #60a5fa,
-            #a78bfa
-        );
+            #a78bfa);
 
     -webkit-background-clip: text;
 
     -webkit-text-fill-color: transparent;
-
 }
+
+
+.summary-bar {
+
+    height: 7px;
+
+    margin-top: 12px;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    background:
+        rgba(255, 255, 255, .08);
+}
+
+
+.summary-fill {
+
+    width: 0;
+
+    height: 100%;
+
+    border-radius: inherit;
+
+    background:
+        linear-gradient(90deg,
+            #2563eb,
+            #8b5cf6);
+
+    transition: width 1s cubic-bezier(.22, 1, .36, 1);
+}
+
+
+/* ============================================================
+   AI WARNING
+============================================================ */
+
+.ai-warning {
+
+    max-width: 1250px;
+
+    margin: 0 auto 48px;
+
+    display: flex;
+
+    gap: 14px;
+
+    padding: 17px 20px;
+
+    border-radius: 15px;
+
+    background:
+        rgba(234, 179, 8, .055);
+
+    border:
+        1px solid rgba(234, 179, 8, .16);
+}
+
+
+.warning-icon {
+
+    font-size: 19px;
+
+    flex-shrink: 0;
+}
+
+
+.ai-warning strong {
+
+    display: block;
+
+    color: #fde68a;
+
+    font-size: 13px;
+
+    margin-bottom: 3px;
+}
+
+
+.ai-warning p {
+
+    margin: 0;
+
+    color: #94a3b8;
+
+    font-size: 12px;
+
+    line-height: 1.6;
+}
+
+
+/* ============================================================
+   SECTION HEADER
+============================================================ */
+
+.section-header {
+
+    max-width: 1250px;
+
+    margin: 0 auto 20px;
+
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+}
+
+
+.section-label {
+
+    color: #64748b;
+
+    font-size: 10px;
+
+    font-weight: 800;
+
+    letter-spacing: 2px;
+}
+
+
+.section-header h2 {
+
+    margin: 5px 0 0;
+
+    font-size: 29px;
+
+    font-weight: 750;
+}
+
+
+.match-count {
+
+    padding: 7px 12px;
+
+    border-radius: 9px;
+
+    color: #94a3b8;
+
+    background:
+        rgba(255, 255, 255, .045);
+
+    border:
+        1px solid rgba(255, 255, 255, .07);
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   MATCH LIST
+============================================================ */
+
+.match-list {
+
+    max-width: 1250px;
+
+    margin: 0 auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+}
+
+
+/* ============================================================
+   MATCH CARD
+============================================================ */
+
+.match-card {
+
+    display: grid;
+
+    grid-template-columns:
+        48px 105px minmax(250px, 1fr) 190px 145px;
+
+    align-items: center;
+
+    gap: 20px;
+
+    padding: 17px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(255, 255, 255, .045);
+
+    border:
+        1px solid rgba(255, 255, 255, .08);
+
+    backdrop-filter: blur(18px);
+
+    transition:
+        transform .3s ease,
+        border-color .3s ease,
+        background .3s ease;
+}
+
+
+.match-card:hover {
+
+    transform: translateY(-3px);
+
+    background:
+        rgba(255, 255, 255, .065);
+
+    border-color:
+        rgba(96, 165, 250, .28);
+}
+
+
+/* ============================================================
+   TOP MATCH
+============================================================ */
+
+.match-card.top-match {
+
+    background:
+        linear-gradient(105deg,
+            rgba(37, 99, 235, .12),
+            rgba(124, 58, 237, .07));
+
+    border-color:
+        rgba(96, 165, 250, .30);
+
+    box-shadow:
+        0 15px 45px rgba(37, 99, 235, .08);
+}
+
+
+.rank {
+
+    display: grid;
+
+    place-items: center;
+
+    width: 40px;
+
+    height: 40px;
+
+    border-radius: 12px;
+
+    color: #94a3b8;
+
+    background:
+        rgba(255, 255, 255, .045);
+
+    font-size: 12px;
+
+    font-weight: 800;
+}
+
+
+.top-match .rank {
+
+    background:
+        rgba(234, 179, 8, .12);
+
+    color: #facc15;
+
+    font-size: 19px;
+}
+
+
+/* ============================================================
+   CANDIDATE PHOTO
+============================================================ */
+
+.candidate-photo {
+
+    width: 105px;
+
+    height: 105px;
+
+    overflow: hidden;
+
+    border-radius: 15px;
+
+    border:
+        1px solid rgba(255, 255, 255, .1);
+}
+
+
+.candidate-photo img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+
+    transition: transform .4s ease;
+}
+
+
+.match-card:hover .candidate-photo img {
+
+    transform: scale(1.05);
+}
+
+
+/* ============================================================
+   CANDIDATE INFORMATION
+============================================================ */
+
+.candidate-info {
+
+    min-width: 0;
+}
+
+
+.candidate-heading {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    flex-wrap: wrap;
+}
+
+
+.candidate-heading h3 {
+
+    margin: 0;
+
+    font-size: 20px;
+
+    font-weight: 750;
+
+    color: #f1f5f9;
+}
+
+
+.top-label {
+
+    padding: 4px 8px;
+
+    border-radius: 6px;
+
+    background:
+        rgba(96, 165, 250, .12);
+
+    color: #93c5fd;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+}
+
+
+.candidate-details {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 18px;
+
+    margin-top: 12px;
+}
+
+
+.candidate-details div span {
+
+    display: block;
+
+    color: #64748b;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .7px;
+
+    margin-bottom: 3px;
+}
+
+
+.candidate-details div strong {
+
+    color: #cbd5e1;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   MATCH STATUS
+============================================================ */
+
+.match-status {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    margin-top: 12px;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    font-size: 10px;
+
+    font-weight: 750;
+}
+
+
+.match-status.high {
+
+    background:
+        rgba(34, 197, 94, .10);
+
+    color: #4ade80;
+}
+
+
+.match-status.medium {
+
+    background:
+        rgba(234, 179, 8, .10);
+
+    color: #facc15;
+}
+
+
+.match-status.low {
+
+    background:
+        rgba(239, 68, 68, .10);
+
+    color: #f87171;
+}
+
+
+/* ============================================================
+   CANDIDATE SCORE
+============================================================ */
+
+.candidate-score {
+
+    text-align: right;
+}
+
+
+.score-label {
+
+    display: block;
+
+    color: #64748b;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: 1.5px;
+}
+
+
+.candidate-score>strong {
+
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 30px;
+
+    font-weight: 850;
+
+    background:
+        linear-gradient(90deg,
+            #60a5fa,
+            #a78bfa);
+
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+}
+
 
 .score-bar {
 
     width: 100%;
 
-    height: 8px;
+    height: 5px;
 
-    margin-top: 14px;
+    margin-top: 8px;
 
-    border-radius: 20px;
-
-    background:
-        rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
 
     overflow: hidden;
 
+    background:
+        rgba(255, 255, 255, .07);
 }
+
 
 .score-fill {
 
@@ -623,15 +998,544 @@
 
     height: 100%;
 
+    border-radius: inherit;
+
+    background:
+        linear-gradient(90deg,
+            #2563eb,
+            #8b5cf6);
+
+    transition:
+        width .9s cubic-bezier(.22, 1, .36, 1);
+}
+
+
+.raw-score {
+
+    margin-top: 7px;
+
+    color: #64748b;
+
+    font-size: 9px;
+}
+
+
+.raw-score strong {
+
+    color: #94a3b8;
+
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   PROFILE BUTTON
+============================================================ */
+
+.candidate-action {
+
+    display: flex;
+
+    justify-content: flex-end;
+}
+
+
+.details-btn {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    min-width: 130px;
+
+    padding: 11px 14px;
+
+    border-radius: 11px;
+
+    text-decoration: none;
+
+    color: white;
+
+    background:
+        linear-gradient(135deg,
+            #2563eb,
+            #7c3aed);
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 7px 20px rgba(37, 99, 235, .18);
+
+    transition:
+        transform .25s ease,
+        box-shadow .25s ease;
+}
+
+
+.details-btn span {
+
+    font-size: 16px;
+
+    transition:
+        transform .25s ease;
+}
+
+
+.details-btn:hover {
+
+    color: white;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 12px 28px rgba(37, 99, 235, .30);
+}
+
+
+.details-btn:hover span {
+
+    transform: translateX(3px);
+}
+
+
+/* ============================================================
+   NO RESULTS
+============================================================ */
+
+.no-results {
+
+    max-width: 750px;
+
+    margin: 0 auto 50px;
+
+    padding: 60px 35px;
+
+    text-align: center;
+
+    border-radius: 22px;
+
+    background:
+        rgba(255, 255, 255, .045);
+
+    border:
+        1px solid rgba(255, 255, 255, .08);
+
+    backdrop-filter: blur(18px);
+}
+
+
+.no-results-icon {
+
+    width: 65px;
+
+    height: 65px;
+
+    margin: 0 auto 20px;
+
+    display: grid;
+
+    place-items: center;
+
+    border-radius: 18px;
+
+    background:
+        rgba(96, 165, 250, .08);
+
+    font-size: 28px;
+}
+
+
+.no-results h2 {
+
+    margin: 0;
+
+    font-size: 25px;
+}
+
+
+.no-results p {
+
+    max-width: 500px;
+
+    margin: 12px auto;
+
+    color: #94a3b8;
+
+    line-height: 1.7;
+
+    font-size: 14px;
+}
+
+
+.no-results-note {
+
+    display: inline-block;
+
+    margin-top: 8px;
+
+    padding: 9px 13px;
+
+    border-radius: 9px;
+
+    color: #93c5fd;
+
+    background:
+        rgba(37, 99, 235, .08);
+
+    font-size: 11px;
+}
+
+
+/* ============================================================
+   METHODOLOGY
+============================================================ */
+
+.methodology {
+
+    max-width: 1250px;
+
+    margin: 50px auto 0;
+
+    padding: 25px;
+
     border-radius: 20px;
 
     background:
-        linear-gradient(
-            90deg,
-            #2563eb,
-            #7c3aed
-        );
+        rgba(255, 255, 255, .035);
 
-    transition: width 0.8s ease;
+    border:
+        1px solid rgba(255, 255, 255, .07);
+}
+
+
+.methodology-title {
+
+    margin-bottom: 20px;
+
+    color: #cbd5e1;
+
+    font-size: 14px;
+
+    font-weight: 750;
+}
+
+
+.methodology-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+}
+
+
+.methodology-grid>div {
+
+    padding: 16px;
+
+    border-radius: 13px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    border:
+        1px solid rgba(255, 255, 255, .05);
+}
+
+
+.methodology-grid strong {
+
+    display: block;
+
+    color: #60a5fa;
+
+    font-size: 12px;
+
+    margin-bottom: 8px;
+}
+
+
+.methodology-grid span {
+
+    display: block;
+
+    color: #e2e8f0;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    margin-bottom: 6px;
+}
+
+
+.methodology-grid p {
+
+    margin: 0;
+
+    color: #64748b;
+
+    font-size: 11px;
+
+    line-height: 1.6;
+}
+
+
+/* ============================================================
+   RESPONSIVE — TABLET
+============================================================ */
+
+@media (max-width: 1050px) {
+
+    .match-card {
+
+        grid-template-columns:
+            42px 90px 1fr 160px;
+    }
+
+    .candidate-action {
+
+        grid-column: 3 / -1;
+
+        justify-content: flex-start;
+    }
+
+    .candidate-photo {
+
+        width: 90px;
+
+        height: 90px;
+    }
+
+    .info-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .methodology-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+/* ============================================================
+   RESPONSIVE — MOBILE
+============================================================ */
+
+@media (max-width: 700px) {
+
+    .ai-page {
+
+        padding:
+            28px 16px 50px;
+    }
+
+
+    .ai-header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        margin-bottom: 30px;
+    }
+
+
+    .ai-header h1 {
+
+        font-size: 32px;
+    }
+
+
+    .analysis-status {
+
+        align-self: flex-start;
+    }
+
+
+    .found-panel {
+
+        flex-direction: column;
+
+        padding: 18px;
+    }
+
+
+    .found-photo {
+
+        width: 100%;
+
+        height: 280px;
+
+        flex-basis: auto;
+    }
+
+
+    .found-details h2 {
+
+        font-size: 23px;
+    }
+
+
+    .info-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .ai-summary {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+    }
+
+
+    .summary-score {
+
+        width: 100%;
+
+        text-align: left;
+    }
+
+
+    .ai-warning {
+
+        margin-bottom: 35px;
+    }
+
+
+    .section-header {
+
+        align-items: center;
+    }
+
+
+    .section-header h2 {
+
+        font-size: 24px;
+    }
+
+
+    .match-count {
+
+        font-size: 10px;
+    }
+
+
+    .match-card {
+
+        grid-template-columns:
+            48px 1fr;
+
+        gap: 15px;
+
+        padding: 16px;
+    }
+
+
+    .rank {
+
+        grid-row: 1;
+
+    }
+
+
+    .candidate-photo {
+
+        grid-row: 1;
+
+        width: 100%;
+
+        height: 180px;
+    }
+
+
+    .candidate-info {
+
+        grid-column: 1 / -1;
+    }
+
+
+    .candidate-score {
+
+        grid-column: 1 / -1;
+
+        text-align: left;
+    }
+
+
+    .candidate-action {
+
+        grid-column: 1 / -1;
+
+        justify-content: stretch;
+    }
+
+
+    .details-btn {
+
+        width: 100%;
+    }
+
+
+    .methodology-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* ============================================================
+   SMALL MOBILE
+============================================================ */
+
+@media (max-width: 430px) {
+
+    .candidate-photo {
+
+        height: 220px;
+    }
+
+
+    .candidate-details {
+
+        flex-direction: column;
+
+        gap: 9px;
+    }
+
+
+    .summary-icon {
+
+        width: 50px;
+
+        height: 50px;
+    }
+
+
+    .summary-content h2 {
+
+        font-size: 20px;
+    }
+
+
+    .summary-score strong {
+
+        font-size: 32px;
+    }
 
 }
