@@ -1382,3 +1382,45 @@ body {
     }
 
 }
+
+/* ==========================================
+   DELETE REPORT BUTTON
+========================================== */
+
+.delete-report-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 9px 14px;
+
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 8px;
+
+    background: rgba(239, 68, 68, 0.08);
+    color: #ef4444;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.delete-report-btn:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+
+    transform: translateY(-1px);
+}
+
+.delete-report-btn:active {
+    transform: translateY(0);
+}

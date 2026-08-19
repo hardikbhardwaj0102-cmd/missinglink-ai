@@ -251,7 +251,15 @@
                         <button type="submit" class="status-update-btn">
                             Update Status
                         </button>
-
+                        <form method="POST" action="{{ url_for(
+                                'delete_report',
+                                report_type='missing',
+                                id=person.id
+                            ) }}" onsubmit="return confirmDelete('{{ person.report_id }}');" style="display:inline;">
+                            <button type="submit" class="delete-report-btn">
+                                Delete Report
+                            </button>
+                        </form>
                     </form>
 
                 </div>
@@ -452,7 +460,15 @@
                         <button type="submit" class="status-update-btn">
                             Update Status
                         </button>
-
+                        <form method="POST" action="{{ url_for(
+        'delete_report',
+        report_type='found',
+        id=person.id
+    ) }}" onsubmit="return confirmDelete('{{ person.report_id }}');" style="display:inline;">
+                            <button type="submit" class="delete-report-btn">
+                                Delete Report
+                            </button>
+                        </form>
                     </form>
 
 
@@ -737,6 +753,19 @@
 
     });
 
-</script>
+    function confirmDelete(reportId) {
 
+        return confirm(
+            "Delete report " + reportId + "?\n\n" +
+            "This will permanently delete:\n" +
+            "• The report information\n" +
+            "• The AI face embedding\n" +
+            "• The uploaded photo\n" +
+            "• All associated database data\n\n" +
+            "This action cannot be undone."
+        );
+
+    }
+
+</script>
 {% endblock %}

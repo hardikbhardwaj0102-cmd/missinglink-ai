@@ -2184,6 +2184,156 @@ def dashboard():
         found_count=found_count
 
     )
+
+
+# ==========================================
+# DELETE REPORT
+# ==========================================
+
+@app.route("/delete-report/<report_type>/<int:id>", methods=["POST"])
+def delete_report(report_type, id):
+
+    # ==========================================
+    # ORGANIZATION LOGIN CHECK
+    # ==========================================
+
+    if not session.get("organization"):
+        flash(
+            "Please log in to delete a report.",
+            "danger"
+        )
+
+        return redirect(url_for("login"))
+
+    # ==========================================
+    # FIND REPORT
+    # ==========================================
+
+    report = None
+    bucket_name = None
+
+    if report_type == "missing":
+
+        report = MissingPerson.query.get_or_404(id)
+
+        bucket_name = "missing-person-photos"
+
+    elif report_type == "found":
+
+        report = FoundPerson.query.get_or_404(id)
+
+        bucket_name = "found-person-photos"
+
+    else:
+
+        flash(
+            "Invalid report type.",
+            "danger"
+        )
+
+        return redirect(url_for("dashboard"))
+
+    # ==========================================
+    # SAVE PHOTO PATH BEFORE DATABASE DELETE
+    # ==========================================
+
+    photo_path = report.photo_path
+
+    report_id = report.report_id
+
+    # ==========================================
+    # DELETE PHOTO FROM SUPABASE
+    # ==========================================
+
+    if photo_path:
+
+        try:
+
+            # --------------------------------------
+            # Normalize storage path
+            # --------------------------------------
+
+            clean_path = photo_path
+
+            prefix = bucket_name + "/"
+
+            if clean_path.startswith(prefix):
+
+                clean_path = clean_path[len(prefix):]
+
+            # --------------------------------------
+            # Delete from Supabase
+            # --------------------------------------
+
+            supabase.storage.from_(
+                bucket_name
+            ).remove([
+                clean_path
+            ])
+
+            print(
+                f"Supabase photo deleted: "
+                f"{bucket_name}/{clean_path}"
+            )
+
+        except Exception as e:
+
+            print(
+                f"SUPABASE DELETE ERROR "
+                f"({report_id}):",
+                e
+            )
+
+            flash(
+                "The report could not be deleted because "
+                "its photo could not be removed from storage.",
+                "danger"
+            )
+
+            return redirect(
+                url_for("dashboard")
+            )
+
+    # ==========================================
+    # DELETE DATABASE RECORD
+    # ==========================================
+
+    try:
+
+        db.session.delete(report)
+
+        db.session.commit()
+
+        # ======================================
+        # SUCCESS
+        # ======================================
+
+        flash(
+            f"Report {report_id} has been permanently deleted.",
+            "success"
+        )
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            f"DATABASE DELETE ERROR ({report_id}):",
+            e
+        )
+
+        flash(
+            "Unable to delete the report. Please try again.",
+            "danger"
+        )
+
+    # ==========================================
+    # RETURN TO NORMAL DASHBOARD
+    # ==========================================
+
+    return redirect(
+        url_for("dashboard")
+    )
 # ==========================================
 # UPDATE REPORT STATUS
 # ==========================================
