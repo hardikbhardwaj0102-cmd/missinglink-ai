@@ -3447,7 +3447,115 @@ def clear_data():
         <h2>Error clearing data</h2>
         <p>{str(e)}</p>
         """
+# ==========================================
+# DELETE REPORT
+# ==========================================
 
+@app.route("/delete-report/<int:id>/<report_type>", methods=["POST"])
+def delete_report(id, report_type):
+
+    # ==========================================
+    # ORGANIZATION LOGIN CHECK
+    # ==========================================
+
+    if not session.get("organization"):
+        return {
+            "success": False,
+            "message": "Authentication required."
+        }, 401
+
+    # ==========================================
+    # FIND REPORT
+    # ==========================================
+
+    report = None
+    bucket_name = None
+
+    if report_type == "missing":
+
+        report = MissingPerson.query.get(id)
+        bucket_name = "missing-person-photos"
+
+    elif report_type == "found":
+
+        report = FoundPerson.query.get(id)
+        bucket_name = "found-person-photos"
+
+    else:
+
+        return {
+            "success": False,
+            "message": "Invalid report type."
+        }, 400
+
+    # ==========================================
+    # REPORT NOT FOUND
+    # ==========================================
+
+    if not report:
+
+        return {
+            "success": False,
+            "message": "Report not found."
+        }, 404
+
+    # ==========================================
+    # DELETE PHOTO FROM SUPABASE
+    # ==========================================
+
+    if report.photo_path:
+
+        try:
+
+            supabase.storage.from_(
+                bucket_name
+            ).remove([
+                report.photo_path
+            ])
+
+        except Exception as e:
+
+            print(
+                "SUPABASE PHOTO DELETE ERROR:",
+                e
+            )
+
+    # ==========================================
+    # DELETE DATABASE RECORD
+    # ==========================================
+
+    try:
+
+        db.session.delete(report)
+
+        db.session.commit()
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print(
+            "REPORT DELETE ERROR:",
+            e
+        )
+
+        return {
+            "success": False,
+            "message": "Unable to delete report."
+        }, 500
+
+    # ==========================================
+    # SUCCESS
+    # ==========================================
+
+    flash(
+        "Report deleted successfully.",
+        "success"
+    )
+
+    return redirect(
+        url_for("dashboard")
+    )
 # ==========================================
 # Run App
 # ==========================================
