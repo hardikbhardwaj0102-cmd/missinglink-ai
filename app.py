@@ -3557,6 +3557,183 @@ def delete_report(id, report_type):
         url_for("dashboard")
     )
 # ==========================================
+# NEW CASES
+# ==========================================
+
+@app.route("/new-cases")
+def new_cases():
+
+    # ==========================================
+    # ORGANIZATION LOGIN CHECK
+    # ==========================================
+
+    if not session.get("organization"):
+        return redirect(
+            url_for("login")
+        )
+
+    # ==========================================
+    # GET LAST DASHBOARD CHECK
+    # ==========================================
+
+    now = datetime.utcnow()
+
+    last_notification_check = session.get(
+        "last_notification_check"
+    )
+
+    if last_notification_check:
+
+        try:
+
+            last_notification_check = datetime.fromisoformat(
+                last_notification_check
+            )
+
+        except (ValueError, TypeError):
+
+            last_notification_check = now
+
+    else:
+
+        # First visit
+        last_notification_check = now
+
+    # ==========================================
+    # GET NEW MISSING CASES
+    # ==========================================
+
+    missing_cases = MissingPerson.query.filter(
+        MissingPerson.created_at > last_notification_check
+    ).order_by(
+        MissingPerson.created_at.desc()
+    ).all()
+
+    # ==========================================
+    # GET NEW FOUND CASES
+    # ==========================================
+
+    found_cases = FoundPerson.query.filter(
+        FoundPerson.created_at > last_notification_check
+    ).order_by(
+        FoundPerson.created_at.desc()
+    ).all()
+
+    # ==========================================
+    # COMBINE CASES
+    # ==========================================
+
+    cases = []
+
+    for person in missing_cases:
+
+        cases.append({
+            "type": "missing",
+            "report_id": person.report_id,
+            "name": person.name,
+            "location": person.last_seen_location,
+            "date": person.last_seen_date,
+            "status": person.status,
+            "created_at": person.created_at,
+            "person": person
+        })
+
+    for person in found_cases:
+
+        cases.append({
+            "type": "found",
+            "report_id": person.report_id,
+            "name": "Unknown Person",
+            "location": person.found_location,
+            "date": person.found_date,
+            "status": person.status,
+            "created_at": person.created_at,
+            "person": person
+        })
+
+    # ==========================================
+    # SORT
+    # ==========================================
+
+    cases.sort(
+        key=lambda case: case["created_at"],
+        reverse=True
+    )
+
+    # ==========================================
+    # GENERATE SIGNED IMAGE URLS
+    # ==========================================
+
+    for case in cases:
+
+        person = case["person"]
+
+        person.photo_url = None
+
+        if person.photo_path:
+
+            try:
+
+                bucket_name = (
+                    "missing-person-photos"
+                    if case["type"] == "missing"
+                    else "found-person-photos"
+                )
+
+                signed_response = supabase.storage.from_(
+                    bucket_name
+                ).create_signed_url(
+                    person.photo_path,
+                    3600
+                )
+
+                if isinstance(
+                    signed_response,
+                    dict
+                ):
+
+                    person.photo_url = (
+                        signed_response.get("signedURL")
+                        or
+                        signed_response.get("signedUrl")
+                    )
+
+            except Exception as e:
+
+                print(
+                    f"New case photo error: {e}"
+                )
+
+    # ==========================================
+    # COUNTS
+    # ==========================================
+
+    total_count = len(cases)
+
+    missing_count = len(missing_cases)
+
+    found_count = len(found_cases)
+
+    # ==========================================
+    # MARK NOTIFICATION CHECK
+    # ==========================================
+
+    session["last_notification_check"] = (
+        now.isoformat()
+    )
+
+    # ==========================================
+    # RENDER
+    # ==========================================
+
+    return render_template(
+        "new_cases.html",
+        cases=cases,
+        total_count=total_count,
+        missing_count=missing_count,
+        found_count=found_count
+    )
+# ==========================================
 # Run App
 # ==========================================
 

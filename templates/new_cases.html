@@ -1,0 +1,481 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/new_cases.css') }}">
+
+{% endblock %}
+
+
+{% block content %}
+
+<div class="new-cases-page">
+
+    <!-- ==========================================
+         HEADER
+    ========================================== -->
+
+    <div class="new-cases-header">
+
+        <div>
+
+            <div class="page-kicker">
+                CASE MANAGEMENT
+            </div>
+
+            <h1>
+                New Cases
+            </h1>
+
+            <p>
+                Review recently submitted missing and found
+                person reports requiring attention.
+            </p>
+
+        </div>
+
+        <a href="{{ url_for('dashboard') }}" class="back-dashboard">
+
+            ← Dashboard
+
+        </a>
+
+    </div>
+
+
+    <!-- ==========================================
+         STATISTICS
+    ========================================== -->
+
+    <div class="case-stats">
+
+        <div class="case-stat">
+
+            <div class="stat-icon blue">
+                ✦
+            </div>
+
+            <div>
+
+                <span class="stat-number">
+                    {{ total_count }}
+                </span>
+
+                <span class="stat-label">
+                    New Cases
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="case-stat">
+
+            <div class="stat-icon orange">
+                !
+            </div>
+
+            <div>
+
+                <span class="stat-number">
+                    {{ missing_count }}
+                </span>
+
+                <span class="stat-label">
+                    Missing
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="case-stat">
+
+            <div class="stat-icon green">
+                ✓
+            </div>
+
+            <div>
+
+                <span class="stat-number">
+                    {{ found_count }}
+                </span>
+
+                <span class="stat-label">
+                    Found
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         TOOLBAR
+    ========================================== -->
+
+    <div class="case-toolbar">
+
+        <div class="case-filters">
+
+            <button class="filter-btn active" data-filter="all">
+
+                All Cases
+
+            </button>
+
+            <button class="filter-btn" data-filter="missing">
+
+                Missing
+
+            </button>
+
+            <button class="filter-btn" data-filter="found">
+
+                Found
+
+            </button>
+
+        </div>
+
+
+        <div class="case-search">
+
+            <span>
+                🔍
+            </span>
+
+            <input type="text" id="caseSearch" placeholder="Search report ID or name..." autocomplete="off">
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         CASE LIST
+    ========================================== -->
+
+    <div class="cases-container" id="casesContainer">
+
+
+        {% if cases %}
+
+
+        {% for case in cases %}
+
+        <div class="case-card" data-type="{{ case.type }}" data-search="
+                    {{ case.report_id }}
+                    {{ case.name }}
+                    {{ case.location }}
+                 ">
+
+
+            <!-- NEW BADGE -->
+
+            <div class="new-badge">
+                NEW
+            </div>
+
+
+            <!-- PHOTO -->
+
+            <div class="case-photo">
+
+                {% if case.person.photo_url %}
+
+                <img src="{{ case.person.photo_url }}" alt="Case photo">
+
+                {% else %}
+
+                <div class="photo-placeholder">
+
+                    {% if case.type == "missing" %}
+                    ?
+                    {% else %}
+                    👤
+                    {% endif %}
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- CASE CONTENT -->
+
+            <div class="case-content">
+
+                <div class="case-top">
+
+                    {% if case.type == "missing" %}
+
+                    <span class="case-type missing">
+                        MISSING PERSON
+                    </span>
+
+                    {% else %}
+
+                    <span class="case-type found">
+                        FOUND PERSON
+                    </span>
+
+                    {% endif %}
+
+
+                    <span class="case-id">
+                        {{ case.report_id }}
+                    </span>
+
+                </div>
+
+
+                <h2>
+
+                    {% if case.type == "missing" %}
+
+                    {{ case.name or "Unknown" }}
+
+                    {% else %}
+
+                    Unknown Person
+
+                    {% endif %}
+
+                </h2>
+
+
+                <div class="case-details">
+
+                    <div class="detail">
+
+                        <span class="detail-icon">
+                            📍
+                        </span>
+
+                        <span>
+
+                            {{ case.location
+                            or "Location not provided" }}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="detail">
+
+                        <span class="detail-icon">
+                            📅
+                        </span>
+
+                        <span>
+
+                            {{ case.date
+                            or "Date not provided" }}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="case-bottom">
+
+                    <span class="status-pill">
+
+                        <span class="status-dot"></span>
+
+                        {{ case.status
+                        .replace("_", " ")
+                        .title() }}
+
+                    </span>
+
+
+                    <span class="created-time">
+
+                        Submitted
+                        {{ case.created_at.strftime(
+                        "%d %b %Y, %I:%M %p"
+                        ) }}
+
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="case-actions">
+
+                {% if case.type == "missing" %}
+
+                <a href="{{ url_for(
+                                'view_missing_profile',
+                                id=case.person.id
+                            ) }}" class="action-btn primary">
+
+                    View Case
+
+                </a>
+
+                {% else %}
+
+                <a href="{{ url_for(
+                                'ai_match',
+                                found_id=case.person.id
+                            ) }}" class="action-btn primary">
+
+                    Find Match
+
+                </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+
+        {% else %}
+
+        <!-- EMPTY STATE -->
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                ✓
+            </div>
+
+            <h2>
+                You're all caught up
+            </h2>
+
+            <p>
+                There are no new cases requiring
+                your attention right now.
+            </p>
+
+            <a href="{{ url_for('dashboard') }}" class="empty-button">
+
+                Back to Dashboard
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<!-- ==========================================
+     FILTER + SEARCH
+========================================== -->
+
+<script>
+
+    const filterButtons =
+        document.querySelectorAll(".filter-btn");
+
+    const caseCards =
+        document.querySelectorAll(".case-card");
+
+    const searchInput =
+        document.getElementById("caseSearch");
+
+    let currentFilter = "all";
+
+
+    function updateCases() {
+
+        const search =
+            searchInput.value
+                .toLowerCase()
+                .trim();
+
+
+        caseCards.forEach(card => {
+
+            const type =
+                card.dataset.type;
+
+            const text =
+                card.dataset.search
+                    .toLowerCase();
+
+            const matchesFilter =
+                currentFilter === "all"
+                || type === currentFilter;
+
+            const matchesSearch =
+                !search
+                || text.includes(search);
+
+
+            if (
+                matchesFilter
+                && matchesSearch
+            ) {
+
+                card.style.display = "";
+
+            } else {
+
+                card.style.display = "none";
+
+            }
+
+        });
+
+    }
+
+
+    filterButtons.forEach(button => {
+
+        button.addEventListener(
+            "click",
+            function () {
+
+                filterButtons.forEach(btn =>
+                    btn.classList.remove("active")
+                );
+
+                this.classList.add("active");
+
+                currentFilter =
+                    this.dataset.filter;
+
+                updateCases();
+
+            }
+        );
+
+    });
+
+
+    if (searchInput) {
+
+        searchInput.addEventListener(
+            "input",
+            updateCases
+        );
+
+    }
+
+</script>
+
+{% endblock %}
