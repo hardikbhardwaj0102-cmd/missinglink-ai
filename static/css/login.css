@@ -1,23 +1,53 @@
 /* ==========================================
    MissingLink AI
    Login Page
+   CHARCOAL + LIGHT BROWN THEME
 ========================================== */
 
 :root {
 
-    --bg: #07111f;
-    --glass: rgba(255, 255, 255, .06);
-    --border: rgba(255, 255, 255, .08);
+    /* =========================
+       MAIN COLOR SYSTEM
+    ========================= */
 
-    --primary: #2563eb;
-    --primary-light: #3b82f6;
+    --bg: #171513;
 
-    --text: #ffffff;
-    --text2: #9ca3af;
+    --glass: rgba(218, 196, 172, 0.055);
+
+    --glass-strong: rgba(218, 196, 172, 0.075);
+
+    --border: rgba(214, 188, 156, 0.14);
+
+    /* Warm brown primary */
+    --primary: #9b7653;
+    --primary-light: #b18a64;
+
+    /* Secondary brown */
+    --secondary: #806247;
+
+    /* Highlight */
+    --highlight: #c5a27e;
+
+    /* Text */
+    --text: #f5ede3;
+    --text2: #b7aa9b;
+    --muted: #8f8173;
+
+    /* Cream */
+    --cream: #e8ddd1;
+
+    /* Semantic colors */
+    --success: #8c9a72;
+    --danger: #b86f5b;
 
     --radius: 24px;
 
 }
+
+
+/* ==========================================
+   GLOBAL
+========================================== */
 
 * {
 
@@ -27,19 +57,39 @@
 
 }
 
+
 body {
 
     font-family: "Poppins", sans-serif;
-    background:
-        radial-gradient(circle at top left, #1d4ed8 0%, transparent 35%),
-        radial-gradient(circle at bottom right, #0ea5e9 0%, transparent 35%),
-        #07111f;
 
-    color: white;
+    background:
+
+        /* Warm brown glow — top left */
+        radial-gradient(circle at top left,
+            rgba(155, 118, 83, 0.20) 0%,
+            transparent 35%),
+
+        /* Subtle warm glow — bottom right */
+        radial-gradient(circle at bottom right,
+            rgba(128, 98, 71, 0.14) 0%,
+            transparent 35%),
+
+        /* Main charcoal */
+        linear-gradient(135deg,
+            #171513 0%,
+            #1d1916 50%,
+            #12110f 100%);
+
+    color: var(--text);
+
+    min-height: 100vh;
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   LOGIN PAGE
+========================================== */
 
 .login-page {
 
@@ -61,7 +111,10 @@ body {
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   LEFT SIDE
+========================================== */
 
 .login-left {
 
@@ -69,11 +122,21 @@ body {
 
 }
 
+
+/* ==========================================
+   BRAND
+========================================== */
+
 .brand {
 
     margin-bottom: 45px;
 
 }
+
+
+/* ==========================================
+   BRAND ICON
+========================================== */
 
 .brand-icon {
 
@@ -81,6 +144,7 @@ body {
     height: 90px;
 
     display: flex;
+
     justify-content: center;
     align-items: center;
 
@@ -88,13 +152,24 @@ body {
 
     font-size: 42px;
 
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    /* Brown gradient instead of blue */
+    background:
+
+        var(--accent);
 
     margin-bottom: 25px;
 
-    box-shadow: 0 20px 45px rgba(37, 99, 235, .35);
+    /* Warm brown glow */
+    box-shadow:
+
+        0 20px 45px rgba(155, 118, 83, 0.30);
 
 }
+
+
+/* ==========================================
+   BRAND TITLE
+========================================== */
 
 .brand h1 {
 
@@ -102,7 +177,12 @@ body {
 
     margin-bottom: 12px;
 
+    color: #f5ede3;
+
+    letter-spacing: -1px;
+
 }
+
 
 .brand p {
 
@@ -112,21 +192,41 @@ body {
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   INFORMATION CARD
+========================================== */
 
 .info-card {
 
-    background: var(--glass);
+    background:
+
+        linear-gradient(145deg,
+            rgba(218, 196, 172, 0.075),
+            rgba(218, 196, 172, 0.025));
 
     border: 1px solid var(--border);
 
     backdrop-filter: blur(20px);
 
+    -webkit-backdrop-filter: blur(20px);
+
     border-radius: 28px;
 
     padding: 35px;
 
+    box-shadow:
+
+        0 20px 55px rgba(0, 0, 0, 0.25),
+
+        inset 0 1px 0 rgba(232, 221, 209, 0.04);
+
 }
+
+
+/* ==========================================
+   INFORMATION CARD TITLE
+========================================== */
 
 .info-card h2 {
 
@@ -134,7 +234,14 @@ body {
 
     margin-bottom: 20px;
 
+    color: #f5ede3;
+
 }
+
+
+/* ==========================================
+   INFORMATION CARD DESCRIPTION
+========================================== */
 
 .info-card>p {
 
@@ -145,6 +252,11 @@ body {
     margin-bottom: 30px;
 
 }
+
+
+/* ==========================================
+   FEATURES
+========================================== */
 
 .feature {
 
@@ -158,32 +270,51 @@ body {
 
 }
 
+
+/* ==========================================
+   FEATURE ICON
+========================================== */
+
 .feature span {
 
     width: 35px;
     height: 35px;
 
     display: flex;
+
     align-items: center;
     justify-content: center;
 
     border-radius: 50%;
 
-    background: rgba(34, 197, 94, .15);
+    /* Muted olive/brown instead of green */
+    background:
+        rgba(140, 154, 114, 0.14);
 
-    color: #22c55e;
+    color: #a6ad86;
+
+    border:
+        1px solid rgba(166, 173, 134, 0.16);
 
     font-weight: 700;
 
 }
 
+
+/* ==========================================
+   FEATURE TEXT
+========================================== */
+
 .feature p {
 
-    color: #d1d5db;
+    color: #d4c5b6;
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   RIGHT SIDE
+========================================== */
 
 .login-right {
 
@@ -191,25 +322,43 @@ body {
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   LOGIN CARD
+========================================== */
 
 .login-card {
 
-    background: var(--glass);
+    background:
+
+        linear-gradient(145deg,
+            rgba(218, 196, 172, 0.075),
+            rgba(218, 196, 172, 0.025));
 
     backdrop-filter: blur(22px);
 
-    border: 1px solid var(--border);
+    -webkit-backdrop-filter: blur(22px);
+
+    border:
+
+        1px solid rgba(214, 188, 156, 0.14);
 
     border-radius: 30px;
 
     padding: 45px;
 
-    box-shadow: 0 25px 60px rgba(0, 0, 0, .35);
+    box-shadow:
+
+        0 25px 60px rgba(0, 0, 0, 0.40),
+
+        inset 0 1px 0 rgba(232, 221, 209, 0.04);
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   LOGIN TITLE
+========================================== */
 
 .login-card h2 {
 
@@ -217,7 +366,12 @@ body {
 
     margin-bottom: 10px;
 
+    color: #f5ede3;
+
+    letter-spacing: -0.5px;
+
 }
+
 
 .login-card>p {
 
@@ -227,7 +381,10 @@ body {
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   INPUT GROUP
+========================================== */
 
 .input-group {
 
@@ -239,13 +396,21 @@ body {
 
 }
 
+
 .input-group label {
 
     margin-bottom: 10px;
 
     font-weight: 600;
 
+    color: #e8ddd1;
+
 }
+
+
+/* ==========================================
+   INPUT
+========================================== */
 
 .input-group input {
 
@@ -253,11 +418,15 @@ body {
 
     border-radius: 14px;
 
-    border: 1px solid rgba(255, 255, 255, .08);
+    border:
 
-    background: rgba(255, 255, 255, .05);
+        1px solid rgba(214, 188, 156, 0.12);
 
-    color: white;
+    background:
+
+        rgba(218, 196, 172, 0.045);
+
+    color: #f5ede3;
 
     font-size: 15px;
 
@@ -265,23 +434,40 @@ body {
 
 }
 
+
+/* ==========================================
+   INPUT PLACEHOLDER
+========================================== */
+
 .input-group input::placeholder {
 
-    color: #94a3b8;
+    color: #958678;
 
 }
+
+
+/* ==========================================
+   INPUT FOCUS
+========================================== */
 
 .input-group input:focus {
 
     outline: none;
 
-    border-color: #3b82f6;
+    border-color: #b18a64;
 
-    box-shadow: 0 0 25px rgba(37, 99, 235, .25);
+    box-shadow:
+
+        0 0 0 3px rgba(177, 138, 100, 0.08),
+
+        0 0 25px rgba(155, 118, 83, 0.16);
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   LOGIN BUTTON
+========================================== */
 
 .login-btn {
 
@@ -295,9 +481,12 @@ body {
 
     cursor: pointer;
 
-    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    /* Main brown gradient */
+    background:
 
-    color: white;
+        var(--accent);
+
+    color: #fff7ee;
 
     font-size: 17px;
 
@@ -307,17 +496,37 @@ body {
 
     margin-top: 10px;
 
+    box-shadow:
+
+        0 8px 22px rgba(155, 118, 83, 0.12);
+
 }
+
+
+/* ==========================================
+   LOGIN BUTTON HOVER
+========================================== */
 
 .login-btn:hover {
 
     transform: translateY(-4px);
 
-    box-shadow: 0 20px 45px rgba(37, 99, 235, .35);
+    background:
+
+        linear-gradient(135deg,
+            #a07856,
+            #bb916a);
+
+    box-shadow:
+
+        0 20px 45px rgba(155, 118, 83, 0.25);
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   DIVIDER
+========================================== */
 
 .divider {
 
@@ -333,13 +542,25 @@ body {
 
 }
 
+
+/* ==========================================
+   DIVIDER TEXT
+========================================== */
+
 .divider span {
 
-    background: #07111f;
+    background: #211d19;
 
     padding: 0 15px;
 
+    color: #9f9182;
+
 }
+
+
+/* ==========================================
+   DIVIDER LINES
+========================================== */
 
 .divider::before {
 
@@ -349,9 +570,12 @@ body {
 
     height: 1px;
 
-    background: rgba(255, 255, 255, .08);
+    background:
+
+        rgba(214, 188, 156, 0.12);
 
 }
+
 
 .divider::after {
 
@@ -361,11 +585,16 @@ body {
 
     height: 1px;
 
-    background: rgba(255, 255, 255, .08);
+    background:
+
+        rgba(214, 188, 156, 0.12);
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   REGISTER BUTTON
+========================================== */
 
 .register-btn {
 
@@ -379,27 +608,51 @@ body {
 
     text-decoration: none;
 
-    color: white;
+    color: #f5ede3;
 
     font-weight: 600;
 
-    background: rgba(255, 255, 255, .05);
+    background:
 
-    border: 1px solid rgba(255, 255, 255, .08);
+        rgba(218, 196, 172, 0.045);
+
+    border:
+
+        1px solid rgba(214, 188, 156, 0.14);
 
     transition: .35s;
 
 }
 
+
+/* ==========================================
+   REGISTER BUTTON HOVER
+========================================== */
+
 .register-btn:hover {
 
-    background: #2563eb;
+    background:
+
+        linear-gradient(135deg,
+            #806247,
+            #9b7653);
+
+    border-color:
+
+        rgba(232, 221, 209, 0.12);
 
     transform: translateY(-4px);
 
+    box-shadow:
+
+        0 12px 30px rgba(155, 118, 83, 0.16);
+
 }
 
-/* ========================= */
+
+/* ==========================================
+   SECURITY NOTE
+========================================== */
 
 .security-note {
 
@@ -407,7 +660,7 @@ body {
 
     text-align: center;
 
-    color: #9ca3af;
+    color: #9f9182;
 
     line-height: 1.8;
 
@@ -415,7 +668,10 @@ body {
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   ANIMATIONS
+========================================== */
 
 @keyframes fadeLeft {
 
@@ -437,6 +693,7 @@ body {
 
 }
 
+
 @keyframes fadeRight {
 
     from {
@@ -457,7 +714,10 @@ body {
 
 }
 
-/* ========================= */
+
+/* ==========================================
+   TABLET
+========================================== */
 
 @media(max-width:1100px) {
 
@@ -472,6 +732,11 @@ body {
     }
 
 }
+
+
+/* ==========================================
+   MOBILE
+========================================== */
 
 @media(max-width:768px) {
 
@@ -501,11 +766,13 @@ body {
 
 }
 
+
 /* ==========================================
    LOGIN ERROR POPUP
 ========================================== */
 
 .login-alert-overlay {
+
     position: fixed;
 
     inset: 0;
@@ -515,34 +782,48 @@ body {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     padding: 20px;
 
-    background: rgba(0, 0, 0, 0.65);
+    background:
+
+        rgba(10, 9, 8, 0.72);
 
     backdrop-filter: blur(8px);
 
     opacity: 0;
+
     visibility: hidden;
 
     transition:
+
         opacity 0.25s ease,
         visibility 0.25s ease;
+
 }
+
 
 .login-alert-overlay.show {
+
     opacity: 1;
+
     visibility: visible;
+
 }
 
 
-/* Popup */
+/* ==========================================
+   ERROR POPUP
+========================================== */
 
 .login-alert {
+
     position: relative;
 
     width: 100%;
+
     max-width: 430px;
 
     padding: 38px 32px 32px;
@@ -551,27 +832,45 @@ body {
 
     text-align: center;
 
-    background: rgba(20, 25, 35, 0.97);
+    background:
 
-    border: 1px solid rgba(255, 255, 255, 0.1);
+        linear-gradient(145deg,
+            rgba(43, 35, 29, 0.98),
+            rgba(29, 25, 21, 0.98));
+
+    border:
+
+        1px solid rgba(214, 188, 156, 0.14);
 
     box-shadow:
-        0 25px 70px rgba(0, 0, 0, 0.55);
 
-    transform: translateY(20px) scale(0.96);
+        0 25px 70px rgba(0, 0, 0, 0.60);
 
-    transition: transform 0.25s ease;
+    transform:
+        translateY(20px) scale(0.96);
+
+    transition:
+        transform 0.25s ease;
+
 }
+
 
 .login-alert-overlay.show .login-alert {
-    transform: translateY(0) scale(1);
+
+    transform:
+        translateY(0) scale(1);
+
 }
 
 
-/* Icon */
+/* ==========================================
+   ERROR ICON
+========================================== */
 
 .login-alert-icon {
+
     width: 64px;
+
     height: 64px;
 
     margin: 0 auto 20px;
@@ -579,35 +878,52 @@ body {
     display: flex;
 
     align-items: center;
+
     justify-content: center;
 
     border-radius: 50%;
 
     font-size: 28px;
+
     font-weight: 700;
 
-    background: rgba(239, 68, 68, 0.12);
+    /* Keep error red, but muted */
+    background:
 
-    border: 1px solid rgba(239, 68, 68, 0.25);
+        rgba(184, 111, 91, 0.12);
+
+    border:
+
+        1px solid rgba(184, 111, 91, 0.28);
+
+    color: #c98976;
+
 }
 
 
-/* Heading */
+/* ==========================================
+   ERROR HEADING
+========================================== */
 
 .login-alert h2 {
+
     margin: 0 0 10px;
 
     font-size: 23px;
 
     font-weight: 700;
 
-    color: #ffffff;
+    color: #f5ede3;
+
 }
 
 
-/* Message */
+/* ==========================================
+   ERROR MESSAGE
+========================================== */
 
 .login-alert p {
+
     margin: 0 auto 25px;
 
     max-width: 340px;
@@ -616,13 +932,17 @@ body {
 
     line-height: 1.6;
 
-    color: rgba(255, 255, 255, 0.65);
+    color: #b7aa9b;
+
 }
 
 
-/* Button */
+/* ==========================================
+   ERROR BUTTON
+========================================== */
 
 .login-alert-btn {
+
     width: 100%;
 
     padding: 12px 20px;
@@ -631,9 +951,13 @@ body {
 
     border-radius: 10px;
 
-    background: #2563eb;
+    background:
 
-    color: #ffffff;
+        linear-gradient(135deg,
+            #8d694b,
+            #a9805c);
+
+    color: #fff7ee;
 
     font-size: 14px;
 
@@ -642,27 +966,41 @@ body {
     cursor: pointer;
 
     transition: all 0.25s ease;
+
 }
 
+
 .login-alert-btn:hover {
-    background: #1d4ed8;
+
+    background:
+
+        linear-gradient(135deg,
+            #a07856,
+            #bb916a);
 
     transform: translateY(-1px);
 
     box-shadow:
-        0 8px 20px rgba(37, 99, 235, 0.3);
+
+        0 8px 20px rgba(155, 118, 83, 0.20);
+
 }
 
 
-/* Close */
+/* ==========================================
+   CLOSE BUTTON
+========================================== */
 
 .login-alert-close {
+
     position: absolute;
 
     top: 14px;
+
     right: 16px;
 
     width: 32px;
+
     height: 32px;
 
     border: none;
@@ -671,7 +1009,7 @@ body {
 
     background: transparent;
 
-    color: rgba(255, 255, 255, 0.55);
+    color: rgba(232, 221, 209, 0.55);
 
     font-size: 25px;
 
@@ -680,57 +1018,105 @@ body {
     cursor: pointer;
 
     transition: all 0.2s ease;
+
 }
+
 
 .login-alert-close:hover {
-    background: rgba(255, 255, 255, 0.08);
 
-    color: #ffffff;
+    background:
+
+        rgba(218, 196, 172, 0.08);
+
+    color: #f5ede3;
+
 }
 
 
-/* Mobile */
+/* ==========================================
+   ERROR POPUP MOBILE
+========================================== */
 
 @media (max-width: 480px) {
 
     .login-alert {
+
         padding: 34px 22px 25px;
+
     }
 
     .login-alert h2 {
+
         font-size: 20px;
+
     }
 
     .login-alert p {
+
         font-size: 13px;
+
     }
 
 }
 
+
+/* ==========================================
+   BACK HOME BUTTON
+========================================== */
+
 .back-home-btn {
+
     position: fixed;
+
     top: 25px;
+
     left: 25px;
+
     z-index: 1000;
 
     padding: 10px 18px;
 
-    color: white;
+    color: #f5ede3;
+
     text-decoration: none;
 
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background:
+
+        rgba(218, 196, 172, 0.06);
+
+    border:
+
+        1px solid rgba(214, 188, 156, 0.18);
+
     border-radius: 8px;
 
     backdrop-filter: blur(10px);
 
     font-size: 14px;
+
     font-weight: 600;
 
     transition: all 0.2s ease;
+
 }
 
+
+/* ==========================================
+   BACK HOME HOVER
+========================================== */
+
 .back-home-btn:hover {
-    background: rgba(255, 255, 255, 0.15);
+
+    background:
+
+        rgba(155, 118, 83, 0.18);
+
+    border-color:
+
+        rgba(177, 138, 100, 0.30);
+
+    color: #fff7ee;
+
     transform: translateX(-2px);
+
 }

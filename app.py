@@ -34,6 +34,14 @@ from ai.face_matcher import find_best_matches
 from dotenv import load_dotenv
 from supabase import create_client, Client
 load_dotenv()
+MISSINGLINK_API_KEY = os.getenv(
+    "MISSINGLINK_API_KEY"
+)
+
+MISSINGLINK_ADMIN_API_KEY = os.getenv(
+    "MISSINGLINK_ADMIN_API_KEY"
+)
+API_KEY = os.getenv("API_KEY")
 from config import Config
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
@@ -4040,6 +4048,16 @@ def found_cases():
 # ==========================================
 # Run App
 # ==========================================
+# ============================================================
+# MISSINGLINK AI API
+# Existing backend remains unchanged
+# ============================================================
+# ============================================================
+# REGISTER API
+# ============================================================
 
+from api import register_api
+
+register_api(app)
 if __name__ == "__main__":
     app.run(debug=True)

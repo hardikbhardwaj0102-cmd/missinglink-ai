@@ -12,10 +12,6 @@
 {% block content %}
 
 <form action="/report-found" method="POST" enctype="multipart/form-data" class="report-page" id="foundReportForm">
-    <!-- =========================
-     HOME BUTTON
-========================== -->
-
     <a href="{{ url_for('home') }}" class="report-home-btn">
         <span>←</span>
         Home
@@ -710,10 +706,13 @@
 
                             Email
 
+                            <span class="optional">
+                                Optional
+                            </span>
 
                         </label>
 
-                        <input type="email" id="email" name="email" placeholder="example@email.com" required>
+                        <input type="email" id="email" name="email" placeholder="example@email.com">
 
                     </div>
 

@@ -1551,7 +1551,7 @@ input[type="date"],
 input[type="time"] {
 
     color-scheme:
-        dark;
+        light;
 
 }
 
@@ -3069,5 +3069,61 @@ input[type="time"]::-webkit-calendar-picker-indicator {
             .01ms !important;
 
     }
+
+}
+
+/* =========================================================
+   DARK GENDER DROPDOWN OPTIONS
+========================================================= */
+
+.input-group select {
+
+    background-color:
+        var(--report-charcoal);
+
+    color:
+        var(--report-white);
+
+    color-scheme:
+        dark;
+
+}
+
+
+/* Dropdown options */
+
+.input-group select option {
+
+    background-color:
+        #22221e;
+
+    color:
+        #f5f4ef;
+
+}
+
+
+/* Placeholder / default option */
+
+.input-group select option[value=""] {
+
+    background-color:
+        #22221e;
+
+    color:
+        #aaa99f;
+
+}
+
+
+/* Selected option */
+
+.input-group select option:checked {
+
+    background-color:
+        #545333;
+
+    color:
+        #ffffff;
 
 }
