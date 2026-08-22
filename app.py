@@ -2097,44 +2097,58 @@ def logout():
 
     return response
 
+# ============================================================
+# ORGANIZATION DASHBOARD
+# ============================================================
+
 @app.route("/dashboard")
 def dashboard():
 
-    # ==========================================
+    # ========================================================
     # ORGANIZATION LOGIN CHECK
-    # ==========================================
+    # ========================================================
 
     if not session.get("organization"):
+
         return redirect(
             url_for("login")
         )
 
-    # ==========================================
-    # GET ALL REPORTS
-    # ==========================================
+
+    # ========================================================
+    # GET ALL MISSING REPORTS
+    # ========================================================
 
     missing_people = MissingPerson.query.order_by(
         MissingPerson.created_at.desc()
     ).all()
 
+
+    # ========================================================
+    # GET ALL FOUND REPORTS
+    # ========================================================
+
     found_people = FoundPerson.query.order_by(
         FoundPerson.created_at.desc()
     ).all()
 
-    # ==========================================
-    # NEW CASES
-    # ==========================================
-    #
-    # A case is NEW only if it was created after
-    # the last time the organization checked
-    # the New Cases page.
+
+    # ========================================================
+    # NEW CASES / NOTIFICATIONS
+    # ========================================================
     #
     # IMPORTANT:
-    # Dashboard does NOT update the timestamp.
-    # This prevents new cases from disappearing
-    # before the user opens New Cases.
     #
-    # ==========================================
+    # Dashboard ONLY READS the last notification timestamp.
+    #
+    # Dashboard NEVER updates:
+    #
+    # session["last_notification_check"]
+    #
+    # The timestamp is updated only when /new-cases
+    # is actually opened.
+    #
+    # ========================================================
 
     now = datetime.utcnow()
 
@@ -2142,61 +2156,71 @@ def dashboard():
         "last_notification_check"
     )
 
-    # ==========================================
-    # GET LAST CHECK TIME
-    # ==========================================
 
-    if last_notification_check:
+    # ========================================================
+    # DETERMINE NOTIFICATION START TIME
+    # ========================================================
+    #
+    # First dashboard visit:
+    #
+    # Existing old reports should NOT be considered new.
+    #
+    # We therefore use "now" as the temporary baseline.
+    #
+    # IMPORTANT:
+    # We do NOT save this value to the session here.
+    #
+    # ========================================================
+
+    if not last_notification_check:
+
+        notification_start = now
+
+    else:
 
         try:
 
-            last_notification_check = datetime.fromisoformat(
+            notification_start = datetime.fromisoformat(
                 last_notification_check
             )
 
         except (ValueError, TypeError):
 
-            last_notification_check = now
+            notification_start = now
 
-    else:
 
-        # ======================================
-        # FIRST VISIT
-        # ======================================
-        #
-        # Old cases should NOT appear as new.
-        #
-        last_notification_check = now
-
-    # ==========================================
-    # FIND NEW MISSING CASES
-    # ==========================================
+    # ========================================================
+    # GET NEW MISSING CASES
+    # ========================================================
 
     new_missing = MissingPerson.query.filter(
-        MissingPerson.created_at > last_notification_check
+        MissingPerson.created_at > notification_start
     ).order_by(
         MissingPerson.created_at.desc()
     ).all()
 
-    # ==========================================
-    # FIND NEW FOUND CASES
-    # ==========================================
+
+    # ========================================================
+    # GET NEW FOUND CASES
+    # ========================================================
 
     new_found = FoundPerson.query.filter(
-        FoundPerson.created_at > last_notification_check
+        FoundPerson.created_at > notification_start
     ).order_by(
         FoundPerson.created_at.desc()
     ).all()
 
-    # ==========================================
+
+    # ========================================================
     # COMBINE NEW CASES
-    # ==========================================
+    # ========================================================
 
     new_cases = []
 
-    # ------------------------------------------
+
+    # ========================================================
     # MISSING CASES
-    # ------------------------------------------
+    # ========================================================
 
     for person in new_missing:
 
@@ -2216,9 +2240,10 @@ def dashboard():
 
         })
 
-    # ------------------------------------------
+
+    # ========================================================
     # FOUND CASES
-    # ------------------------------------------
+    # ========================================================
 
     for person in new_found:
 
@@ -2238,144 +2263,169 @@ def dashboard():
 
         })
 
-    # ==========================================
+
+    # ========================================================
     # SORT NEW CASES
-    # ==========================================
+    # ========================================================
 
     new_cases.sort(
         key=lambda case: case["created_at"],
         reverse=True
     )
 
-    # ==========================================
-    # SHOW ONLY LATEST 5 NEW CASES
-    # ==========================================
+
+    # ========================================================
+    # SHOW ONLY LATEST 5 ON DASHBOARD
+    # ========================================================
 
     new_cases = new_cases[:5]
 
-    # ==========================================
-    # GENERATE SIGNED URLs
-    # FOR MISSING PHOTOS
-    # ==========================================
+
+    # ========================================================
+    # GENERATE SIGNED URLS
+    # FOR MISSING PERSON PHOTOS
+    # ========================================================
 
     for person in missing_people:
 
+        # Default value
         person.photo_url = None
 
-        if person.photo_path:
+        # No photo
+        if not person.photo_path:
+            continue
 
-            try:
+        try:
 
-                signed_response = supabase.storage.from_(
+            signed_response = (
+                supabase.storage
+                .from_(
                     "missing-person-photos"
-                ).create_signed_url(
+                )
+                .create_signed_url(
                     person.photo_path,
                     3600
                 )
+            )
 
-                if isinstance(
-                    signed_response,
-                    dict
-                ):
+            # Supabase response
+            if isinstance(
+                signed_response,
+                dict
+            ):
 
-                    person.photo_url = (
-                        signed_response.get(
-                            "signedURL"
-                        )
-                        or
-                        signed_response.get(
-                            "signedUrl"
-                        )
+                person.photo_url = (
+                    signed_response.get(
+                        "signedURL"
                     )
-
-            except Exception as e:
-
-                print(
-                    f"Missing photo URL error "
-                    f"for {person.id}: {e}"
+                    or
+                    signed_response.get(
+                        "signedUrl"
+                    )
                 )
 
-    # ==========================================
-    # GENERATE SIGNED URLs
-    # FOR FOUND PHOTOS
-    # ==========================================
+        except Exception as e:
+
+            print(
+                f"Missing photo URL error "
+                f"for {person.id}: {e}"
+            )
+
+
+    # ========================================================
+    # GENERATE SIGNED URLS
+    # FOR FOUND PERSON PHOTOS
+    # ========================================================
 
     for person in found_people:
 
+        # Default value
         person.photo_url = None
 
-        if person.photo_path:
+        # No photo
+        if not person.photo_path:
+            continue
 
-            try:
+        try:
 
-                signed_response = supabase.storage.from_(
+            signed_response = (
+                supabase.storage
+                .from_(
                     "found-person-photos"
-                ).create_signed_url(
+                )
+                .create_signed_url(
                     person.photo_path,
                     3600
                 )
+            )
 
-                if isinstance(
-                    signed_response,
-                    dict
-                ):
+            # Supabase response
+            if isinstance(
+                signed_response,
+                dict
+            ):
 
-                    person.photo_url = (
-                        signed_response.get(
-                            "signedURL"
-                        )
-                        or
-                        signed_response.get(
-                            "signedUrl"
-                        )
+                person.photo_url = (
+                    signed_response.get(
+                        "signedURL"
                     )
-
-            except Exception as e:
-
-                print(
-                    f"Found photo URL error "
-                    f"for {person.id}: {e}"
+                    or
+                    signed_response.get(
+                        "signedUrl"
+                    )
                 )
 
-    # ==========================================
+        except Exception as e:
+
+            print(
+                f"Found photo URL error "
+                f"for {person.id}: {e}"
+            )
+
+
+    # ========================================================
     # DASHBOARD COUNTS
-    # ==========================================
+    # ========================================================
 
     missing_count = MissingPerson.query.count()
 
     found_count = FoundPerson.query.count()
 
-    # ==========================================
-    # IMPORTANT
-    # ==========================================
-    #
-    # DO NOT update:
-    #
-    # session["last_notification_check"]
-    #
-    # here.
-    #
-    # It will be updated only by /new-cases
-    # after the user actually opens the page.
-    #
-    # ==========================================
 
-    # ==========================================
+    # ========================================================
+    # IMPORTANT
+    # ========================================================
+    #
+    # DO NOT DO THIS HERE:
+    #
+    # session["last_notification_check"] = now.isoformat()
+    #
+    # Dashboard must NOT mark cases as seen.
+    #
+    # Only /new-cases does that.
+    #
+    # ========================================================
+
+
+    # ========================================================
     # RENDER DASHBOARD
-    # ==========================================
+    # ========================================================
 
     return render_template(
 
         "dashboard.html",
 
+        # All reports
         missing_people=missing_people,
 
         found_people=found_people,
 
+        # Dashboard statistics
         missing_count=missing_count,
 
         found_count=found_count,
 
+        # New case notifications
         new_cases=new_cases
 
     )
@@ -3578,43 +3628,50 @@ def delete_report(id, report_type):
 # NEW CASES PAGE
 # ============================================================
 
+# ============================================================
+# NEW CASES PAGE
+# ============================================================
+
 @app.route("/new-cases")
 def new_cases():
 
-    # ==========================================
+    # ========================================================
     # ORGANIZATION LOGIN CHECK
-    # ==========================================
+    # ========================================================
 
     if not session.get("organization"):
+
         return redirect(
             url_for("login")
         )
 
-    # ==========================================
+
+    # ========================================================
     # CURRENT TIME
-    # ==========================================
+    # ========================================================
 
     now = datetime.utcnow()
 
-    # ==========================================
+
+    # ========================================================
     # GET LAST NOTIFICATION CHECK
-    # ==========================================
+    # ========================================================
 
     last_notification_check = session.get(
         "last_notification_check"
     )
 
-    # ==========================================
+
+    # ========================================================
     # FIRST VISIT
-    # ==========================================
+    # ========================================================
     #
-    # If this is the organization's first visit,
-    # establish the starting point.
+    # If the organization has never opened New Cases,
+    # establish a baseline.
     #
-    # Existing old cases should NOT be considered
-    # new.
+    # Existing reports will NOT be shown as new.
     #
-    # ==========================================
+    # ========================================================
 
     if not last_notification_check:
 
@@ -3632,9 +3689,10 @@ def new_cases():
             found_count=0
         )
 
-    # ==========================================
+
+    # ========================================================
     # CONVERT SAVED TIMESTAMP
-    # ==========================================
+    # ========================================================
 
     try:
 
@@ -3644,7 +3702,9 @@ def new_cases():
 
     except (ValueError, TypeError):
 
-        last_notification_check = now
+        # ----------------------------------------------------
+        # INVALID TIMESTAMP
+        # ----------------------------------------------------
 
         session["last_notification_check"] = (
             now.isoformat()
@@ -3660,9 +3720,10 @@ def new_cases():
             found_count=0
         )
 
-    # ==========================================
+
+    # ========================================================
     # GET NEW MISSING CASES
-    # ==========================================
+    # ========================================================
 
     missing_cases = MissingPerson.query.filter(
         MissingPerson.created_at > last_notification_check
@@ -3670,9 +3731,10 @@ def new_cases():
         MissingPerson.created_at.desc()
     ).all()
 
-    # ==========================================
+
+    # ========================================================
     # GET NEW FOUND CASES
-    # ==========================================
+    # ========================================================
 
     found_cases = FoundPerson.query.filter(
         FoundPerson.created_at > last_notification_check
@@ -3680,15 +3742,17 @@ def new_cases():
         FoundPerson.created_at.desc()
     ).all()
 
-    # ==========================================
+
+    # ========================================================
     # COMBINE CASES
-    # ==========================================
+    # ========================================================
 
     cases = []
 
-    # ------------------------------------------
+
+    # ========================================================
     # MISSING CASES
-    # ------------------------------------------
+    # ========================================================
 
     for person in missing_cases:
 
@@ -3712,9 +3776,10 @@ def new_cases():
 
         })
 
-    # ------------------------------------------
+
+    # ========================================================
     # FOUND CASES
-    # ------------------------------------------
+    # ========================================================
 
     for person in found_cases:
 
@@ -3738,66 +3803,96 @@ def new_cases():
 
         })
 
-    # ==========================================
+
+    # ========================================================
     # SORT NEWEST FIRST
-    # ==========================================
+    # ========================================================
 
     cases.sort(
         key=lambda case: case["created_at"],
         reverse=True
     )
 
-    # ==========================================
-    # GENERATE SIGNED IMAGE URLS
-    # ==========================================
+
+    # ========================================================
+    # GENERATE SIGNED PHOTO URLS
+    # ========================================================
 
     for case in cases:
 
         person = case["person"]
 
+        # Default
         person.photo_url = None
 
-        if person.photo_path:
+        # Skip if there is no image
+        if not person.photo_path:
+            continue
 
-            try:
+        try:
+
+            # ------------------------------------------------
+            # SELECT CORRECT SUPABASE BUCKET
+            # ------------------------------------------------
+
+            if case["type"] == "missing":
 
                 bucket_name = (
                     "missing-person-photos"
-                    if case["type"] == "missing"
-                    else "found-person-photos"
                 )
 
-                signed_response = supabase.storage.from_(
-                    bucket_name
-                ).create_signed_url(
+            else:
+
+                bucket_name = (
+                    "found-person-photos"
+                )
+
+
+            # ------------------------------------------------
+            # CREATE SIGNED URL
+            # ------------------------------------------------
+
+            signed_response = (
+                supabase.storage
+                .from_(bucket_name)
+                .create_signed_url(
                     person.photo_path,
                     3600
                 )
+            )
 
-                if isinstance(
-                    signed_response,
-                    dict
-                ):
 
-                    person.photo_url = (
-                        signed_response.get(
-                            "signedURL"
-                        )
-                        or
-                        signed_response.get(
-                            "signedUrl"
-                        )
+            # ------------------------------------------------
+            # READ SUPABASE RESPONSE
+            # ------------------------------------------------
+
+            if isinstance(
+                signed_response,
+                dict
+            ):
+
+                person.photo_url = (
+                    signed_response.get(
+                        "signedURL"
                     )
-
-            except Exception as e:
-
-                print(
-                    f"New case photo error: {e}"
+                    or
+                    signed_response.get(
+                        "signedUrl"
+                    )
                 )
 
-    # ==========================================
+
+        except Exception as e:
+
+            print(
+                f"New case photo error "
+                f"for {person.id}: {e}"
+            )
+
+
+    # ========================================================
     # COUNTS
-    # ==========================================
+    # ========================================================
 
     total_count = len(cases)
 
@@ -3805,18 +3900,19 @@ def new_cases():
 
     found_count = len(found_cases)
 
-    # ==========================================
-    # MARK THESE CASES AS SEEN
-    # ==========================================
+
+    # ========================================================
+    # MARK CASES AS SEEN
+    # ========================================================
     #
     # IMPORTANT:
-    # This happens AFTER we have retrieved the
-    # new cases.
     #
-    # Therefore the current request can display
-    # them before they become "seen".
+    # This is the ONLY place where the timestamp
+    # is updated.
     #
-    # ==========================================
+    # Dashboard does NOT update it.
+    #
+    # ========================================================
 
     session["last_notification_check"] = (
         now.isoformat()
@@ -3824,16 +3920,23 @@ def new_cases():
 
     session.modified = True
 
-    # ==========================================
-    # RENDER
-    # ==========================================
+
+    # ========================================================
+    # RENDER NEW CASES PAGE
+    # ========================================================
 
     return render_template(
+
         "new_cases.html",
+
         cases=cases,
+
         total_count=total_count,
+
         missing_count=missing_count,
+
         found_count=found_count
+
     )
 
 
