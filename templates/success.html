@@ -10,74 +10,115 @@
 
     <div class="success-card">
 
-        <!-- SUCCESS ICON -->
+        <!-- ==========================================
+             SUCCESS ICON
+        =========================================== -->
         <div class="success-icon">
             ✓
         </div>
 
-        <!-- TITLE -->
+
+        <!-- ==========================================
+             TITLE
+        =========================================== -->
         <h1>Report Submitted Successfully</h1>
 
-        <p>
+        <p class="success-description">
             Thank you for your contribution.
-            The report has been securely stored and will be processed by
-            MissingLink AI.
+            Your report has been securely stored and will be
+            processed by <strong>MissingLink AI</strong>.
         </p>
 
 
-        <!-- REPORT ID -->
+        <!-- ==========================================
+             REPORT ID
+        =========================================== -->
         <div class="report-box">
 
-            <h3>Report ID</h3>
+            <span class="report-label">
+                REPORT ID
+            </span>
 
             <h2>{{ report_id }}</h2>
 
             <p>
-                Please save this Report ID to track your report later.
+                Please save this Report ID to track your report
+                and check its status later.
             </p>
 
         </div>
 
 
-        <!-- REPORT INFORMATION -->
+        <!-- ==========================================
+             REPORT INFORMATION
+        =========================================== -->
         <div class="info-grid">
 
             <div class="info-item">
-                <h4>Status</h4>
-                <span>Submitted</span>
+
+                <span class="info-label">
+                    Status
+                </span>
+
+                <span class="status-badge submitted">
+                    Submitted
+                </span>
+
             </div>
 
-            <div class="info-item">
-                <h4>AI Analysis</h4>
-                <span>Pending</span>
-            </div>
 
             <div class="info-item">
-                <h4>Verification</h4>
-                <span>Awaiting Review</span>
+
+                <span class="info-label">
+                    AI Analysis
+                </span>
+
+                <span class="status-text">
+                    Pending
+                </span>
+
+            </div>
+
+
+            <div class="info-item">
+
+                <span class="info-label">
+                    Verification
+                </span>
+
+                <span class="status-text">
+                    Awaiting Review
+                </span>
+
             </div>
 
         </div>
 
 
-        <!-- DOWNLOAD REPORT -->
+        <!-- ==========================================
+             DOWNLOAD REPORT
+        =========================================== -->
         <div class="download-section">
 
             <div class="download-icon">
-                📄
+                ↓
             </div>
 
             <div class="download-content">
 
-                <h3>Save Your Report</h3>
+                <h3>
+                    Save Your Report
+                </h3>
 
                 <p>
-                    Download a copy of your submission for your records.
-                    Keep your Report ID safe for future tracking.
+                    Download a copy of your submission for your
+                    records. Keep your Report ID safe for future
+                    tracking.
                 </p>
 
                 <a href="{{ url_for('download_report', report_id=report_id) }}" class="btn-download">
-                    ⬇ Download Report
+                    <span>↓</span>
+                    Download Report
                 </a>
 
             </div>
@@ -85,20 +126,51 @@
         </div>
 
 
-        <!-- BUTTONS -->
-        {% if report_type == "found" %}
+        <!-- ==========================================
+             ACTION BUTTONS
+        =========================================== -->
+        <div class="success-actions">
 
-        <a href="{{ url_for('report_found') }}" class="btn-report">
-            ➕ Report Another Found Person
-        </a>
+            <!-- NEW REPORT -->
+            {% if report_type == "found" %}
 
-        {% else %}
+            <a href="{{ url_for('report_found') }}" class="success-action-btn primary">
+                <span class="action-icon">+</span>
+                Report Another Found Person
+            </a>
 
-        <a href="{{ url_for('report_missing') }}" class="btn-report">
-            ➕ Report Another Missing Person
-        </a>
+            {% else %}
 
-        {% endif %}
+            <a href="{{ url_for('report_missing') }}" class="success-action-btn primary">
+                <span class="action-icon">+</span>
+                Report Another Missing Person
+            </a>
+
+            {% endif %}
+
+
+            <!-- HOME -->
+            <a href="{{ url_for('home') }}" class="success-action-btn secondary">
+                <span class="action-icon">⌂</span>
+                Back to Home
+            </a>
+
+        </div>
+
+
+        <!-- ==========================================
+             FOOTER MESSAGE
+        =========================================== -->
+        <div class="success-footer">
+
+            <span class="footer-dot"></span>
+
+            <span>
+                Your report is now part of the MissingLink AI
+                network.
+            </span>
+
+        </div>
 
     </div>
 
