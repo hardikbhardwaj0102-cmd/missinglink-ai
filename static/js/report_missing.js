@@ -1,1014 +1,1093 @@
-/* =========================================================
-   MissingLink AI
-   Report Missing - Multi Step Wizard
-========================================================= */
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
+
+    const form = document.getElementById("missingReportForm");
+
+    const photoInput = document.getElementById("photoInput");
+
+    const previewImage = document.getElementById("previewImage");
+
+    const uploadBox = document.getElementById("uploadBox");
+
+    const uploadPlaceholder =
+        document.getElementById("uploadPlaceholder");
+
+    const progressBar =
+        document.getElementById("progressBar");
+
+    const qualityText =
+        document.getElementById("qualityText");
+
+    const qualityPercentage =
+        document.getElementById("qualityPercentage");
+
+    const stepCounter =
+        document.getElementById("stepCounter");
 
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
+    /* =========================================================
+       CURRENT STEP
+    ========================================================= */
 
-const form =
-    document.getElementById("missingReportForm");
-
-const photoInput =
-    document.getElementById("photoInput");
-
-const previewImage =
-    document.getElementById("previewImage");
-
-const uploadBox =
-    document.querySelector(".upload-box");
-
-const progressBar =
-    document.querySelector(".progress-bar");
-
-const qualityText =
-    document.querySelector(".ai-quality-text");
-
-const reviewImage =
-    document.getElementById("reviewImage");
+    let currentStep = 1;
 
 
+    /* =========================================================
+       SHOW STEP
+    ========================================================= */
 
-/* =========================================================
-   CURRENT STEP
-========================================================= */
+    function showStep(stepNumber) {
 
-let currentStep = 1;
-
-const totalSteps = 4;
-
-
-
-/* =========================================================
-   STEP ELEMENTS
-========================================================= */
-
-const steps =
-    document.querySelectorAll(".wizard-step");
-
-const progressSteps =
-    document.querySelectorAll(".progress-step");
-
-const progressLineFill =
-    document.getElementById(
-        "progressLineFill"
-    );
+        const allSteps =
+            document.querySelectorAll(".wizard-step");
 
 
+        allSteps.forEach(function (step) {
 
-/* =========================================================
-   SHOW STEP
-========================================================= */
+            step.classList.remove("active-step");
 
-function showStep(stepNumber) {
-
-    currentStep = stepNumber;
+        });
 
 
-    /* ================================================
-       CONTENT
-    ================================================ */
-
-    steps.forEach(function (step) {
-
-        const stepValue =
-            Number(
-                step.dataset.step
-            );
-
-        step.classList.toggle(
-            "active",
-            stepValue === stepNumber
-        );
-
-    });
-
-
-    /* ================================================
-       PROGRESS
-    ================================================ */
-
-    progressSteps.forEach(function (step) {
-
-        const stepValue =
-            Number(
-                step.dataset.step
+        const selectedStep =
+            document.getElementById(
+                "step" + stepNumber
             );
 
 
-        step.classList.remove(
-            "active"
-        );
+        if (selectedStep) {
 
-        step.classList.remove(
-            "completed"
-        );
-
-
-        if (stepValue === stepNumber) {
-
-            step.classList.add(
-                "active"
+            selectedStep.classList.add(
+                "active-step"
             );
 
         }
 
 
-        if (stepValue < stepNumber) {
+        /* UPDATE INDICATORS */
 
-            step.classList.add(
+        for (let i = 1; i <= 3; i++) {
+
+            const indicator =
+                document.getElementById(
+                    "stepIndicator" + i
+                );
+
+
+            if (!indicator) {
+                continue;
+            }
+
+
+            indicator.classList.remove(
+                "active",
                 "completed"
             );
 
+
+            if (i < stepNumber) {
+
+                indicator.classList.add(
+                    "completed"
+                );
+
+            }
+            else if (i === stepNumber) {
+
+                indicator.classList.add(
+                    "active"
+                );
+
+            }
+
         }
 
-    });
+
+        /* UPDATE PROGRESS LINES */
+
+        const lines =
+            document.querySelectorAll(".step-line");
 
 
-    /* ================================================
-       PROGRESS LINE
-    ================================================ */
+        lines.forEach(function (line, index) {
 
-    const progressPercentage =
-        ((stepNumber - 1) / (totalSteps - 1)) * 100;
+            line.classList.remove("completed");
 
 
-    if (progressLineFill) {
+            if (index < stepNumber - 1) {
 
-        progressLineFill.style.width =
-            progressPercentage + "%";
+                line.classList.add(
+                    "completed"
+                );
 
-    }
+            }
 
-
-    /* ================================================
-       UPDATE REVIEW
-    ================================================ */
-
-    if (stepNumber === 4) {
-
-        updateReview();
-
-    }
+        });
 
 
-    /* ================================================
-       SCROLL
-    ================================================ */
+        /* UPDATE COUNTER */
 
-    window.scrollTo({
+        if (stepCounter) {
 
-        top: 0,
+            stepCounter.textContent =
+                "Step " +
+                stepNumber +
+                " of 3";
 
-        behavior: "smooth"
-
-    });
-
-}
+        }
 
 
+        currentStep = stepNumber;
 
-/* =========================================================
-   GET FIELD VALUE
-========================================================= */
 
-function getValue(id) {
+        /* SCROLL */
 
-    const element =
-        document.getElementById(id);
-
-    if (!element) {
-
-        return "";
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
 
     }
 
-    return element.value.trim();
 
-}
+    /* =========================================================
+       VALIDATE CURRENT STEP
+    ========================================================= */
 
+    function validateStep(stepNumber) {
 
-
-/* =========================================================
-   VALIDATE STEP
-========================================================= */
-
-function validateStep(stepNumber) {
-
-    const step =
-        document.querySelector(
-            `.wizard-step[data-step="${stepNumber}"]`
-        );
+        const step =
+            document.getElementById(
+                "step" + stepNumber
+            );
 
 
-    if (!step) {
+        if (!step) {
+            return false;
+        }
+
+
+        /* STEP 1 PHOTO */
+
+        if (stepNumber === 1) {
+
+            if (!photoInput.files.length) {
+
+                alert(
+                    "Please upload a photo before continuing."
+                );
+
+                return false;
+
+            }
+
+        }
+
+
+        /* STANDARD REQUIRED FIELDS */
+
+        const requiredInputs =
+            step.querySelectorAll(
+                "input[required], select[required], textarea[required]"
+            );
+
+
+        for (const input of requiredInputs) {
+
+            if (!input.checkValidity()) {
+
+                input.reportValidity();
+
+                return false;
+
+            }
+
+        }
+
+
+        /* LOCATION VALIDATION */
+
+        if (stepNumber === 2) {
+
+            const locationValue =
+                document.getElementById(
+                    "lastSeenLocationValue"
+                );
+
+
+            if (
+                !locationValue ||
+                !locationValue.value.trim()
+            ) {
+
+                showLocationError(
+                    "Please search and select the last seen location."
+                );
+
+                return false;
+
+            }
+
+        }
+
 
         return true;
 
     }
 
 
-    const requiredFields =
-        step.querySelectorAll(
-            "input[required], select[required], textarea[required]"
-        );
+    /* =========================================================
+       NAVIGATION BUTTONS
+    ========================================================= */
+
+    const step1Next =
+        document.getElementById("step1Next");
 
 
-    for (
-        const field
-        of requiredFields
-    ) {
-
-        if (!field.checkValidity()) {
-
-            field.reportValidity();
-
-            return false;
-
-        }
-
-    }
+    const step2Next =
+        document.getElementById("step2Next");
 
 
-    /* ================================================
-       LOCATION VALIDATION
-    ================================================ */
-
-    if (stepNumber === 2) {
-
-        const location =
-            document.getElementById(
-                "lastSeenLocationValue"
-            );
-
-        const latitude =
-            document.getElementById(
-                "lastSeenLatitude"
-            );
-
-        const longitude =
-            document.getElementById(
-                "lastSeenLongitude"
-            );
+    const step2Back =
+        document.getElementById("step2Back");
 
 
-        if (
-            !location ||
-            !location.value.trim()
-        ) {
-
-            alert(
-                "Please select the last seen location before continuing."
-            );
-
-            return false;
-
-        }
+    const step3Back =
+        document.getElementById("step3Back");
 
 
-        if (
-            !latitude ||
-            !latitude.value ||
-            !longitude ||
-            !longitude.value
-        ) {
+    if (step1Next) {
 
-            alert(
-                "Please select a location from the suggestions so its coordinates can be captured."
-            );
-
-            return false;
-
-        }
-
-    }
-
-
-    return true;
-
-}
-
-
-
-/* =========================================================
-   NEXT BUTTONS
-========================================================= */
-
-document
-    .querySelectorAll("[data-next]")
-    .forEach(function (button) {
-
-        button.addEventListener(
+        step1Next.addEventListener(
             "click",
             function () {
 
-                const nextStep =
-                    Number(
-                        this.dataset.next
-                    );
+                if (validateStep(1)) {
 
-
-                if (
-                    validateStep(
-                        currentStep
-                    )
-                ) {
-
-                    showStep(
-                        nextStep
-                    );
+                    showStep(2);
 
                 }
 
             }
         );
 
-    });
+    }
 
 
+    if (step2Next) {
 
-/* =========================================================
-   BACK BUTTONS
-========================================================= */
-
-document
-    .querySelectorAll("[data-back]")
-    .forEach(function (button) {
-
-        button.addEventListener(
+        step2Next.addEventListener(
             "click",
             function () {
 
-                const backStep =
-                    Number(
-                        this.dataset.back
-                    );
+                if (validateStep(2)) {
 
+                    showStep(3);
 
-                showStep(
-                    backStep
-                );
+                }
 
             }
         );
-
-    });
-
-
-
-/* =========================================================
-   EDIT BUTTONS
-========================================================= */
-
-document
-    .querySelectorAll("[data-edit]")
-    .forEach(function (button) {
-
-        button.addEventListener(
-            "click",
-            function () {
-
-                const editStep =
-                    Number(
-                        this.dataset.edit
-                    );
-
-
-                showStep(
-                    editStep
-                );
-
-            }
-        );
-
-    });
-
-
-
-/* =========================================================
-   IMAGE PREVIEW
-========================================================= */
-
-if (photoInput) {
-
-    photoInput.addEventListener(
-        "change",
-        function () {
-
-            const file =
-                this.files[0];
-
-
-            if (!file) {
-
-                return;
-
-            }
-
-
-            if (
-                !file.type.startsWith(
-                    "image/"
-                )
-            ) {
-
-                alert(
-                    "Please select a valid image file."
-                );
-
-                this.value = "";
-
-                return;
-
-            }
-
-
-            const imageURL =
-                URL.createObjectURL(
-                    file
-                );
-
-
-            if (previewImage) {
-
-                previewImage.src =
-                    imageURL;
-
-            }
-
-
-            if (reviewImage) {
-
-                reviewImage.src =
-                    imageURL;
-
-            }
-
-
-            simulateAIQuality();
-
-        }
-    );
-
-}
-
-
-
-/* =========================================================
-   DRAG & DROP
-========================================================= */
-
-if (uploadBox) {
-
-    uploadBox.addEventListener(
-        "dragover",
-        function (event) {
-
-            event.preventDefault();
-
-            uploadBox.classList.add(
-                "dragover"
-            );
-
-        }
-    );
-
-
-    uploadBox.addEventListener(
-        "dragleave",
-        function () {
-
-            uploadBox.classList.remove(
-                "dragover"
-            );
-
-        }
-    );
-
-
-    uploadBox.addEventListener(
-        "drop",
-        function (event) {
-
-            event.preventDefault();
-
-            uploadBox.classList.remove(
-                "dragover"
-            );
-
-
-            const files =
-                event.dataTransfer.files;
-
-
-            if (
-                !files ||
-                !files.length
-            ) {
-
-                return;
-
-            }
-
-
-            const file =
-                files[0];
-
-
-            if (
-                !file.type.startsWith(
-                    "image/"
-                )
-            ) {
-
-                alert(
-                    "Please drop a valid image file."
-                );
-
-                return;
-
-            }
-
-
-            try {
-
-                photoInput.files =
-                    files;
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "Unable to assign dropped file:",
-                    error
-                );
-
-            }
-
-
-            const imageURL =
-                URL.createObjectURL(
-                    file
-                );
-
-
-            if (previewImage) {
-
-                previewImage.src =
-                    imageURL;
-
-            }
-
-
-            if (reviewImage) {
-
-                reviewImage.src =
-                    imageURL;
-
-            }
-
-
-            simulateAIQuality();
-
-        }
-    );
-
-}
-
-
-
-/* =========================================================
-   AI PHOTO QUALITY SIMULATION
-========================================================= */
-
-function simulateAIQuality() {
-
-    if (!progressBar || !qualityText) {
-
-        return;
 
     }
 
 
-    progressBar.style.width =
-        "0%";
+    if (step2Back) {
+
+        step2Back.addEventListener(
+            "click",
+            function () {
+
+                showStep(1);
+
+            }
+        );
+
+    }
 
 
-    qualityText.textContent =
-        "Analyzing image...";
+    if (step3Back) {
+
+        step3Back.addEventListener(
+            "click",
+            function () {
+
+                showStep(2);
+
+            }
+        );
+
+    }
 
 
-    const score =
-        Math.floor(
-            Math.random() * 18
-        ) + 82;
+    /* =========================================================
+       PHOTO PREVIEW
+    ========================================================= */
+
+    function handlePhoto(file) {
+
+        if (!file) {
+            return;
+        }
 
 
-    setTimeout(
-        function () {
+        if (!file.type.startsWith("image/")) {
+
+            alert(
+                "Please select a valid image file."
+            );
+
+            return;
+
+        }
+
+
+        const imageURL =
+            URL.createObjectURL(file);
+
+
+        previewImage.src =
+            imageURL;
+
+
+        previewImage.style.display =
+            "block";
+
+
+        uploadPlaceholder.style.display =
+            "none";
+
+
+        simulateAIQuality();
+
+    }
+
+
+    if (photoInput) {
+
+        photoInput.addEventListener(
+            "change",
+            function () {
+
+                const file =
+                    this.files[0];
+
+
+                handlePhoto(file);
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       DRAG AND DROP
+    ========================================================= */
+
+    if (uploadBox) {
+
+        uploadBox.addEventListener(
+            "dragover",
+            function (event) {
+
+                event.preventDefault();
+
+                uploadBox.classList.add(
+                    "dragover"
+                );
+
+            }
+        );
+
+
+        uploadBox.addEventListener(
+            "dragleave",
+            function () {
+
+                uploadBox.classList.remove(
+                    "dragover"
+                );
+
+            }
+        );
+
+
+        uploadBox.addEventListener(
+            "drop",
+            function (event) {
+
+                event.preventDefault();
+
+
+                uploadBox.classList.remove(
+                    "dragover"
+                );
+
+
+                const file =
+                    event.dataTransfer.files[0];
+
+
+                if (!file) {
+                    return;
+                }
+
+
+                const dataTransfer =
+                    new DataTransfer();
+
+
+                dataTransfer.items.add(
+                    file
+                );
+
+
+                photoInput.files =
+                    dataTransfer.files;
+
+
+                handlePhoto(file);
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       PHOTO QUALITY
+    ========================================================= */
+
+    function simulateAIQuality() {
+
+        progressBar.style.width =
+            "0%";
+
+
+        qualityText.textContent =
+            "Analyzing image...";
+
+
+        qualityPercentage.textContent =
+            "--";
+
+
+        const score =
+            Math.floor(
+                Math.random() * 18
+            ) + 82;
+
+
+        setTimeout(function () {
 
             progressBar.style.width =
                 score + "%";
 
 
-            if (score > 95) {
+            qualityPercentage.textContent =
+                score + "%";
+
+
+            if (score >= 95) {
 
                 qualityText.textContent =
-                    "Excellent Photo • " +
-                    score +
-                    "% AI Match Quality";
+                    "Excellent photo quality";
 
             }
-
-            else if (score > 90) {
+            else if (score >= 90) {
 
                 qualityText.textContent =
-                    "Very Good Photo • " +
-                    score +
-                    "% AI Match Quality";
+                    "Very good photo quality";
 
             }
-
             else {
 
                 qualityText.textContent =
-                    "Good Photo • " +
-                    score +
-                    "% AI Match Quality";
+                    "Good photo quality";
 
             }
 
-        },
-        800
-    );
-
-}
-
-
-
-/* =========================================================
-   FORMAT DATE
-========================================================= */
-
-function formatDate(dateValue) {
-
-    if (!dateValue) {
-
-        return "Not provided";
+        }, 700);
 
     }
 
 
-    const date =
-        new Date(
-            dateValue + "T00:00:00"
+    /* =========================================================
+       LAST SEEN DATE
+    ========================================================= */
+
+    const lastSeenDate =
+        document.getElementById(
+            "lastSeenDate"
         );
 
 
-    if (
-        Number.isNaN(
-            date.getTime()
-        )
-    ) {
+    if (lastSeenDate) {
 
-        return dateValue;
-
-    }
+        const today =
+            new Date();
 
 
-    return date.toLocaleDateString(
-        "en-IN",
-        {
-            day: "numeric",
-            month: "short",
-            year: "numeric"
-        }
-    );
-
-}
+        const year =
+            today.getFullYear();
 
 
+        const month =
+            String(
+                today.getMonth() + 1
+            ).padStart(
+                2,
+                "0"
+            );
 
-/* =========================================================
-   SAFE DISPLAY
-========================================================= */
 
-function displayOrDash(value) {
+        const day =
+            String(
+                today.getDate()
+            ).padStart(
+                2,
+                "0"
+            );
 
-    if (
-        value === null ||
-        value === undefined ||
-        String(value).trim() === ""
-    ) {
 
-        return "Not provided";
+        lastSeenDate.max =
+            year +
+            "-" +
+            month +
+            "-" +
+            day;
 
     }
 
 
-    return value;
+    /* =========================================================
+       LOCATION SEARCH
+       OpenStreetMap Nominatim
+    ========================================================= */
 
-}
-
-
-
-/* =========================================================
-   UPDATE REVIEW
-========================================================= */
-
-function updateReview() {
-
-    const name =
-        getValue("name");
-
-    const age =
-        getValue("age");
-
-    const gender =
-        getValue("gender");
-
-    const height =
-        getValue("height");
-
-    const clothing =
-        getValue("clothing");
+    const locationSearch =
+        document.getElementById(
+            "lastSeenLocationSearch"
+        );
 
 
-    const date =
-        getValue("lastSeenDate");
+    const locationResults =
+        document.getElementById(
+            "lastSeenLocationResults"
+        );
 
-    const location =
-        getValue(
+
+    const locationValue =
+        document.getElementById(
             "lastSeenLocationValue"
         );
 
-    const latitude =
-        getValue(
+
+    const latitudeInput =
+        document.getElementById(
             "lastSeenLatitude"
         );
 
-    const longitude =
-        getValue(
+
+    const longitudeInput =
+        document.getElementById(
             "lastSeenLongitude"
         );
 
 
-    const reporter =
-        getValue("reporterName");
-
-    const relationship =
-        getValue("relationship");
-
-    const phone =
-        getValue("phone");
-
-    const email =
-        getValue("email");
-
-
-    /* ================================================
-       PERSON
-    ================================================ */
-
-    setText(
-        "reviewName",
-        displayOrDash(name)
-    );
-
-
-    setText(
-        "reviewAge",
-        age
-            ? age + " years"
-            : "Not provided"
-    );
-
-
-    setText(
-        "reviewGender",
-        displayOrDash(gender)
-    );
-
-
-    setText(
-        "reviewHeight",
-        displayOrDash(height)
-    );
-
-
-    setText(
-        "reviewClothing",
-        displayOrDash(clothing)
-    );
-
-
-    /* ================================================
-       HEADER
-    ================================================ */
-
-    setText(
-        "reviewPersonName",
-        displayOrDash(name)
-    );
-
-
-    let basicInfo = "";
-
-
-    if (age) {
-
-        basicInfo +=
-            age + " years";
-
-    }
-
-
-    if (gender) {
-
-        if (basicInfo) {
-
-            basicInfo +=
-                " • ";
-
-        }
-
-
-        basicInfo +=
-            gender;
-
-    }
-
-
-    setText(
-        "reviewPersonBasic",
-        basicInfo ||
-        "Personal details not provided"
-    );
-
-
-    /* ================================================
-       LAST SEEN
-    ================================================ */
-
-    setText(
-        "reviewDate",
-        formatDate(date)
-    );
-
-
-    setText(
-        "reviewLocation",
-        displayOrDash(location)
-    );
-
-
-    let coordinates =
-        "Not provided";
-
-
-    if (
-        latitude &&
-        longitude
-    ) {
-
-        coordinates =
-            latitude +
-            " • " +
-            longitude;
-
-    }
-
-
-    setText(
-        "reviewCoordinates",
-        coordinates
-    );
-
-
-    /* ================================================
-       REPORTER
-    ================================================ */
-
-    setText(
-        "reviewReporter",
-        displayOrDash(reporter)
-    );
-
-
-    setText(
-        "reviewRelationship",
-        displayOrDash(relationship)
-    );
-
-
-    setText(
-        "reviewPhone",
-        displayOrDash(phone)
-    );
-
-
-    setText(
-        "reviewEmail",
-        displayOrDash(email)
-    );
-
-
-    /* ================================================
-       IMAGE
-    ================================================ */
-
-    if (
-        photoInput &&
-        photoInput.files &&
-        photoInput.files[0]
-    ) {
-
-        const imageURL =
-            URL.createObjectURL(
-                photoInput.files[0]
-            );
-
-
-        if (reviewImage) {
-
-            reviewImage.src =
-                imageURL;
-
-        }
-
-    }
-
-}
-
-
-
-/* =========================================================
-   SET TEXT
-========================================================= */
-
-function setText(
-    elementId,
-    value
-) {
-
-    const element =
+    const locationSelected =
         document.getElementById(
-            elementId
+            "lastSeenLocationSelected"
         );
 
 
-    if (!element) {
+    const locationName =
+        document.getElementById(
+            "lastSeenLocationName"
+        );
 
-        return;
+
+    const coordinates =
+        document.getElementById(
+            "lastSeenCoordinates"
+        );
+
+
+    const mapPlaceholder =
+        document.getElementById(
+            "mapPlaceholder"
+        );
+
+
+    const mapSelectedInfo =
+        document.getElementById(
+            "mapSelectedInfo"
+        );
+
+
+    const mapLocationTitle =
+        document.getElementById(
+            "mapLocationTitle"
+        );
+
+
+    const mapCoordinatesText =
+        document.getElementById(
+            "mapCoordinatesText"
+        );
+
+
+    let searchTimeout;
+
+
+    if (locationSearch) {
+
+        locationSearch.addEventListener(
+            "input",
+            function () {
+
+                clearTimeout(
+                    searchTimeout
+                );
+
+
+                const query =
+                    locationSearch.value.trim();
+
+
+                locationResults.innerHTML =
+                    "";
+
+
+                if (query.length < 3) {
+                    return;
+                }
+
+
+                searchTimeout =
+                    setTimeout(
+                        function () {
+
+                            searchLocation(
+                                query
+                            );
+
+                        },
+                        500
+                    );
+
+            }
+        );
 
     }
 
 
-    element.textContent =
-        value;
+    function searchLocation(query) {
 
-}
+        fetch(
+            "https://nominatim.openstreetmap.org/search?" +
+            new URLSearchParams({
+                q: query,
+                format: "json",
+                limit: 5
+            }),
+            {
+                headers: {
+                    "Accept":
+                        "application/json"
+                }
+            }
+        )
+
+            .then(function (response) {
+
+                return response.json();
+
+            })
+
+            .then(function (results) {
+
+                locationResults.innerHTML =
+                    "";
 
 
+                if (!results.length) {
 
-/* =========================================================
-   FORM SUBMIT
-========================================================= */
+                    const empty =
+                        document.createElement("div");
 
-if (form) {
+
+                    empty.className =
+                        "location-result-item";
+
+
+                    empty.textContent =
+                        "No locations found.";
+
+
+                    locationResults.appendChild(
+                        empty
+                    );
+
+
+                    return;
+
+                }
+
+
+                results.forEach(
+                    function (result) {
+
+                        const item =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        item.className =
+                            "location-result-item";
+
+
+                        item.textContent =
+                            result.display_name;
+
+
+                        item.addEventListener(
+                            "click",
+                            function () {
+
+                                selectLocation(
+                                    result.display_name,
+                                    result.lat,
+                                    result.lon
+                                );
+
+
+                                locationResults.innerHTML =
+                                    "";
+
+                            }
+                        );
+
+
+                        locationResults.appendChild(
+                            item
+                        );
+
+                    }
+                );
+
+            })
+
+            .catch(function () {
+
+                locationResults.innerHTML =
+                    "";
+
+                showLocationError(
+                    "Unable to search for locations. Please try again."
+                );
+
+            });
+
+    }
+
+
+    /* =========================================================
+       SELECT LOCATION
+    ========================================================= */
+
+    function selectLocation(
+        name,
+        latitude,
+        longitude
+    ) {
+
+        locationValue.value =
+            name;
+
+
+        latitudeInput.value =
+            latitude;
+
+
+        longitudeInput.value =
+            longitude;
+
+
+        locationSearch.value =
+            name;
+
+
+        locationName.textContent =
+            name;
+
+
+        const coordinateText =
+            "Latitude: " +
+            Number(latitude).toFixed(6) +
+            " • Longitude: " +
+            Number(longitude).toFixed(6);
+
+
+        coordinates.textContent =
+            coordinateText;
+
+
+        locationSelected.classList.add(
+            "active"
+        );
+
+
+        if (mapPlaceholder) {
+
+            mapPlaceholder.style.display =
+                "none";
+
+        }
+
+
+        if (mapSelectedInfo) {
+
+            mapSelectedInfo.classList.add(
+                "active"
+            );
+
+        }
+
+
+        if (mapLocationTitle) {
+
+            mapLocationTitle.textContent =
+                name;
+
+        }
+
+
+        if (mapCoordinatesText) {
+
+            mapCoordinatesText.textContent =
+                coordinateText;
+
+        }
+
+
+        clearLocationError();
+
+    }
+
+
+    /* =========================================================
+       CURRENT LOCATION
+    ========================================================= */
+
+    const currentLocationButton =
+        document.getElementById(
+            "lastSeenCurrentLocation"
+        );
+
+
+    if (currentLocationButton) {
+
+        currentLocationButton.addEventListener(
+            "click",
+            function () {
+
+                if (!navigator.geolocation) {
+
+                    showLocationError(
+                        "Geolocation is not supported by this browser."
+                    );
+
+                    return;
+
+                }
+
+
+                currentLocationButton.disabled =
+                    true;
+
+
+                currentLocationButton.textContent =
+                    "Getting location...";
+
+
+                navigator.geolocation.getCurrentPosition(
+
+                    function (position) {
+
+                        const latitude =
+                            position.coords.latitude;
+
+
+                        const longitude =
+                            position.coords.longitude;
+
+
+                        reverseGeocode(
+                            latitude,
+                            longitude
+                        );
+
+
+                        currentLocationButton.disabled =
+                            false;
+
+
+                        currentLocationButton.innerHTML =
+                            "<span>⌖</span>" +
+                            "<span>Use My Current Location</span>";
+
+                    },
+
+                    function () {
+
+                        showLocationError(
+                            "Unable to access your current location."
+                        );
+
+
+                        currentLocationButton.disabled =
+                            false;
+
+
+                        currentLocationButton.innerHTML =
+                            "<span>⌖</span>" +
+                            "<span>Use My Current Location</span>";
+
+                    }
+
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =========================================================
+       REVERSE GEOCODING
+    ========================================================= */
+
+    function reverseGeocode(
+        latitude,
+        longitude
+    ) {
+
+        fetch(
+            "https://nominatim.openstreetmap.org/reverse?" +
+            new URLSearchParams({
+                lat: latitude,
+                lon: longitude,
+                format: "json"
+            }),
+            {
+                headers: {
+                    "Accept":
+                        "application/json"
+                }
+            }
+        )
+
+            .then(function (response) {
+
+                return response.json();
+
+            })
+
+            .then(function (result) {
+
+                const name =
+                    result.display_name ||
+                    "Current Location";
+
+
+                selectLocation(
+                    name,
+                    latitude,
+                    longitude
+                );
+
+            })
+
+            .catch(function () {
+
+                selectLocation(
+                    "Current Location",
+                    latitude,
+                    longitude
+                );
+
+            });
+
+    }
+
+
+    /* =========================================================
+       LOCATION ERROR
+    ========================================================= */
+
+    function showLocationError(message) {
+
+        const error =
+            document.getElementById(
+                "lastSeenLocationError"
+            );
+
+
+        if (!error) {
+            return;
+        }
+
+
+        error.textContent =
+            message;
+
+
+        error.classList.add(
+            "active"
+        );
+
+    }
+
+
+    function clearLocationError() {
+
+        const error =
+            document.getElementById(
+                "lastSeenLocationError"
+            );
+
+
+        if (!error) {
+            return;
+        }
+
+
+        error.textContent =
+            "";
+
+
+        error.classList.remove(
+            "active"
+        );
+
+    }
+
+
+    /* =========================================================
+       FORM SUBMIT VALIDATION
+    ========================================================= */
 
     form.addEventListener(
         "submit",
         function (event) {
 
-            /* ============================================
-               FINAL VALIDATION
-            ============================================ */
-
-            if (
-                !validateStep(1) ||
-                !validateStep(2) ||
-                !validateStep(3)
-            ) {
-
-                event.preventDefault();
-
-                return;
-
-            }
-
-
-            if (
-                !photoInput ||
-                !photoInput.files.length
-            ) {
-
-                alert(
-                    "Please upload a photo."
-                );
+            if (!validateStep(1)) {
 
                 event.preventDefault();
 
@@ -1019,118 +1098,58 @@ if (form) {
             }
 
 
-            /* ============================================
-               LOCATION CHECK
-            ============================================ */
-
-            const location =
-                document.getElementById(
-                    "lastSeenLocationValue"
-                );
-
-
             if (
-                !location ||
-                !location.value.trim()
+                !locationValue ||
+                !locationValue.value.trim()
             ) {
-
-                alert(
-                    "Please select the last seen location."
-                );
 
                 event.preventDefault();
 
                 showStep(2);
+
+                showLocationError(
+                    "Please select the last seen location."
+                );
 
                 return;
 
             }
 
 
-            /* ============================================
-               SUBMIT STATE
-            ============================================ */
-
-            const submitButton =
-                document.getElementById(
-                    "submitReportBtn"
-                );
+            const requiredReporterFields =
+                document
+                    .getElementById("step3")
+                    .querySelectorAll(
+                        "input[required]"
+                    );
 
 
-            if (submitButton) {
+            for (
+                const input of requiredReporterFields
+            ) {
 
-                submitButton.disabled =
-                    true;
+                if (!input.checkValidity()) {
 
+                    event.preventDefault();
 
-                submitButton.innerHTML =
-                    `
-                    <span class="submit-spinner"></span>
-                    Submitting...
-                    `;
+                    showStep(3);
+
+                    input.reportValidity();
+
+                    return;
+
+                }
 
             }
 
         }
     );
 
-}
 
+    /* =========================================================
+       INITIAL STATE
+    ========================================================= */
 
+    showStep(1);
 
-/* =========================================================
-   LAST SEEN DATE
-   Only allow dates before today
-========================================================= */
-
-const lastSeenDate =
-    document.getElementById(
-        "lastSeenDate"
-    );
-
-
-if (lastSeenDate) {
-
-    const yesterday =
-        new Date();
-
-
-    yesterday.setDate(
-        yesterday.getDate() - 1
-    );
-
-
-    const year =
-        yesterday.getFullYear();
-
-
-    const month =
-        String(
-            yesterday.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            yesterday.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    lastSeenDate.max =
-        `${year}-${month}-${day}`;
-
-}
-
-
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-showStep(1);
+});

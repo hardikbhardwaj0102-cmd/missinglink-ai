@@ -13,94 +13,88 @@
 
 <form action="/report-missing" method="POST" enctype="multipart/form-data" class="report-page" id="missingReportForm">
 
-    <!-- =====================================================
-         PAGE HEADER
-    ====================================================== -->
+    <!-- =========================
+         HEADER
+    ========================== -->
 
     <div class="wizard-header">
 
-        <div class="wizard-heading">
+        <div class="wizard-title-row">
+            <div>
+                <span class="page-eyebrow">
+                    MISSING PERSON REPORT
+                </span>
 
-            <span class="eyebrow">
-                MISSINGLINK AI
-            </span>
+                <h1>Report Missing Person</h1>
 
-            <h1>
-                Report Missing Person
-            </h1>
+                <p>
+                    Provide the information step by step to help us
+                    create an accurate missing person report.
+                </p>
+            </div>
 
-            <p>
-                Provide the available information to help create
-                an accurate and searchable case.
-            </p>
-
+            <div class="step-counter" id="stepCounter">
+                Step 1 of 3
+            </div>
         </div>
 
 
-        <!-- =================================================
-             PROGRESS
-        ================================================== -->
+        <!-- =========================
+             PROGRESS STEPS
+        ========================== -->
 
-        <div class="progress-wrapper">
+        <div class="steps">
 
-            <div class="progress-line">
+            <div class="step active" id="stepIndicator1" data-step="1">
 
-                <div class="progress-line-fill" id="progressLineFill"></div>
+                <div class="step-number">
+                    <span class="step-default">01</span>
+                    <span class="step-check">✓</span>
+                </div>
+
+                <div class="step-label">
+                    <strong>Person</strong>
+                    <span>Personal details</span>
+                </div>
 
             </div>
 
 
-            <div class="progress-steps">
+            <div class="step-line">
+                <span class="step-line-progress"></span>
+            </div>
 
-                <div class="progress-step active" data-step="1">
 
-                    <div class="step-number">
-                        1
-                    </div>
+            <div class="step" id="stepIndicator2" data-step="2">
 
-                    <span>
-                        Person
-                    </span>
-
+                <div class="step-number">
+                    <span class="step-default">02</span>
+                    <span class="step-check">✓</span>
                 </div>
 
-
-                <div class="progress-step" data-step="2">
-
-                    <div class="step-number">
-                        2
-                    </div>
-
-                    <span>
-                        Last Seen
-                    </span>
-
+                <div class="step-label">
+                    <strong>Last Seen</strong>
+                    <span>Time and location</span>
                 </div>
 
+            </div>
 
-                <div class="progress-step" data-step="3">
 
-                    <div class="step-number">
-                        3
-                    </div>
+            <div class="step-line">
+                <span class="step-line-progress"></span>
+            </div>
 
-                    <span>
-                        Reporter
-                    </span>
 
+            <div class="step" id="stepIndicator3" data-step="3">
+
+                <div class="step-number">
+                    <span class="step-default">03</span>
+                    <span class="step-check">✓</span>
                 </div>
 
-
-                <div class="progress-step" data-step="4">
-
-                    <div class="step-number">
-                        4
-                    </div>
-
-                    <span>
-                        Review
-                    </span>
-
+                <div class="step-label">
+                    <strong>Reporter</strong>
+                    <span>Contact details</span>
                 </div>
 
             </div>
@@ -110,244 +104,258 @@
     </div>
 
 
-    <!-- =====================================================
-         WIZARD CARD
-    ====================================================== -->
+    <!-- =========================
+         WIZARD CONTAINER
+    ========================== -->
 
-    <div class="wizard-card">
+    <div class="wizard-container">
 
 
         <!-- =================================================
-             STEP 1
+             STEP 1 — PERSON
         ================================================== -->
 
-        <section class="wizard-step active" data-step="1">
+        <section class="wizard-step active-step" id="step1">
 
-            <div class="step-heading">
-
-                <div>
-
-                    <span class="step-label">
-                        STEP 01
-                    </span>
-
-                    <h2>
-                        Person Details
-                    </h2>
-
-                    <p>
-                        Tell us about the person you're looking for.
-                    </p>
-
-                </div>
-
-            </div>
+            <div class="step-card person-step-card">
 
 
-            <!-- =============================================
-                 PHOTO
-            ============================================== -->
+                <!-- LEFT: PHOTO -->
 
-            <div class="photo-section">
+                <div class="upload-section">
 
-                <div class="photo-upload-area">
+                    <div class="section-heading">
 
-                    <label for="photoInput" class="upload-box">
-
-                        <img id="previewImage" src="{{ url_for(
-                                'static',
-                                filename='images/upload-placeholder.png'
-                            ) }}" alt="Missing person photo preview">
-
-                        <div class="upload-overlay">
-
-                            <span class="upload-camera">
-                                📷
-                            </span>
-
-                            <strong>
-                                Click to Upload
-                            </strong>
-
-                            <small>
-                                or drag & drop an image
-                            </small>
-
+                        <div class="section-badge">
+                            STEP 01
                         </div>
 
-                        <span class="drop-message">
-                            Drop Image Here
-                        </span>
+                        <h2>Person Information</h2>
 
-                    </label>
+                        <p>
+                            Start by uploading a clear photo and entering
+                            the missing person's basic information.
+                        </p>
 
-
-                    <input type="file" id="photoInput" name="photo" accept="image/*" required>
-
-                </div>
-
-
-                <div class="photo-info">
-
-                    <div class="info-icon">
-                        ✦
                     </div>
 
-                    <div>
 
-                        <h3>
-                            AI Photo Quality
-                        </h3>
+                    <div class="upload-card">
 
-                        <p class="photo-description">
-                            Use a clear front-facing image for better
+                        <div class="upload-icon">
+                            📷
+                        </div>
+
+                        <h3>Upload Photo</h3>
+
+                        <p>
+                            A clear front-facing image helps improve
                             AI matching accuracy.
                         </p>
 
 
-                        <div class="progress">
+                        <label for="photoInput" class="upload-box" id="uploadBox">
 
-                            <div class="progress-bar" id="photoProgressBar"></div>
+                            <div class="upload-placeholder" id="uploadPlaceholder">
+
+                                <span class="upload-image-icon">
+                                    ⬆
+                                </span>
+
+                                <strong>
+                                    Drag & drop your photo
+                                </strong>
+
+                                <small>
+                                    or click to browse
+                                </small>
+
+                            </div>
+
+
+                            <img id="previewImage" class="preview-image" alt="Selected photo preview">
+
+                        </label>
+
+
+                        <input type="file" id="photoInput" name="photo" accept="image/*" required>
+
+
+                        {% if face_error %}
+
+                        <div class="face-error">
+
+                            <div class="face-error-icon">
+                                !
+                            </div>
+
+                            <div class="face-error-content">
+
+                                <strong>
+                                    Photo Validation Failed
+                                </strong>
+
+                                <p>
+                                    {{ face_error }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        {% endif %}
+
+
+                        <div class="ai-score">
+
+                            <div class="score-header">
+
+                                <h3>
+                                    AI Photo Quality
+                                </h3>
+
+                                <span id="qualityPercentage">
+                                    --
+                                </span>
+
+                            </div>
+
+                            <div class="progress">
+
+                                <div class="progress-bar" id="progressBar">
+                                </div>
+
+                            </div>
+
+                            <p id="qualityText">
+                                Waiting for image...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- RIGHT: DETAILS -->
+
+                <div class="person-form-section">
+
+                    <div class="form-grid">
+
+
+                        <!-- NAME -->
+
+                        <div class="input-group full-width">
+
+                            <label for="personName">
+                                Full Name
+                            </label>
+
+                            <input type="text" id="personName" name="name" placeholder="Enter full name" required>
 
                         </div>
 
 
-                        <p class="ai-quality-text">
-                            Waiting for image...
-                        </p>
+                        <!-- AGE -->
+
+                        <div class="input-group">
+
+                            <label for="personAge">
+                                Age
+                            </label>
+
+                            <input type="number" id="personAge" name="age" placeholder="Age" min="0" max="120" required>
+
+                        </div>
+
+
+                        <!-- GENDER -->
+
+                        <div class="input-group">
+
+                            <label for="personGender">
+                                Gender
+                            </label>
+
+                            <select id="personGender" name="gender" required>
+
+                                <option value="" selected disabled>
+                                    Select gender
+                                </option>
+
+                                <option value="Male">
+                                    Male
+                                </option>
+
+                                <option value="Female">
+                                    Female
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- HEIGHT -->
+
+                        <div class="input-group full-width">
+
+                            <label for="personHeight">
+                                Height
+                                <span class="optional">
+                                    Optional
+                                </span>
+                            </label>
+
+                            <input type="text" id="personHeight" name="height" placeholder="e.g. 165 cm">
+
+                        </div>
+
+
+                        <!-- CLOTHING -->
+
+                        <div class="input-group full-width">
+
+                            <label for="personClothing">
+                                Clothing / Distinguishing Features
+                                <span class="optional">
+                                    Optional
+                                </span>
+                            </label>
+
+                            <textarea id="personClothing" name="clothing" rows="4"
+                                placeholder="Example: Blue shirt, black jeans, glasses, visible tattoo..."></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="wizard-buttons person-buttons">
+
+                        <div class="step-help">
+                            Complete the required fields to continue.
+                        </div>
+
+                        <button type="button" class="next-btn" id="step1Next">
+
+                            Continue
+
+                            <span>
+                                →
+                            </span>
+
+                        </button>
 
                     </div>
 
                 </div>
-
-
-                {% if face_error %}
-
-                <div class="face-error">
-
-                    <div class="face-error-icon">
-                        !
-                    </div>
-
-                    <div class="face-error-content">
-
-                        <strong>
-                            Photo Validation Failed
-                        </strong>
-
-                        <p>
-                            {{ face_error }}
-                        </p>
-
-                    </div>
-
-                </div>
-
-                {% endif %}
-
-            </div>
-
-
-            <!-- =============================================
-                 PERSONAL INFORMATION
-            ============================================== -->
-
-            <div class="section-divider">
-
-                <span>
-                    Personal Information
-                </span>
-
-            </div>
-
-
-            <div class="form-grid">
-
-
-                <div class="input-group full-width">
-
-                    <label for="name">
-                        Full Name
-                        <span>*</span>
-                    </label>
-
-                    <input type="text" id="name" name="name" placeholder="Enter full name" autocomplete="name" required>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label for="age">
-                        Age
-                        <span>*</span>
-                    </label>
-
-                    <input type="number" id="age" name="age" placeholder="Age" min="0" max="120" required>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label for="gender">
-                        Gender
-                    </label>
-
-                    <select id="gender" name="gender">
-
-                        <option value="Male">
-                            Male
-                        </option>
-
-                        <option value="Female">
-                            Female
-                        </option>
-
-                        <option value="Other">
-                            Other
-                        </option>
-
-                    </select>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label for="height">
-                        Height
-                    </label>
-
-                    <input type="text" id="height" name="height" placeholder="e.g. 165 cm">
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label for="clothing">
-                        Clothing
-                    </label>
-
-                    <input type="text" id="clothing" name="clothing" placeholder="e.g. Blue shirt, black jeans">
-
-                </div>
-
-            </div>
-
-
-            <div class="step-actions next-only">
-
-                <button type="button" class="next-btn" data-next="2">
-
-                    Continue
-
-                    <span>
-                        →
-                    </span>
-
-                </button>
 
             </div>
 
@@ -355,153 +363,210 @@
 
 
         <!-- =================================================
-             STEP 2
+             STEP 2 — LAST SEEN
         ================================================== -->
 
-        <section class="wizard-step" data-step="2">
+        <section class="wizard-step" id="step2">
 
-            <div class="step-heading">
+            <div class="full-step-card">
 
-                <div>
-
-                    <span class="step-label">
-                        STEP 02
-                    </span>
-
-                    <h2>
-                        Last Seen Information
-                    </h2>
-
-                    <p>
-                        Tell us when and where the person was last seen.
-                    </p>
-
+                <div class="section-badge">
+                    STEP 02
                 </div>
 
-            </div>
+                <h2>
+                    When and Where Was the Person Last Seen?
+                </h2>
 
-
-            <div class="form-grid">
-
-                <div class="input-group full-width">
-
-                    <label for="lastSeenDate">
-                        Last Seen Date
-                        <span>*</span>
-                    </label>
-
-                    <input type="date" name="last_seen_date" id="lastSeenDate" required>
-
-                    <small class="field-help">
-                        Select the date when the person was last seen.
-                    </small>
-
-                </div>
-
-            </div>
-
-
-            <!-- =============================================
-                 LOCATION
-            ============================================== -->
-
-            <div class="location-section">
-
-                <div class="section-divider location-divider">
-
-                    <span>
-                        Last Seen Location
-                    </span>
-
-                </div>
-
-
-                <p class="location-description">
-                    Search for the place where the person was last seen.
-                    Select a location from the suggestions to automatically
-                    capture its coordinates.
+                <p class="section-description">
+                    Enter the date and select the location where the
+                    person was last seen.
                 </p>
 
 
-                <div class="location-search-wrapper">
+                <!-- DATE AND TIME -->
 
-                    <div class="search-input-container">
+                <div class="form-grid location-date-grid">
 
-                        <span class="search-icon">
-                            ⌕
-                        </span>
+                    <div class="input-group">
+
+                        <label for="lastSeenDate">
+                            Last Seen Date
+                        </label>
+
+                        <input type="date" name="last_seen_date" id="lastSeenDate" required>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="lastSeenTime">
+                            Approximate Time
+                            <span class="optional">
+                                Optional
+                            </span>
+                        </label>
+
+                        <input type="time" name="last_seen_time" id="lastSeenTime">
+
+                    </div>
+
+                </div>
+
+
+                <!-- LOCATION -->
+
+                <div class="location-picker">
+
+                    <div class="location-picker-header">
+
+                        <div>
+
+                            <h3 class="location-picker-title">
+                                Last Seen Location
+                            </h3>
+
+                            <p class="location-picker-subtitle">
+                                Search for an address, area, landmark
+                                or city, then select the correct result.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SEARCH -->
+
+                    <div class="location-search-wrapper">
 
                         <input type="text" id="lastSeenLocationSearch" class="location-search"
                             placeholder="Search address, area, landmark or city..." autocomplete="off">
 
+
+                        <div id="lastSeenLocationResults" class="location-search-results">
+                        </div>
+
                     </div>
 
 
-                    <div id="lastSeenLocationResults" class="location-search-results"></div>
+                    <!-- MAP PREVIEW -->
+
+                    <div class="location-map-preview" id="locationMapPreview">
+
+                        <div class="map-placeholder" id="mapPlaceholder">
+
+                            <div class="map-pin">
+                                📍
+                            </div>
+
+                            <strong>
+                                Select a location
+                            </strong>
+
+                            <span>
+                                The selected location will appear here.
+                            </span>
+
+                        </div>
+
+
+                        <div class="map-selected-info" id="mapSelectedInfo">
+
+                            <span class="map-selected-pin">
+                                📍
+                            </span>
+
+                            <div>
+
+                                <strong id="mapLocationTitle">
+                                    Selected Location
+                                </strong>
+
+                                <span id="mapCoordinatesText">
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- SELECTED LOCATION -->
+
+                    <div id="lastSeenLocationSelected" class="location-selected">
+
+                        <div class="location-selected-status">
+                            ✓ Location Selected
+                        </div>
+
+                        <div id="lastSeenLocationName" class="location-selected-name">
+                        </div>
+
+                        <div id="lastSeenCoordinates" class="location-coordinates">
+                        </div>
+
+                    </div>
+
+
+                    <!-- ERROR -->
+
+                    <div id="lastSeenLocationError" class="location-error">
+                    </div>
+
+
+                    <!-- HIDDEN VALUES -->
+
+                    <input type="hidden" name="last_seen_location" id="lastSeenLocationValue">
+
+
+                    <input type="hidden" name="last_seen_latitude" id="lastSeenLatitude">
+
+
+                    <input type="hidden" name="last_seen_longitude" id="lastSeenLongitude">
+
+
+                    <!-- CURRENT LOCATION -->
+
+                    <button type="button" id="lastSeenCurrentLocation" class="location-current-btn">
+
+                        <span>
+                            ⌖
+                        </span>
+
+                        <span>
+                            Use My Current Location
+                        </span>
+
+                    </button>
 
                 </div>
 
 
-                <div id="lastSeenLocationSelected" class="location-selected">
+                <!-- BUTTONS -->
 
-                    <div class="location-selected-status">
-                        ✓ Location Selected
-                    </div>
+                <div class="wizard-buttons">
 
-                    <div id="lastSeenLocationName" class="location-selected-name"></div>
+                    <button type="button" class="back-btn" id="step2Back">
 
-                    <div id="lastSeenCoordinates" class="location-coordinates"></div>
+                        ← Back
+
+                    </button>
+
+
+                    <button type="button" class="next-btn" id="step2Next">
+
+                        Continue
+
+                        <span>
+                            →
+                        </span>
+
+                    </button>
 
                 </div>
-
-
-                <div id="lastSeenLocationError" class="location-error"></div>
-
-
-                <input type="hidden" name="last_seen_location" id="lastSeenLocationValue">
-
-                <input type="hidden" name="last_seen_latitude" id="lastSeenLatitude">
-
-                <input type="hidden" name="last_seen_longitude" id="lastSeenLongitude">
-
-
-                <button type="button" id="lastSeenCurrentLocation" class="location-current-btn">
-
-                    <span>
-                        ⌖
-                    </span>
-
-                    <span>
-                        Use My Current Location
-                    </span>
-
-                </button>
-
-            </div>
-
-
-            <div class="step-actions">
-
-                <button type="button" class="back-btn" data-back="1">
-
-                    <span>
-                        ←
-                    </span>
-
-                    Back
-
-                </button>
-
-
-                <button type="button" class="next-btn" data-next="3">
-
-                    Continue
-
-                    <span>
-                        →
-                    </span>
-
-                </button>
 
             </div>
 
@@ -509,492 +574,131 @@
 
 
         <!-- =================================================
-             STEP 3
+             STEP 3 — REPORTER
         ================================================== -->
 
-        <section class="wizard-step" data-step="3">
+        <section class="wizard-step" id="step3">
 
-            <div class="step-heading">
+            <div class="full-step-card">
 
-                <div>
-
-                    <span class="step-label">
-                        STEP 03
-                    </span>
-
-                    <h2>
-                        Reporter Information
-                    </h2>
-
-                    <p>
-                        Provide your contact details so organizations
-                        can reach you if a potential match is found.
-                    </p>
-
+                <div class="section-badge">
+                    STEP 03
                 </div>
 
-            </div>
+                <h2>
+                    Reporter Information
+                </h2>
 
+                <p class="section-description">
+                    Provide your contact information so you can be
+                    contacted regarding this report.
+                </p>
 
-            <div class="reporter-notice">
 
-                <div class="notice-icon">
-                    🔒
-                </div>
+                <div class="form-grid">
 
-                <div>
 
-                    <strong>
-                        Your information is protected
-                    </strong>
+                    <!-- NAME -->
 
-                    <p>
-                        Your contact details are used only for
-                        case communication and verification.
-                    </p>
+                    <div class="input-group">
 
-                </div>
+                        <label for="reporterName">
+                            Your Name
+                        </label>
 
-            </div>
-
-
-            <div class="form-grid">
-
-
-                <div class="input-group">
-
-                    <label for="reporterName">
-                        Your Name
-                        <span>*</span>
-                    </label>
-
-                    <input type="text" id="reporterName" name="reporter_name" placeholder="Enter your name"
-                        autocomplete="name" required>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label for="relationship">
-                        Relationship
-                    </label>
-
-                    <input type="text" id="relationship" name="relationship" placeholder="Father, Mother, Friend...">
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label for="phone">
-                        Phone
-                        <span>*</span>
-                    </label>
-
-                    <input type="tel" id="phone" name="phone" placeholder="+91 XXXXX XXXXX" autocomplete="tel" required>
-
-                </div>
-
-
-                <div class="input-group">
-
-                    <label for="email">
-                        Email
-                    </label>
-
-                    <input type="email" id="email" name="email" placeholder="example@email.com" autocomplete="email">
-
-                </div>
-
-            </div>
-
-
-            <div class="step-actions">
-
-                <button type="button" class="back-btn" data-back="2">
-
-                    <span>
-                        ←
-                    </span>
-
-                    Back
-
-                </button>
-
-
-                <button type="button" class="next-btn" data-next="4">
-
-                    Review Report
-
-                    <span>
-                        →
-                    </span>
-
-                </button>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             STEP 4
-        ================================================== -->
-
-        <section class="wizard-step" data-step="4">
-
-            <div class="step-heading">
-
-                <div>
-
-                    <span class="step-label">
-                        STEP 04
-                    </span>
-
-                    <h2>
-                        Review Your Report
-                    </h2>
-
-                    <p>
-                        Please check the information before submitting
-                        the missing person report.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <!-- =============================================
-                 REVIEW PHOTO
-            ============================================== -->
-
-            <div class="review-photo-card">
-
-                <img id="reviewImage" src="{{ url_for(
-                        'static',
-                        filename='images/upload-placeholder.png'
-                    ) }}" alt="Report photo">
-
-                <div>
-
-                    <span class="review-label">
-                        Missing Person
-                    </span>
-
-                    <h3 id="reviewPersonName">
-                        —
-                    </h3>
-
-                    <p id="reviewPersonBasic">
-                        —
-                    </p>
-
-                </div>
-
-            </div>
-
-
-            <!-- =============================================
-                 REVIEW PERSON
-            ============================================== -->
-
-            <div class="review-section">
-
-                <div class="review-section-header">
-
-                    <div>
-
-                        <span class="review-number">
-                            01
-                        </span>
-
-                        <h3>
-                            Person Details
-                        </h3>
-
-                    </div>
-
-                    <button type="button" class="edit-btn" data-edit="1">
-                        Edit
-                    </button>
-
-                </div>
-
-
-                <div class="review-grid">
-
-                    <div class="review-item">
-
-                        <span>
-                            Full Name
-                        </span>
-
-                        <strong id="reviewName">
-                            —
-                        </strong>
+                        <input type="text" id="reporterName" name="reporter_name" placeholder="Enter your full name"
+                            required>
 
                     </div>
 
 
-                    <div class="review-item">
+                    <!-- RELATIONSHIP -->
 
-                        <span>
-                            Age
-                        </span>
+                    <div class="input-group">
 
-                        <strong id="reviewAge">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="review-item">
-
-                        <span>
-                            Gender
-                        </span>
-
-                        <strong id="reviewGender">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="review-item">
-
-                        <span>
-                            Height
-                        </span>
-
-                        <strong id="reviewHeight">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="review-item full-width">
-
-                        <span>
-                            Clothing
-                        </span>
-
-                        <strong id="reviewClothing">
-                            —
-                        </strong>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =============================================
-                 REVIEW LAST SEEN
-            ============================================== -->
-
-            <div class="review-section">
-
-                <div class="review-section-header">
-
-                    <div>
-
-                        <span class="review-number">
-                            02
-                        </span>
-
-                        <h3>
-                            Last Seen
-                        </h3>
-
-                    </div>
-
-                    <button type="button" class="edit-btn" data-edit="2">
-                        Edit
-                    </button>
-
-                </div>
-
-
-                <div class="review-grid">
-
-                    <div class="review-item">
-
-                        <span>
-                            Date
-                        </span>
-
-                        <strong id="reviewDate">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="review-item full-width">
-
-                        <span>
-                            Location
-                        </span>
-
-                        <strong id="reviewLocation">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="review-item full-width">
-
-                        <span>
-                            Coordinates
-                        </span>
-
-                        <strong id="reviewCoordinates">
-                            —
-                        </strong>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- =============================================
-                 REVIEW REPORTER
-            ============================================== -->
-
-            <div class="review-section">
-
-                <div class="review-section-header">
-
-                    <div>
-
-                        <span class="review-number">
-                            03
-                        </span>
-
-                        <h3>
-                            Reporter
-                        </h3>
-
-                    </div>
-
-                    <button type="button" class="edit-btn" data-edit="3">
-                        Edit
-                    </button>
-
-                </div>
-
-
-                <div class="review-grid">
-
-                    <div class="review-item">
-
-                        <span>
-                            Name
-                        </span>
-
-                        <strong id="reviewReporter">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="review-item">
-
-                        <span>
+                        <label for="relationship">
                             Relationship
-                        </span>
+                        </label>
 
-                        <strong id="reviewRelationship">
-                            —
-                        </strong>
-
-                    </div>
-
-
-                    <div class="review-item">
-
-                        <span>
-                            Phone
-                        </span>
-
-                        <strong id="reviewPhone">
-                            —
-                        </strong>
+                        <input type="text" id="relationship" name="relationship"
+                            placeholder="e.g. Parent, sibling, friend" required>
 
                     </div>
 
 
-                    <div class="review-item">
+                    <!-- PHONE -->
 
-                        <span>
+                    <div class="input-group">
+
+                        <label for="phone">
+                            Phone Number
+                        </label>
+
+                        <input type="tel" id="phone" name="phone" placeholder="+91 XXXXX XXXXX" required>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="input-group">
+
+                        <label for="email">
                             Email
-                        </span>
+                            <span class="optional">
+                                Optional
+                            </span>
+                        </label>
 
-                        <strong id="reviewEmail">
-                            —
-                        </strong>
+                        <input type="email" id="email" name="email" placeholder="example@email.com">
 
                     </div>
 
                 </div>
 
-            </div>
 
+                <!-- FINAL REVIEW -->
 
-            <div class="review-confirmation">
+                <div class="final-message">
 
-                <span class="confirmation-icon">
-                    ✓
-                </span>
+                    <div class="final-icon">
+                        ✓
+                    </div>
 
-                <div>
+                    <div>
 
-                    <strong>
-                        Ready to submit?
-                    </strong>
+                        <strong>
+                            Ready to submit
+                        </strong>
 
-                    <p>
-                        By submitting, the information will be securely
-                        processed and you'll continue to verification.
-                    </p>
+                        <p>
+                            Please review your information before
+                            submitting the missing person report.
+                        </p>
+
+                    </div>
 
                 </div>
 
-            </div>
+
+                <!-- BUTTONS -->
+
+                <div class="wizard-buttons">
+
+                    <button type="button" class="back-btn" id="step3Back">
+
+                        ← Back
+
+                    </button>
 
 
-            <div class="step-actions">
+                    <button type="submit" class="submit-btn">
 
-                <button type="button" class="back-btn" data-back="3">
+                        Submit Missing Report
 
-                    <span>
-                        ←
-                    </span>
+                    </button>
 
-                    Back
-
-                </button>
-
-
-                <button type="submit" class="submit-btn" id="submitReportBtn">
-
-                    Submit Report
-
-                    <span>
-                        ✓
-                    </span>
-
-                </button>
+                </div>
 
             </div>
 
@@ -1012,11 +716,6 @@
 <script src="{{ url_for(
     'static',
     filename='js/report_missing.js'
-) }}"></script>
-
-<script src="{{ url_for(
-    'static',
-    filename='js/location-picker.js'
 ) }}"></script>
 
 {% endblock %}
