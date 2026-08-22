@@ -4,7 +4,6 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 {% endblock %}
 
-
 {% block content %}
 
 <div class="dashboard">
@@ -13,629 +12,274 @@
          HEADER
     ====================================================== -->
 
-    <header class="dashboard-header">
+    <div class="dashboard-header">
 
-        <div class="dashboard-brand">
+        <div>
+            <h1>MissingLink AI Dashboard</h1>
 
-            <div class="brand-icon">
-                🔍
-            </div>
-
-            <div>
-                <h1>MissingLink AI</h1>
-
-                <p>
-                    Case Management Dashboard
-                </p>
-            </div>
-
+            <p class="subtitle">
+                Monitor missing and found person reports in one place.
+            </p>
         </div>
-
 
         <div class="dashboard-actions">
 
             <a href="{{ url_for('report_missing') }}" class="action-btn primary">
-
                 + Report Missing
-
             </a>
-
 
             <a href="{{ url_for('report_found') }}" class="action-btn secondary">
-
                 + Report Found
-
             </a>
 
-
-            <!-- NEW CASES -->
-
-            <a href="{{ url_for('new_cases') }}" class="notification-btn" title="New Cases">
-
-                🔔
-
-                {% if new_cases %}
-                <span class="notification-count">
-                    {{ new_cases|length }}
-                </span>
-                {% endif %}
-
-            </a>
-
-
-            <!-- LOGOUT -->
-
-            <a href="{{ url_for('logout') }}" id="logout-btn">
-
+            <a id="logout-btn" href="{{ url_for('logout') }}">
                 Logout
-
             </a>
 
         </div>
 
-    </header>
-
-
-
-    <!-- =====================================================
-         WELCOME SECTION
-    ====================================================== -->
-
-    <section class="welcome-section">
-
-        <div>
-
-            <span class="welcome-label">
-                CASE MANAGEMENT
-            </span>
-
-            <h2>
-                Welcome to MissingLink AI
-            </h2>
-
-            <p>
-                Monitor missing and found person cases,
-                manage investigations and use AI-powered
-                matching to identify potential connections.
-            </p>
-
-        </div>
-
-
-        <div class="welcome-status">
-
-            <span class="status-dot"></span>
-
-            <span>
-                AI Matching Ready
-            </span>
-
-        </div>
-
-    </section>
-
+    </div>
 
 
     <!-- =====================================================
-         STATISTICS
+         SEARCH
     ====================================================== -->
 
-    <section class="stats">
+    <div class="search-box">
 
+        <input type="text" id="searchInput" placeholder="Search by name, report ID or location..." autocomplete="off">
 
-        <!-- TOTAL -->
-
-        <div class="stat-card total">
-
-            <div class="stat-icon">
-                📊
-            </div>
-
-            <div class="stat-content">
-
-                <span class="stat-label">
-                    Total Cases
-                </span>
-
-                <h2>
-                    {{ missing_count + found_count }}
-                </h2>
-
-                <p>
-                    Active records
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- MISSING -->
-
-        <div class="stat-card missing">
-
-            <div class="stat-icon">
-                🔴
-            </div>
-
-            <div class="stat-content">
-
-                <span class="stat-label">
-                    Missing Persons
-                </span>
-
-                <h2>
-                    {{ missing_count }}
-                </h2>
-
-                <p>
-                    Missing reports
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- FOUND -->
-
-        <div class="stat-card found">
-
-            <div class="stat-icon">
-                🟠
-            </div>
-
-            <div class="stat-content">
-
-                <span class="stat-label">
-                    Found Persons
-                </span>
-
-                <h2>
-                    {{ found_count }}
-                </h2>
-
-                <p>
-                    Found reports
-                </p>
-
-            </div>
-
-        </div>
-
-
-
-        <!-- NEW CASES -->
-
-        <div class="stat-card new">
-
-            <div class="stat-icon">
-                🔔
-            </div>
-
-            <div class="stat-content">
-
-                <span class="stat-label">
-                    New Cases
-                </span>
-
-                <h2>
-                    {{ new_cases|length }}
-                </h2>
-
-                <p>
-                    Require attention
-                </p>
-
-            </div>
-
-        </div>
-
-    </section>
-
+    </div>
 
 
     <!-- =====================================================
-         MAIN DASHBOARD GRID
+         STATS
     ====================================================== -->
 
-    <section class="dashboard-grid">
+    <div class="stats">
 
-
-        <!-- =================================================
-             CASE MANAGEMENT
-        ================================================== -->
-
-        <div class="dashboard-panel">
-
-            <div class="panel-header">
-
-                <div>
-
-                    <span class="panel-label">
-                        CASE MANAGEMENT
-                    </span>
-
-                    <h2>
-                        Manage Cases
-                    </h2>
-
-                </div>
-
-            </div>
-
-
-            <div class="management-grid">
-
-
-                <!-- MISSING CASES -->
-
-                <a href="{{ url_for('missing_cases') }}" class="management-card missing-card">
-
-                    <div class="management-icon">
-                        🔴
-                    </div>
-
-                    <div class="management-content">
-
-                        <h3>
-                            Missing Persons
-                        </h3>
-
-                        <p>
-                            View and manage all missing
-                            person reports.
-                        </p>
-
-                        <span class="management-count">
-                            {{ missing_count }} Cases
-                        </span>
-
-                    </div>
-
-                    <div class="management-arrow">
-                        →
-                    </div>
-
-                </a>
-
-
-
-                <!-- FOUND CASES -->
-
-                <a href="{{ url_for('found_cases') }}" class="management-card found-card">
-
-                    <div class="management-icon">
-                        🟠
-                    </div>
-
-                    <div class="management-content">
-
-                        <h3>
-                            Found Persons
-                        </h3>
-
-                        <p>
-                            Review found person reports
-                            and run AI matching.
-                        </p>
-
-                        <span class="management-count">
-                            {{ found_count }} Cases
-                        </span>
-
-                    </div>
-
-                    <div class="management-arrow">
-                        →
-                    </div>
-
-                </a>
-
-
-
-                <!-- NEW CASES -->
-
-                <a href="{{ url_for('new_cases') }}" class="management-card new-card">
-
-                    <div class="management-icon">
-                        🚨
-                    </div>
-
-                    <div class="management-content">
-
-                        <h3>
-                            New Cases
-                        </h3>
-
-                        <p>
-                            Review recently submitted
-                            cases requiring attention.
-                        </p>
-
-                        <span class="management-count">
-                            {{ new_cases|length }} New
-                        </span>
-
-                    </div>
-
-                    <div class="management-arrow">
-                        →
-                    </div>
-
-                </a>
-
-
-
-                <!-- AI MATCHING -->
-
-                <div class="management-card ai-card">
-
-                    <div class="management-icon">
-                        🤖
-                    </div>
-
-                    <div class="management-content">
-
-                        <h3>
-                            AI Matching
-                        </h3>
-
-                        <p>
-                            Compare found persons with
-                            missing person records.
-                        </p>
-
-                        <span class="management-count ai-ready">
-                            ● AI Ready
-                        </span>
-
-                    </div>
-
-                    <div class="management-arrow">
-                        →
-                    </div>
-
-                </div>
-
-            </div>
-
+        <div class="stat-card">
+            <h2>{{ missing_count }}</h2>
+            <p>Missing Reports</p>
         </div>
 
-
-
-        <!-- =================================================
-             QUICK ACTIONS
-        ================================================== -->
-
-        <div class="dashboard-panel quick-panel">
-
-            <div class="panel-header">
-
-                <div>
-
-                    <span class="panel-label">
-                        QUICK ACTIONS
-                    </span>
-
-                    <h2>
-                        Get Started
-                    </h2>
-
-                </div>
-
-            </div>
-
-
-            <div class="quick-actions">
-
-
-                <a href="{{ url_for('report_missing') }}" class="quick-action">
-
-                    <div class="quick-icon missing">
-                        +
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Report Missing Person
-                        </h3>
-
-                        <p>
-                            Create a new missing person case.
-                        </p>
-
-                    </div>
-
-                    <span>
-                        →
-                    </span>
-
-                </a>
-
-
-
-                <a href="{{ url_for('report_found') }}" class="quick-action">
-
-                    <div class="quick-icon found">
-                        +
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Report Found Person
-                        </h3>
-
-                        <p>
-                            Register a newly found person.
-                        </p>
-
-                    </div>
-
-                    <span>
-                        →
-                    </span>
-
-                </a>
-
-
-
-                <a href="{{ url_for('new_cases') }}" class="quick-action">
-
-                    <div class="quick-icon alert">
-                        !
-                    </div>
-
-                    <div>
-
-                        <h3>
-                            Review New Cases
-                        </h3>
-
-                        <p>
-                            Check recently submitted reports.
-                        </p>
-
-                    </div>
-
-                    <span>
-                        →
-                    </span>
-
-                </a>
-
-            </div>
-
+        <div class="stat-card">
+            <h2>{{ found_count }}</h2>
+            <p>Found Reports</p>
         </div>
 
-    </section>
+        <div class="stat-card">
+            <h2>{{ missing_count + found_count }}</h2>
+            <p>Total Cases</p>
+        </div>
 
+        <div class="stat-card">
+            <h2>AI</h2>
+            <p>Matching Ready</p>
+        </div>
+
+    </div>
 
 
     <!-- =====================================================
-         RECENT CASE ACTIVITY
+         MISSING PERSONS
     ====================================================== -->
 
-    <section class="dashboard-section recent-section">
+    <section class="dashboard-section">
 
         <div class="section-header">
 
-            <div>
+            <h2>Missing Persons</h2>
 
-                <span class="panel-label">
-                    RECENT ACTIVITY
-                </span>
-
-                <h2>
-                    Latest Cases
-                </h2>
-
-                <p>
-                    Recently submitted reports across MissingLink AI.
-                </p>
-
-            </div>
-
-
-            <div class="section-links">
-
-                <a href="{{ url_for('missing_cases') }}">
-                    Missing Cases
-                </a>
-
-                <a href="{{ url_for('found_cases') }}">
-                    Found Cases
-                </a>
-
-            </div>
+            <span>
+                {{ missing_count }} Records
+            </span>
 
         </div>
 
 
-
-        <!-- =================================================
-             RECENT CASES
-        ================================================== -->
-
-        <div class="recent-cases">
-
+        <div class="case-grid">
 
             {% if missing_people %}
 
-            {% for person in missing_people[:5] %}
+            {% for person in missing_people %}
 
-            <div class="recent-case">
+            <div class="case-card" data-search="
+                        {{ person.name }}
+                        {{ person.report_id }}
+                        {{ person.last_seen_location }}
+                    ">
 
-                <div class="recent-case-icon missing">
-                    🔴
+                <!-- =================================================
+                         IMAGE
+                    ================================================== -->
+
+                {% if person.photo_url %}
+
+                <img src="{{ person.photo_url }}" alt="{{ person.name }}">
+
+                {% else %}
+
+                <div class="image-placeholder">
+                    No Image Available
                 </div>
 
+                {% endif %}
 
-                <div class="recent-case-info">
+
+                <!-- =================================================
+                         CASE INFORMATION
+                    ================================================== -->
+
+                <div class="case-info">
 
                     <h3>
                         {{ person.name }}
                     </h3>
 
-                    <p>
-                        Missing Person
-                        ·
-                        {{ person.report_id }}
+
+                    <!-- REPORT ID -->
+
+                    <p class="report-id">
+
+                        <strong>Report ID:</strong>
+
+                        <span>
+                            {{ person.report_id }}
+                        </span>
+
                     </p>
 
-                </div>
+
+                    <!-- AGE -->
+
+                    <p>
+                        <strong>Age:</strong>
+                        {{ person.age or "N/A" }}
+                    </p>
 
 
-                <div class="recent-case-location">
+                    <!-- LOCATION -->
 
-                    <span>
-                        Location
-                    </span>
-
-                    <strong>
+                    <p>
+                        <strong>Location:</strong>
                         {{ person.last_seen_location or "N/A" }}
-                    </strong>
-
-                </div>
+                    </p>
 
 
-                <div class="recent-case-status">
+                    <!-- =================================================
+                             CURRENT STATUS
+                        ================================================== -->
 
-                    {% if person.status == "submitted" %}
+                    <div class="status-section">
 
-                    <span class="badge submitted">
-                        Report Submitted
-                    </span>
+                        <label>
+                            Current Status
+                        </label>
 
-                    {% elif person.status == "investigating" %}
+                        <span class="badge
+                                {% if person.status == 'submitted' %}
+                                    submitted
+                                {% elif person.status == 'investigating' %}
+                                    investigating
+                                {% elif person.status == 'potential_match' %}
+                                    potential-match
+                                {% elif person.status == 'found' %}
+                                    found
+                                {% endif %}">
 
-                    <span class="badge investigating">
-                        Under Investigation
-                    </span>
+                            {% if person.status == "submitted" %}
 
-                    {% elif person.status == "potential_match" %}
+                            Report Submitted
 
-                    <span class="badge potential-match">
-                        Potential Match
-                    </span>
+                            {% elif person.status == "investigating" %}
 
-                    {% elif person.status == "found" %}
+                            Under Investigation
 
-                    <span class="badge found">
-                        Person Found
-                    </span>
+                            {% elif person.status == "potential_match" %}
 
-                    {% else %}
+                            Potential Match Found
 
-                    <span class="badge submitted">
-                        Report Submitted
-                    </span>
+                            {% elif person.status == "found" %}
 
-                    {% endif %}
+                            Person Found
+
+                            {% else %}
+
+                            Report Submitted
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- =================================================
+                             STATUS UPDATE FORM
+                        ================================================== -->
+
+                    <form action="{{ url_for('update_report_status') }}" method="POST" class="status-form">
+
+                        <input type="hidden" name="report_id" value="{{ person.report_id }}">
+
+                        <input type="hidden" name="report_type" value="missing">
+
+
+                        <label for="status-{{ person.id }}">
+                            Update Status
+                        </label>
+
+
+                        <select id="status-{{ person.id }}" name="status" required>
+
+                            <option value="submitted" {% if person.status=="submitted" %} selected {% endif %}>
+                                ✓ Report Submitted
+                            </option>
+
+
+                            <option value="investigating" {% if person.status=="investigating" %} selected {% endif %}>
+                                ✓ Under Investigation
+                            </option>
+
+
+                            <option value="potential_match" {% if person.status=="potential_match" %} selected {% endif
+                                %}>
+                                ● Potential Match Found
+                            </option>
+
+
+                            <option value="found" {% if person.status=="found" %} selected {% endif %}>
+                                ✓ Person Found
+                            </option>
+
+                        </select>
+
+
+                        <button type="submit" class="status-update-btn">
+                            Update Status
+                        </button>
+
+                    </form>
+
+
+                    <!-- =================================================
+                             DELETE REPORT FORM
+                             IMPORTANT:
+                             This is OUTSIDE the status form.
+                        ================================================== -->
+
+                    <form method="POST" action="{{ url_for(
+                                'delete_report',
+                                report_type='missing',
+                                id=person.id
+                            ) }}" class="delete-form" onsubmit="return confirmDelete('{{ person.report_id }}');">
+
+                        <button type="submit" class="delete-report-btn">
+                            Delete Report
+                        </button>
+
+                    </form>
 
                 </div>
 
@@ -643,22 +287,16 @@
 
             {% endfor %}
 
-
             {% else %}
 
             <div class="empty-card">
 
-                <div class="empty-icon">
-                    📁
-                </div>
-
                 <h3>
-                    No Recent Cases
+                    No Missing Reports
                 </h3>
 
                 <p>
-                    No missing person reports have been
-                    submitted yet.
+                    No missing person reports have been submitted yet.
                 </p>
 
             </div>
@@ -670,52 +308,279 @@
     </section>
 
 
-
     <!-- =====================================================
-         PLATFORM INFORMATION
+         FOUND PERSONS
     ====================================================== -->
 
-    <section class="platform-info">
+    <section class="dashboard-section">
 
-        <div class="platform-icon">
-            🤖
-        </div>
+        <div class="section-header">
 
-        <div class="platform-text">
+            <h2>Found Persons</h2>
 
             <span>
-                POWERED BY AI
+                {{ found_count }} Records
             </span>
-
-            <h2>
-                MissingLink AI Matching System
-            </h2>
-
-            <p>
-                Face embeddings and intelligent case analysis
-                help identify potential connections between
-                missing and found person reports.
-            </p>
 
         </div>
 
 
-        <div class="platform-status">
+        <div class="case-grid">
 
-            <div class="status-indicator">
-                <span></span>
-                System Operational
+            {% if found_people %}
+
+            {% for person in found_people %}
+
+            <div class="case-card" data-search="
+                        {{ person.report_id }}
+                        {{ person.found_location }}
+                        {{ person.organization }}
+                        {{ person.police_station }}
+                    ">
+
+                <!-- =================================================
+                         IMAGE
+                    ================================================== -->
+
+                {% if person.photo_url %}
+
+                <img src="{{ person.photo_url }}" alt="Found Person">
+
+                {% else %}
+
+                <div class="image-placeholder">
+                    No Image Available
+                </div>
+
+                {% endif %}
+
+
+                <!-- =================================================
+                         CASE INFORMATION
+                    ================================================== -->
+
+                <div class="case-info">
+
+                    <h3>
+                        Unknown Person
+                    </h3>
+
+
+                    <!-- REPORT ID -->
+
+                    <p class="report-id">
+
+                        <strong>Report ID:</strong>
+
+                        <span>
+                            {{ person.report_id }}
+                        </span>
+
+                    </p>
+
+
+                    <!-- ESTIMATED AGE -->
+
+                    <p>
+                        <strong>Estimated Age:</strong>
+                        {{ person.estimated_age or "N/A" }}
+                    </p>
+
+
+                    <!-- LOCATION -->
+
+                    <p>
+                        <strong>Location:</strong>
+                        {{ person.found_location or "N/A" }}
+                    </p>
+
+
+                    <!-- =================================================
+                             CURRENT STATUS
+                        ================================================== -->
+
+                    <div class="status-section">
+
+                        <label>
+                            Current Status
+                        </label>
+
+                        <span class="badge
+                                {% if person.status == 'submitted' %}
+                                    submitted
+                                {% elif person.status == 'investigating' %}
+                                    investigating
+                                {% elif person.status == 'potential_match' %}
+                                    potential-match
+                                {% elif person.status == 'found' %}
+                                    found
+                                {% endif %}">
+
+                            {% if person.status == "submitted" %}
+
+                            Report Submitted
+
+                            {% elif person.status == "investigating" %}
+
+                            Under Investigation
+
+                            {% elif person.status == "potential_match" %}
+
+                            Potential Match Found
+
+                            {% elif person.status == "found" %}
+
+                            Person Found
+
+                            {% else %}
+
+                            Report Submitted
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- =================================================
+                             STATUS UPDATE FORM
+                        ================================================== -->
+
+                    <form action="{{ url_for('update_report_status') }}" method="POST" class="status-form">
+
+                        <input type="hidden" name="report_id" value="{{ person.report_id }}">
+
+                        <input type="hidden" name="report_type" value="found">
+
+
+                        <label for="found-status-{{ person.id }}">
+                            Update Status
+                        </label>
+
+
+                        <select id="found-status-{{ person.id }}" name="status" required>
+
+                            <option value="submitted" {% if person.status=="submitted" %} selected {% endif %}>
+                                ✓ Report Submitted
+                            </option>
+
+
+                            <option value="investigating" {% if person.status=="investigating" %} selected {% endif %}>
+                                ✓ Under Investigation
+                            </option>
+
+
+                            <option value="potential_match" {% if person.status=="potential_match" %} selected {% endif
+                                %}>
+                                ● Potential Match Found
+                            </option>
+
+
+                            <option value="found" {% if person.status=="found" %} selected {% endif %}>
+                                ✓ Person Found
+                            </option>
+
+                        </select>
+
+
+                        <button type="submit" class="status-update-btn">
+                            Update Status
+                        </button>
+
+                    </form>
+
+
+                    <!-- =================================================
+                             DELETE REPORT FORM
+                             IMPORTANT:
+                             This is OUTSIDE the status form.
+                        ================================================== -->
+
+                    <form method="POST" action="{{ url_for(
+                                'delete_report',
+                                report_type='found',
+                                id=person.id
+                            ) }}" class="delete-form" onsubmit="return confirmDelete('{{ person.report_id }}');">
+
+                        <button type="submit" class="delete-report-btn">
+                            Delete Report
+                        </button>
+
+                    </form>
+
+
+                    <!-- =================================================
+                             AI MATCH
+                        ================================================== -->
+
+                    <a href="{{ url_for('ai_match', found_id=person.id) }}" class="ai-match-btn ai-loader-link">
+                        AI Face Match
+                    </a>
+
+                </div>
+
             </div>
+
+            {% endfor %}
+
+            {% else %}
+
+            <div class="empty-card">
+
+                <h3>
+                    No Found Reports
+                </h3>
+
+                <p>
+                    No found person reports have been submitted yet.
+                </p>
+
+            </div>
+
+            {% endif %}
 
         </div>
 
     </section>
+
+
+    <!-- =====================================================
+         AI LOADER
+    ====================================================== -->
+
+    <div id="aiLoader" class="ai-loader">
+
+        <div class="loader-box">
+
+            <div class="loader-icon"></div>
+
+            <h2>
+                MissingLink AI
+            </h2>
+
+            <p id="loaderText">
+                Initializing AI...
+            </p>
+
+            <div class="progress">
+
+                <div id="progressBar"></div>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </div>
 
 {% endblock %}
 
 
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
 
 {% block extra_js %}
 
@@ -726,62 +591,337 @@
     document.addEventListener("DOMContentLoaded", function () {
 
         /*
-        =========================================================
-        NOTIFICATION ANIMATION
-        =========================================================
-        */
+         * =========================================================
+         * STATUS UPDATE
+         * =========================================================
+         */
 
-        const notification =
-            document.querySelector(".notification-btn");
+        const statusForms = document.querySelectorAll(".status-form");
 
-        if (notification) {
 
-            const count =
-                notification.querySelector(".notification-count");
+        statusForms.forEach(function (form) {
 
-            if (count) {
+            form.addEventListener("submit", async function (event) {
 
-                notification.classList.add("has-notifications");
+                event.preventDefault();
 
-            }
 
-        }
+                const button = form.querySelector(".status-update-btn");
+
+                const select = form.querySelector("select");
+
+
+                const reportIdInput = form.querySelector(
+                    'input[name="report_id"]'
+                );
+
+
+                const reportTypeInput = form.querySelector(
+                    'input[name="report_type"]'
+                );
+
+
+                if (
+                    !button ||
+                    !select ||
+                    !reportIdInput ||
+                    !reportTypeInput
+                ) {
+
+                    return;
+
+                }
+
+
+                const reportId = reportIdInput.value;
+
+                const reportType = reportTypeInput.value;
+
+                const status = select.value;
+
+
+                const card = form.closest(".case-card");
+
+
+                const badge = card
+                    ? card.querySelector(".status-section .badge")
+                    : null;
+
+
+                const originalText = button.textContent;
+
+
+                /*
+                 * Prevent duplicate requests
+                 */
+
+                if (button.disabled) {
+
+                    return;
+
+                }
+
+
+                button.disabled = true;
+
+                button.textContent = "Updating...";
+
+
+                try {
+
+                    const response = await fetch(
+                        "{{ url_for('update_report_status') }}",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type": "application/json",
+
+                                "Accept": "application/json"
+
+                            },
+
+                            body: JSON.stringify({
+
+                                report_id: reportId,
+
+                                status: status,
+
+                                report_type: reportType
+
+                            })
+
+                        }
+                    );
+
+
+                    const result = await response.json();
+
+
+                    if (
+                        !response.ok ||
+                        !result.success
+                    ) {
+
+                        throw new Error(
+                            result.message ||
+                            "Unable to update report status."
+                        );
+
+                    }
+
+
+                    /*
+                     * =====================================================
+                     * STATUS LABELS
+                     * =====================================================
+                     */
+
+                    const statusLabels = {
+
+                        submitted:
+                            "Report Submitted",
+
+                        investigating:
+                            "Under Investigation",
+
+                        potential_match:
+                            "Potential Match Found",
+
+                        found:
+                            "Person Found"
+
+                    };
+
+
+                    /*
+                     * =====================================================
+                     * UPDATE BADGE
+                     * =====================================================
+                     */
+
+                    if (badge) {
+
+                        badge.textContent =
+                            statusLabels[status] ||
+                            "Report Submitted";
+
+
+                        /*
+                         * Remove old classes
+                         */
+
+                        badge.classList.remove(
+                            "submitted",
+                            "investigating",
+                            "potential-match",
+                            "found"
+                        );
+
+
+                        /*
+                         * Add new class
+                         */
+
+                        if (status === "potential_match") {
+
+                            badge.classList.add(
+                                "potential-match"
+                            );
+
+                        } else {
+
+                            badge.classList.add(status);
+
+                        }
+
+                    }
+
+
+                    /*
+                     * =====================================================
+                     * SUCCESS STATE
+                     * =====================================================
+                     */
+
+                    button.textContent = "✓ Updated";
+
+
+                    /*
+                     * Small success animation
+                     */
+
+                    if (card) {
+
+                        card.classList.add(
+                            "status-updated"
+                        );
+
+
+                        setTimeout(function () {
+
+                            card.classList.remove(
+                                "status-updated"
+                            );
+
+                        }, 800);
+
+                    }
+
+
+                    /*
+                     * Restore button
+                     */
+
+                    setTimeout(function () {
+
+                        button.textContent =
+                            originalText;
+
+                        button.disabled = false;
+
+                    }, 1500);
+
+
+                } catch (error) {
+
+                    console.error(
+                        "STATUS UPDATE ERROR:",
+                        error
+                    );
+
+
+                    /*
+                     * Error state
+                     */
+
+                    button.textContent =
+                        "Update Failed";
+
+
+                    setTimeout(function () {
+
+                        button.textContent =
+                            originalText;
+
+                        button.disabled = false;
+
+                    }, 2000);
+
+                }
+
+            });
+
+        });
 
 
         /*
-        =========================================================
-        CARD HOVER EFFECT
-        =========================================================
-        */
+         * =========================================================
+         * DELETE FORM PROTECTION
+         * =========================================================
+         *
+         * Explicitly prevent the delete form from being treated
+         * as a status form.
+         *
+         * The delete request is handled normally by Flask.
+         * =========================================================
+         */
 
-        const cards =
-            document.querySelectorAll(
-                ".management-card, .quick-action"
-            );
+        const deleteForms =
+            document.querySelectorAll(".delete-form");
 
-        cards.forEach(function (card) {
 
-            card.addEventListener(
-                "mouseenter",
-                function () {
+        deleteForms.forEach(function (form) {
 
-                    card.classList.add("active");
+            form.addEventListener("submit", function (event) {
 
-                }
-            );
+                /*
+                 * Stop this event from bubbling to any parent.
+                 *
+                 * This is extra protection against accidental
+                 * status updates.
+                 */
 
-            card.addEventListener(
-                "mouseleave",
-                function () {
+                event.stopPropagation();
 
-                    card.classList.remove("active");
-
-                }
-            );
+            });
 
         });
 
     });
+
+
+    /*
+     * =========================================================
+     * DELETE CONFIRMATION
+     * =========================================================
+     */
+
+    function confirmDelete(reportId) {
+
+        return confirm(
+
+            "Delete report " +
+            reportId +
+            "?\n\n" +
+
+            "This will permanently delete:\n" +
+
+            "• The report information\n" +
+
+            "• The AI face embedding\n" +
+
+            "• The uploaded photo\n" +
+
+            "• All associated database data\n\n" +
+
+            "This action cannot be undone."
+
+        );
+
+    }
 
 </script>
 
