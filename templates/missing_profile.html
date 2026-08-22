@@ -1,14 +1,28 @@
 {% extends "base.html" %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/missing_profile.css') }}">
+{% endblock %}
+
+
 {% block content %}
 
 <div class="profile-container">
 
+    <!-- Back to AI Results -->
+    <div class="profile-topbar">
+        <button type="button" class="back-results-btn" onclick="window.history.back()">
+
+            <span>←</span>
+            Back to AI Results
+
+        </button>
+    </div>
+
+
     <h1>Missing Person Profile</h1>
 
-    {% block extra_css %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/missing_profile.css') }}">
-    {% endblock %}
+
     <div class="profile-card">
 
         <img src="{{ person.photo_url }}" alt="{{ person.name }}">
@@ -17,6 +31,7 @@
         <div class="profile-info">
 
             <h2>{{ person.name }}</h2>
+
 
             <p>
                 <strong>Age:</strong>
@@ -80,12 +95,9 @@
                 Email: {{ person.email }}
             </p>
 
-
         </div>
 
-
     </div>
-
 
 </div>
 

@@ -1,33 +1,53 @@
-/* ================= PROFILE PAGE ================= */
+/* ============================================================
+   MISSINGLINK AI — MISSING PERSON PROFILE
+   Dashboard Color Scheme
+============================================================ */
 
+
+/* ============================================================
+   ROOT / PAGE
+============================================================ */
 
 .profile-container {
 
     min-height: 100vh;
 
-    padding: 50px;
+    padding: 50px 6% 70px;
 
-    color: white;
+    color: #e8e6df;
 
     position: relative;
+
+    overflow: hidden;
+
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
 
 }
 
 
-
-/* Background */
+/* ============================================================
+   BACKGROUND
+============================================================ */
 
 .profile-container::before {
 
     content: "";
 
-    position: absolute;
+    position: fixed;
 
     inset: 0;
 
     background:
-        linear-gradient(rgba(5, 12, 25, 0.88),
-            rgba(5, 12, 25, 0.95)),
+
+        linear-gradient(rgba(20, 21, 18, 0.94),
+            rgba(14, 15, 13, 0.98)),
+
         url("/static/images/ai-bg.jpg");
 
     background-size: cover;
@@ -36,223 +56,556 @@
 
     background-attachment: fixed;
 
-    z-index: -1;
+    z-index: -2;
 
 }
 
 
+/* Subtle warm glow */
 
-/* Heading */
+.profile-container::after {
 
+    content: "";
 
-.profile-container h1 {
+    position: fixed;
 
-    text-align: center;
+    width: 700px;
 
-    font-size: 42px;
+    height: 700px;
 
-    margin-bottom: 45px;
+    top: -250px;
 
+    left: -250px;
 
     background:
 
-        linear-gradient(90deg,
-            #60a5fa,
-            #a78bfa);
+        rgba(154, 150, 99, 0.08);
 
+    border-radius: 50%;
 
-    -webkit-background-clip: text;
+    filter: blur(150px);
 
-    color: transparent;
+    z-index: -1;
+
+    pointer-events: none;
 
 }
 
 
+/* ============================================================
+   TOP NAVIGATION
+============================================================ */
 
-/* ================= CARD ================= */
+.profile-topbar {
 
+    max-width: 1250px;
 
-.profile-card {
-
-
-    max-width: 1100px;
-
-    margin: auto;
-
+    margin: 0 auto 35px;
 
     display: flex;
 
-    gap: 40px;
+    align-items: center;
+
+}
 
 
-    padding: 35px;
+/* ============================================================
+   BACK TO AI RESULTS BUTTON
+============================================================ */
 
+.back-results-btn {
 
-    border-radius: 30px;
+    display: inline-flex;
 
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 9px;
+
+    padding: 12px 20px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    color: #d8d6ce;
 
     background:
 
-        rgba(255, 255, 255, 0.08);
-
-
-    backdrop-filter: blur(20px);
-
+        rgba(255, 255, 255, 0.025);
 
     border:
 
-        1px solid rgba(255, 255, 255, .15);
+        1px solid rgba(210, 205, 170, 0.16);
 
+    font-size: 14px;
+
+    font-weight: 700;
+
+    transition:
+
+        background .25s ease,
+        border-color .25s ease,
+        transform .25s ease,
+        color .25s ease;
+
+}
+
+
+.back-results-btn:hover {
+
+    color: #f1efe6;
+
+    background:
+
+        rgba(154, 150, 99, 0.13);
+
+    border-color:
+
+        rgba(190, 185, 130, 0.40);
+
+    transform:
+
+        translateX(-3px);
+
+}
+
+
+.back-results-btn span {
+
+    font-size: 18px;
+
+    transition:
+
+        transform .25s ease;
+
+}
+
+
+.back-results-btn:hover span {
+
+    transform:
+
+        translateX(-3px);
+
+}
+
+
+/* ============================================================
+   PAGE HEADING
+============================================================ */
+
+.profile-container h1 {
+
+    max-width: 1250px;
+
+    margin: 0 auto 42px;
+
+    text-align: center;
+
+    font-size: clamp(34px, 4vw, 50px);
+
+    line-height: 1.1;
+
+    font-weight: 800;
+
+    letter-spacing: -1px;
+
+    color: #e8e6df;
+
+}
+
+
+/* ============================================================
+   PROFILE CARD
+============================================================ */
+
+.profile-card {
+
+    max-width: 1250px;
+
+    margin: 0 auto;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    gap: 42px;
+
+    padding: 38px;
+
+    border-radius: 24px;
+
+    background:
+
+        linear-gradient(135deg,
+            rgba(43, 43, 37, 0.92),
+            rgba(32, 33, 29, 0.92));
+
+    border:
+
+        1px solid rgba(210, 205, 170, 0.18);
+
+    backdrop-filter:
+
+        blur(20px);
+
+    -webkit-backdrop-filter:
+
+        blur(20px);
 
     box-shadow:
 
-        0 25px 60px rgba(0, 0, 0, .45);
-
+        0 25px 70px rgba(0, 0, 0, 0.40);
 
 }
 
 
-
-/* Image */
-
+/* ============================================================
+   PROFILE IMAGE
+============================================================ */
 
 .profile-card img {
 
-
-    width: 350px;
+    width: 330px;
 
     height: 420px;
 
+    flex-shrink: 0;
 
     object-fit: cover;
 
+    display: block;
 
-    border-radius: 25px;
-
+    border-radius: 20px;
 
     border:
 
-        3px solid rgba(96, 165, 250, .5);
+        1px solid rgba(190, 185, 130, 0.42);
 
+    box-shadow:
+
+        0 18px 45px rgba(0, 0, 0, 0.30);
 
 }
 
 
-
-/* ================= INFO ================= */
-
+/* ============================================================
+   PROFILE INFORMATION
+============================================================ */
 
 .profile-info {
 
-
     flex: 1;
+
+    min-width: 0;
 
 }
 
 
+/* Person Name */
 
 .profile-info h2 {
 
+    margin: 5px 0 30px;
 
-    font-size: 35px;
+    font-size: 38px;
 
-    margin-bottom: 25px;
+    line-height: 1.1;
 
+    font-weight: 800;
+
+    letter-spacing: -0.5px;
+
+    color: #eceae3;
 
 }
 
 
+/* ============================================================
+   INFORMATION ROWS
+============================================================ */
 
 .profile-info p {
 
+    margin: 15px 0;
 
-    color: #d1d5db;
-
+    color: #b9b8b0;
 
     font-size: 17px;
 
-
-    margin: 14px 0;
-
-
-    line-height: 1.5;
-
+    line-height: 1.65;
 
 }
-
 
 
 .profile-info strong {
 
+    color: #e5e3da;
 
-    color: white;
-
-}
-
-
-
-/* Divider */
-
-
-.profile-info hr {
-
-
-    margin: 30px 0;
-
-
-    border: none;
-
-
-    height: 1px;
-
-
-    background:
-
-        rgba(255, 255, 255, .2);
-
+    font-weight: 750;
 
 }
 
 
+/* ============================================================
+   REMOVE BACKGROUND FROM HEIGHT & LAST SEEN LOCATION
+============================================================ */
 
-/* Reporter section */
-
-
-.profile-info h3 {
-
-
-    font-size: 24px;
-
-    margin-bottom: 15px;
-
-
-}
-
-
-
-/* ================= HIGHLIGHT BOXES ================= */
-
+/*
+   All profile information remains plain.
+   No background box is applied to:
+   - Height
+   - Last Seen Location
+*/
 
 .profile-info p:nth-child(4),
 .profile-info p:nth-child(5) {
 
+    padding: 0;
 
-    padding: 8px 12px;
+    background: transparent;
 
+    border: none;
+
+    border-radius: 0;
 
 }
 
 
+/* ============================================================
+   DIVIDER
+============================================================ */
 
-/* ================= MOBILE ================= */
+.profile-info hr {
+
+    margin: 34px 0;
+
+    border: none;
+
+    height: 1px;
+
+    background:
+
+        rgba(210, 205, 170, 0.18);
+
+}
 
 
-@media(max-width:800px) {
+/* ============================================================
+   REPORTER SECTION
+============================================================ */
 
+.profile-info h3 {
+
+    margin: 0 0 20px;
+
+    color: #e8e6df;
+
+    font-size: 25px;
+
+    font-weight: 750;
+
+}
+
+
+/* Reporter details */
+
+.profile-info h3~p {
+
+    font-size: 15px;
+
+    margin: 10px 0;
+
+}
+
+
+/* ============================================================
+   OPTIONAL PROFILE STATUS BADGE
+============================================================ */
+
+.profile-status {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 7px 12px;
+
+    margin-bottom: 20px;
+
+    border-radius: 999px;
+
+    background:
+
+        rgba(154, 150, 99, 0.14);
+
+    border:
+
+        1px solid rgba(190, 185, 130, 0.25);
+
+    color: #d5d1a5;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    text-transform: uppercase;
+
+}
+
+
+/* ============================================================
+   BOTTOM ACTION AREA
+============================================================ */
+
+.profile-actions {
+
+    max-width: 1250px;
+
+    margin: 30px auto 0;
+
+    display: flex;
+
+    justify-content: flex-start;
+
+}
+
+
+/* ============================================================
+   LARGE BACK TO RESULTS BUTTON
+============================================================ */
+
+.back-results-large {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    padding: 14px 22px;
+
+    border-radius: 12px;
+
+    text-decoration: none;
+
+    color: #1b1c18;
+
+    background:
+
+        #a6a274;
+
+    border:
+
+        1px solid rgba(210, 205, 170, 0.25);
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    transition:
+
+        transform .25s ease,
+        background .25s ease,
+        box-shadow .25s ease;
+
+}
+
+
+.back-results-large:hover {
+
+    color: #151612;
+
+    background:
+
+        #bbb681;
+
+    transform:
+
+        translateY(-2px);
+
+    box-shadow:
+
+        0 12px 30px rgba(166, 162, 116, 0.18);
+
+}
+
+
+.back-results-large span {
+
+    font-size: 18px;
+
+}
+
+
+/* ============================================================
+   RESPONSIVE — TABLET
+============================================================ */
+
+@media (max-width: 1000px) {
+
+    .profile-card {
+
+        gap: 30px;
+
+        padding: 28px;
+
+    }
+
+
+    .profile-card img {
+
+        width: 280px;
+
+        height: 380px;
+
+    }
+
+
+    .profile-info h2 {
+
+        font-size: 32px;
+
+    }
+
+}
+
+
+/* ============================================================
+   RESPONSIVE — MOBILE
+============================================================ */
+
+@media (max-width: 800px) {
 
     .profile-container {
 
-        padding: 20px;
+        padding:
+
+            28px 16px 50px;
+
+    }
+
+
+    .profile-topbar {
+
+        margin-bottom: 25px;
+
+    }
+
+
+    .profile-container h1 {
+
+        margin-bottom: 30px;
+
+        font-size: 34px;
 
     }
 
@@ -261,26 +614,126 @@
 
         flex-direction: column;
 
-        padding: 25px;
+        gap: 25px;
+
+        padding: 20px;
+
+        border-radius: 20px;
 
     }
 
 
     .profile-card img {
 
+        width: 100%;
+
+        height: 400px;
+
+        border-radius: 16px;
+
+    }
+
+
+    .profile-info {
 
         width: 100%;
 
-        height: 350px;
+    }
+
+
+    .profile-info h2 {
+
+        margin-bottom: 22px;
+
+        font-size: 30px;
+
+    }
+
+
+    .profile-info p {
+
+        font-size: 15px;
+
+    }
+
+
+    .profile-info hr {
+
+        margin: 28px 0;
+
+    }
+
+
+    .profile-actions {
+
+        margin-top: 22px;
+
+    }
+
+
+    .back-results-large {
+
+        width: 100%;
+
+    }
+
+}
+
+
+/* ============================================================
+   SMALL MOBILE
+============================================================ */
+
+@media (max-width: 430px) {
+
+    .profile-container {
+
+        padding:
+
+            22px 12px 40px;
 
     }
 
 
     .profile-container h1 {
 
-        font-size: 32px;
+        font-size: 29px;
 
     }
 
+
+    .profile-card {
+
+        padding: 16px;
+
+    }
+
+
+    .profile-card img {
+
+        height: 330px;
+
+    }
+
+
+    .profile-info h2 {
+
+        font-size: 27px;
+
+    }
+
+
+    .profile-info h3 {
+
+        font-size: 22px;
+
+    }
+
+
+    .back-results-btn {
+
+        width: 100%;
+
+    }
 
 }
