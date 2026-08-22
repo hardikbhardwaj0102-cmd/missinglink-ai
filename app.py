@@ -2126,9 +2126,13 @@ def dashboard():
     # ==========================================
     #
     # A case is NEW only if it was created after
-    # the organization's previous dashboard visit.
+    # the last time the organization checked
+    # the New Cases page.
     #
-    # We DO NOT use status="submitted" here.
+    # IMPORTANT:
+    # Dashboard does NOT update the timestamp.
+    # This prevents new cases from disappearing
+    # before the user opens New Cases.
     #
     # ==========================================
 
@@ -2139,11 +2143,7 @@ def dashboard():
     )
 
     # ==========================================
-    # FIRST DASHBOARD VISIT
-    # ==========================================
-    #
-    # Do NOT show all old cases as NEW.
-    #
+    # GET LAST CHECK TIME
     # ==========================================
 
     if last_notification_check:
@@ -2160,6 +2160,12 @@ def dashboard():
 
     else:
 
+        # ======================================
+        # FIRST VISIT
+        # ======================================
+        #
+        # Old cases should NOT appear as new.
+        #
         last_notification_check = now
 
     # ==========================================
@@ -2188,6 +2194,10 @@ def dashboard():
 
     new_cases = []
 
+    # ------------------------------------------
+    # MISSING CASES
+    # ------------------------------------------
+
     for person in new_missing:
 
         new_cases.append({
@@ -2200,9 +2210,15 @@ def dashboard():
 
             "location": person.last_seen_location,
 
-            "created_at": person.created_at
+            "created_at": person.created_at,
+
+            "person": person
 
         })
+
+    # ------------------------------------------
+    # FOUND CASES
+    # ------------------------------------------
 
     for person in new_found:
 
@@ -2216,7 +2232,9 @@ def dashboard():
 
             "location": person.found_location,
 
-            "created_at": person.created_at
+            "created_at": person.created_at,
+
+            "person": person
 
         })
 
@@ -2328,26 +2346,22 @@ def dashboard():
     found_count = FoundPerson.query.count()
 
     # ==========================================
-    # MARK CURRENT CHECK TIME
+    # IMPORTANT
     # ==========================================
     #
-    # This happens AFTER we have calculated
-    # the new cases.
+    # DO NOT update:
     #
-    # Therefore the cases found above are shown
-    # as NEW during this dashboard request.
+    # session["last_notification_check"]
     #
-    # On the next dashboard visit they won't
-    # appear as NEW again.
+    # here.
+    #
+    # It will be updated only by /new-cases
+    # after the user actually opens the page.
     #
     # ==========================================
 
-    session["last_notification_check"] = (
-        now.isoformat()
-    )
-
     # ==========================================
-    # DASHBOARD
+    # RENDER DASHBOARD
     # ==========================================
 
     return render_template(
@@ -3560,6 +3574,10 @@ def delete_report(id, report_type):
 # NEW CASES
 # ==========================================
 
+# ============================================================
+# NEW CASES PAGE
+# ============================================================
+
 @app.route("/new-cases")
 def new_cases():
 
@@ -3568,35 +3586,82 @@ def new_cases():
     # ==========================================
 
     if not session.get("organization"):
-        return redirect(url_for("login"))
+        return redirect(
+            url_for("login")
+        )
+
+    # ==========================================
+    # CURRENT TIME
+    # ==========================================
+
+    now = datetime.utcnow()
 
     # ==========================================
     # GET LAST NOTIFICATION CHECK
     # ==========================================
 
-    now = datetime.utcnow()
-
     last_notification_check = session.get(
         "last_notification_check"
     )
 
-    if last_notification_check:
+    # ==========================================
+    # FIRST VISIT
+    # ==========================================
+    #
+    # If this is the organization's first visit,
+    # establish the starting point.
+    #
+    # Existing old cases should NOT be considered
+    # new.
+    #
+    # ==========================================
 
-        try:
-            last_notification_check = datetime.fromisoformat(
-                last_notification_check
-            )
+    if not last_notification_check:
 
-        except (ValueError, TypeError):
-            last_notification_check = now
+        session["last_notification_check"] = (
+            now.isoformat()
+        )
 
-    else:
-        # First visit:
-        # Don't treat old cases as new
-        last_notification_check = now
+        session.modified = True
+
+        return render_template(
+            "new_cases.html",
+            cases=[],
+            total_count=0,
+            missing_count=0,
+            found_count=0
+        )
 
     # ==========================================
-    # GET ONLY NEW MISSING CASES
+    # CONVERT SAVED TIMESTAMP
+    # ==========================================
+
+    try:
+
+        last_notification_check = datetime.fromisoformat(
+            last_notification_check
+        )
+
+    except (ValueError, TypeError):
+
+        last_notification_check = now
+
+        session["last_notification_check"] = (
+            now.isoformat()
+        )
+
+        session.modified = True
+
+        return render_template(
+            "new_cases.html",
+            cases=[],
+            total_count=0,
+            missing_count=0,
+            found_count=0
+        )
+
+    # ==========================================
+    # GET NEW MISSING CASES
     # ==========================================
 
     missing_cases = MissingPerson.query.filter(
@@ -3606,7 +3671,7 @@ def new_cases():
     ).all()
 
     # ==========================================
-    # GET ONLY NEW FOUND CASES
+    # GET NEW FOUND CASES
     # ==========================================
 
     found_cases = FoundPerson.query.filter(
@@ -3621,30 +3686,56 @@ def new_cases():
 
     cases = []
 
+    # ------------------------------------------
+    # MISSING CASES
+    # ------------------------------------------
+
     for person in missing_cases:
 
         cases.append({
+
             "type": "missing",
+
             "report_id": person.report_id,
+
             "name": person.name,
+
             "location": person.last_seen_location,
+
             "date": person.last_seen_date,
+
             "status": person.status,
+
             "created_at": person.created_at,
+
             "person": person
+
         })
+
+    # ------------------------------------------
+    # FOUND CASES
+    # ------------------------------------------
 
     for person in found_cases:
 
         cases.append({
+
             "type": "found",
+
             "report_id": person.report_id,
+
             "name": "Unknown Person",
+
             "location": person.found_location,
+
             "date": person.found_date,
+
             "status": person.status,
+
             "created_at": person.created_at,
+
             "person": person
+
         })
 
     # ==========================================
@@ -3683,12 +3774,19 @@ def new_cases():
                     3600
                 )
 
-                if isinstance(signed_response, dict):
+                if isinstance(
+                    signed_response,
+                    dict
+                ):
 
                     person.photo_url = (
-                        signed_response.get("signedURL")
+                        signed_response.get(
+                            "signedURL"
+                        )
                         or
-                        signed_response.get("signedUrl")
+                        signed_response.get(
+                            "signedUrl"
+                        )
                     )
 
             except Exception as e:
@@ -3702,11 +3800,22 @@ def new_cases():
     # ==========================================
 
     total_count = len(cases)
+
     missing_count = len(missing_cases)
+
     found_count = len(found_cases)
 
     # ==========================================
-    # MARK CURRENT POINT AS SEEN
+    # MARK THESE CASES AS SEEN
+    # ==========================================
+    #
+    # IMPORTANT:
+    # This happens AFTER we have retrieved the
+    # new cases.
+    #
+    # Therefore the current request can display
+    # them before they become "seen".
+    #
     # ==========================================
 
     session["last_notification_check"] = (
@@ -3726,15 +3835,35 @@ def new_cases():
         missing_count=missing_count,
         found_count=found_count
     )
+
+
+# ============================================================
+# MISSING CASES PAGE
+# ============================================================
+
 @app.route("/missing-cases")
 def missing_cases():
 
+    # ==========================================
+    # ORGANIZATION LOGIN CHECK
+    # ==========================================
+
     if not session.get("organization"):
-        return redirect(url_for("login"))
+        return redirect(
+            url_for("login")
+        )
+
+    # ==========================================
+    # GET ALL MISSING CASES
+    # ==========================================
 
     missing_people = MissingPerson.query.order_by(
         MissingPerson.created_at.desc()
     ).all()
+
+    # ==========================================
+    # RENDER
+    # ==========================================
 
     return render_template(
         "missing_cases.html",
@@ -3743,15 +3872,33 @@ def missing_cases():
     )
 
 
+# ============================================================
+# FOUND CASES PAGE
+# ============================================================
+
 @app.route("/found-cases")
 def found_cases():
 
+    # ==========================================
+    # ORGANIZATION LOGIN CHECK
+    # ==========================================
+
     if not session.get("organization"):
-        return redirect(url_for("login"))
+        return redirect(
+            url_for("login")
+        )
+
+    # ==========================================
+    # GET ALL FOUND CASES
+    # ==========================================
 
     found_people = FoundPerson.query.order_by(
         FoundPerson.created_at.desc()
     ).all()
+
+    # ==========================================
+    # RENDER
+    # ==========================================
 
     return render_template(
         "found_cases.html",
