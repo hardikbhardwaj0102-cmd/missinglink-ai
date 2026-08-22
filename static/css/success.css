@@ -798,3 +798,162 @@
     }
 
 }
+
+/* =========================================================
+   SUCCESS ACTION BUTTONS
+   MissingLink AI Theme
+========================================================= */
+
+.success-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+
+/* =========================================================
+   COMMON BUTTON
+========================================================= */
+
+.success-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    min-height: 48px;
+    padding: 0 22px;
+
+    border-radius: 20px;
+
+    text-decoration: none !important;
+
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.25s ease,
+        border-color 0.25s ease,
+        color 0.25s ease,
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* =========================================================
+   PRIMARY BUTTON
+========================================================= */
+
+.success-action-btn.primary {
+    background: #545333;
+    border: 1px solid #545333;
+    color: #ffffff !important;
+
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.20);
+}
+
+.success-action-btn.primary:hover {
+    background: #77764d;
+    border-color: #77764d;
+    color: #ffffff !important;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.30);
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+========================================================= */
+
+.success-action-btn.secondary {
+    background: rgba(34, 34, 30, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #deddd5 !important;
+}
+
+.success-action-btn.secondary:hover {
+    background: rgba(84, 83, 51, 0.28);
+    border-color: rgba(119, 118, 77, 0.55);
+    color: #ffffff !important;
+
+    transform: translateY(-2px);
+}
+
+
+/* =========================================================
+   ACTION ICON
+========================================================= */
+
+.success-action-btn .action-icon {
+    width: 26px;
+    height: 26px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+
+/* Primary icon */
+
+.success-action-btn.primary .action-icon {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+
+/* Secondary icon */
+
+.success-action-btn.secondary .action-icon {
+    background: rgba(119, 118, 77, 0.20);
+    color: #d5d4b5;
+}
+
+
+/* =========================================================
+   REMOVE DEFAULT LINK STYLING
+========================================================= */
+
+.success-action-btn:visited,
+.success-action-btn:active,
+.success-action-btn:focus {
+    text-decoration: none !important;
+}
+
+.success-action-btn:focus {
+    outline: 2px solid rgba(119, 118, 77, 0.65);
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+    .success-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .success-action-btn {
+        width: 100%;
+        min-height: 50px;
+    }
+
+}
