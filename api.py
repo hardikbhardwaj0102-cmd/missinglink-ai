@@ -3123,6 +3123,69 @@ def ai_match_api(found_id):
 # ORGANIZATION LOGIN
 # ============================================================
 
+# ============================================================
+# API ORGANIZATION REGISTRATION (FOR MOBILE APP)
+# ============================================================
+@api.route("/auth/register", methods=["POST"])
+def organization_register_api():
+    try:
+        # 1. Get form data (using request.form because it's multipart with an image)
+        organization = request.form.get("organization")
+        role = request.form.get("role")
+        full_name = request.form.get("full_name")
+        government_id = request.form.get("government_id")
+        email = request.form.get("email")
+        phone = request.form.get("phone")
+        password = request.form.get("password")
+        
+        # 2. Check for duplicate email
+        existing_email = Organization.query.filter_by(email=email).first()
+        if existing_email:
+            return jsonify({"success": False, "message": "Email already registered."}), 400
+            
+        # 3. Handle ID Card Upload to Supabase
+        file = request.files.get("id_card")
+        if not file:
+            return jsonify({"success": False, "message": "ID card image is required."}), 400
+
+        filename = f"{uuid.uuid4()}_{secure_filename(file.filename)}"
+        temp_filepath = os.path.join(current_app.config["ID_CARD_FOLDER"], filename)
+        file.save(temp_filepath)
+
+        supabase = get_supabase()
+        storage_path = f"organization-documents/{filename}"
+        
+        with open(temp_filepath, "rb") as id_file:
+            supabase.storage.from_("organization-documents").upload(
+                storage_path, id_file, {"content-type": file.content_type}
+            )
+        os.remove(temp_filepath)
+
+        # 4. Save to Database as Unverified
+        new_org = Organization(
+            organization=organization,
+            role=role,
+            full_name=full_name,
+            government_id=government_id,
+            email=email,
+            phone=phone,
+            password=generate_password_hash(password),
+            id_card=storage_path,
+            email_verified=False,
+            verified=False
+        )
+        db.session.add(new_org)
+        db.session.commit()
+
+        return jsonify({
+            "success": True, 
+            "message": "Organization registered successfully. Awaiting administrator approval."
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"success": False, "message": f"Registration failed: {str(e)}"}), 500
+
 @api.route(
     "/auth/login",
     methods=["POST"]
@@ -3681,3 +3744,5 @@ def register_api(app):
     app.register_blueprint(
         api
     )
+
+    
