@@ -3568,56 +3568,23 @@ def new_cases():
     # ==========================================
 
     if not session.get("organization"):
-        return redirect(
-            url_for("login")
-        )
+        return redirect(url_for("login"))
 
     # ==========================================
-    # GET LAST DASHBOARD CHECK
+    # GET RECENT MISSING CASES
     # ==========================================
 
-    now = datetime.utcnow()
-
-    last_notification_check = session.get(
-        "last_notification_check"
-    )
-
-    if last_notification_check:
-
-        try:
-
-            last_notification_check = datetime.fromisoformat(
-                last_notification_check
-            )
-
-        except (ValueError, TypeError):
-
-            last_notification_check = now
-
-    else:
-
-        # First visit
-        last_notification_check = now
-
-    # ==========================================
-    # GET NEW MISSING CASES
-    # ==========================================
-
-    missing_cases = MissingPerson.query.filter(
-        MissingPerson.created_at > last_notification_check
-    ).order_by(
+    missing_cases = MissingPerson.query.order_by(
         MissingPerson.created_at.desc()
-    ).all()
+    ).limit(50).all()
 
     # ==========================================
-    # GET NEW FOUND CASES
+    # GET RECENT FOUND CASES
     # ==========================================
 
-    found_cases = FoundPerson.query.filter(
-        FoundPerson.created_at > last_notification_check
-    ).order_by(
+    found_cases = FoundPerson.query.order_by(
         FoundPerson.created_at.desc()
-    ).all()
+    ).limit(50).all()
 
     # ==========================================
     # COMBINE CASES
@@ -3687,15 +3654,11 @@ def new_cases():
                     3600
                 )
 
-                if isinstance(
-                    signed_response,
-                    dict
-                ):
+                if isinstance(signed_response, dict):
 
                     person.photo_url = (
                         signed_response.get("signedURL")
-                        or
-                        signed_response.get("signedUrl")
+                        or signed_response.get("signedUrl")
                     )
 
             except Exception as e:
@@ -3709,17 +3672,15 @@ def new_cases():
     # ==========================================
 
     total_count = len(cases)
-
     missing_count = len(missing_cases)
-
     found_count = len(found_cases)
 
     # ==========================================
-    # MARK NOTIFICATION CHECK
+    # MARK NOTIFICATIONS AS SEEN
     # ==========================================
 
     session["last_notification_check"] = (
-        now.isoformat()
+        datetime.utcnow().isoformat()
     )
 
     # ==========================================
@@ -3733,12 +3694,11 @@ def new_cases():
         missing_count=missing_count,
         found_count=found_count
     )
-# ============================================================
-# MISSING CASES PAGE
-# ============================================================
-
 @app.route("/missing-cases")
 def missing_cases():
+
+    if not session.get("organization"):
+        return redirect(url_for("login"))
 
     missing_people = MissingPerson.query.order_by(
         MissingPerson.created_at.desc()
@@ -3751,12 +3711,11 @@ def missing_cases():
     )
 
 
-# ============================================================
-# FOUND CASES PAGE
-# ============================================================
-
 @app.route("/found-cases")
 def found_cases():
+
+    if not session.get("organization"):
+        return redirect(url_for("login"))
 
     found_people = FoundPerson.query.order_by(
         FoundPerson.created_at.desc()
