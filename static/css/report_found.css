@@ -1,135 +1,40 @@
 /* ==========================================
-   FOUND PERSON REPORT
-   Uses Report Missing Wizard Styles
+   MissingLink AI
+   Found Person Report
+
+   IMPORTANT:
+   Uses the exact same UI as Report Missing.
+   report_missing.css is NOT modified.
 ========================================== */
 
 @import url("report_missing.css");
 
 
 /* ==========================================
-   FOUND PAGE ACCENT
-========================================== */
+   FOUND PERSON PAGE
 
-:root {
-    --primary: #0ea5e9;
-    --primary-light: #38bdf8;
-}
+   No visual overrides.
+
+   This allows the Found Person report to inherit
+   the exact same:
+   - Olive accent
+   - Header
+   - Stepper
+   - Cards
+   - Upload section
+   - Form controls
+   - Buttons
+   - Borders
+   - Shadows
+   - Responsive layout
+   from report_missing.css.
+========================================== */
 
 
 /* ==========================================
-   FOUND HEADER
-========================================== */
-
-.page-eyebrow {
-    color: #38bdf8;
-}
-
-.step-counter {
-    background: rgba(14, 165, 233, 0.14);
-    border-color: rgba(56, 189, 248, 0.28);
-    color: #7dd3fc;
-}
-
-
-/* ==========================================
-   ACTIVE STEP
-========================================== */
-
-.step.active .step-number {
-    background: linear-gradient(135deg,
-            #0ea5e9,
-            #38bdf8);
-
-    border-color: #38bdf8;
-
-    box-shadow:
-        0 0 25px rgba(14, 165, 233, 0.35);
-}
-
-
-/* ==========================================
-   SECTION BADGE
-========================================== */
-
-.section-badge {
-    background: rgba(14, 165, 233, 0.14);
-    color: #7dd3fc;
-}
-
-
-/* ==========================================
-   UPLOAD ICON
-========================================== */
-
-.upload-icon {
-    background: linear-gradient(135deg,
-            #0ea5e9,
-            #06b6d4);
-}
-
-
-/* ==========================================
-   UPLOAD AREA
-========================================== */
-
-.upload-box {
-    border-color:
-        rgba(56, 189, 248, 0.45);
-}
-
-.upload-box:hover,
-.upload-box.dragover {
-    border-color: #38bdf8;
-
-    background:
-        rgba(14, 165, 233, 0.08);
-}
-
-.upload-image-icon {
-    background:
-        rgba(14, 165, 233, 0.18);
-
-    color: #7dd3fc;
-}
-
-
-/* ==========================================
-   INPUT FOCUS
-========================================== */
-
-.input-group input:focus,
-.input-group select:focus,
-.input-group textarea:focus,
-.location-search:focus {
-    border-color: #38bdf8;
-
-    box-shadow:
-        0 0 0 3px rgba(14, 165, 233, 0.12);
-}
-
-
-/* ==========================================
-   LOCATION
-========================================== */
-
-.location-current-btn {
-    border-color:
-        rgba(56, 189, 248, 0.30);
-
-    background:
-        rgba(14, 165, 233, 0.10);
-
-    color: #7dd3fc;
-}
-
-.location-current-btn:hover {
-    background:
-        rgba(14, 165, 233, 0.18);
-}
-
-
-/* ==========================================
-   CONDITION
+   FOUND PERSON SPECIFIC SPACING
+   Only keep this if these classes exist
+   in your Found Person HTML.
 ========================================== */
 
 .condition-group {
@@ -142,139 +47,7 @@
 
 
 /* ==========================================
-   NEXT BUTTON
-========================================== */
-
-.next-btn {
-    background: linear-gradient(135deg,
-            #0ea5e9,
-            #38bdf8);
-
-    box-shadow:
-        0 12px 30px rgba(14, 165, 233, 0.28);
-}
-
-.next-btn:hover {
-    box-shadow:
-        0 18px 35px rgba(14, 165, 233, 0.40);
-}
-
-
-/* ==========================================
-   SUBMIT BUTTON
-========================================== */
-
-.submit-btn {
-    background: linear-gradient(135deg,
-            #0ea5e9,
-            #38bdf8);
-
-    box-shadow:
-        0 15px 35px rgba(14, 165, 233, 0.35);
-}
-
-.submit-btn:hover {
-    box-shadow:
-        0 20px 40px rgba(14, 165, 233, 0.45);
-}
-
-
-/* ==========================================
-   SELECT
-========================================== */
-
-select {
-    color: white;
-    background:
-        rgba(255, 255, 255, 0.08);
-}
-
-select option {
-    color: white;
-    background: #07111f;
-}
-
-
-/* ==========================================
-   PLACEHOLDERS
-========================================== */
-
-input::placeholder,
-textarea::placeholder {
-    color: rgba(255, 255, 255, 0.48);
-}
-
-
-/* ==========================================
-   PHOTO QUALITY
-========================================== */
-
-.progress-bar {
-    background: linear-gradient(90deg,
-            #0ea5e9,
-            #22c55e);
-}
-
-
-/* ==========================================
-   FACE ERROR
-========================================== */
-
-.face-error {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-
-    margin-top: 16px;
-    padding: 14px 16px;
-
-    border-radius: 14px;
-
-    background:
-        rgba(239, 68, 68, 0.10);
-
-    border:
-        1px solid rgba(239, 68, 68, 0.35);
-
-    color: #fca5a5;
-}
-
-.face-error-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 26px;
-    height: 26px;
-    min-width: 26px;
-
-    border-radius: 50%;
-
-    background: #ef4444;
-    color: white;
-
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.face-error-content strong {
-    display: block;
-
-    margin-bottom: 3px;
-
-    font-size: 14px;
-}
-
-.face-error-content p {
-    margin: 0;
-
-    font-size: 13px;
-    line-height: 1.5;
-}
-
-
-/* ==========================================
-   RESPONSIVE ADJUSTMENTS
+   RESPONSIVE
 ========================================== */
 
 @media (max-width: 768px) {
@@ -282,100 +55,6 @@ textarea::placeholder {
     .condition-group,
     .description-group {
         margin-top: 22px;
-    }
-
-}
-
-/* =========================================================
-   HOME BUTTON
-========================================================= */
-
-.report-home-btn {
-
-    position: absolute;
-
-    top: 35px;
-    left: 40px;
-
-    display: inline-flex;
-
-    align-items: center;
-    gap: 9px;
-
-    padding: 11px 18px;
-
-    border-radius: 12px;
-
-    border: 1px solid rgba(255, 255, 255, 0.10);
-
-    background: rgba(255, 255, 255, 0.05);
-
-    color: #ffffff;
-
-    text-decoration: none;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    transition: all 0.25s ease;
-
-    backdrop-filter: blur(12px);
-
-    z-index: 20;
-}
-
-
-.report-home-btn span {
-
-    font-size: 18px;
-
-    line-height: 1;
-
-    transition: transform 0.25s ease;
-
-}
-
-
-.report-home-btn:hover {
-
-    background: rgba(37, 99, 235, 0.15);
-
-    border-color: rgba(59, 130, 246, 0.45);
-
-    color: #ffffff;
-
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 8px 25px rgba(37, 99, 235, 0.15);
-
-}
-
-
-.report-home-btn:hover span {
-
-    transform: translateX(-3px);
-
-}
-
-
-/* =========================================================
-   HOME BUTTON — MOBILE
-========================================================= */
-
-@media (max-width: 768px) {
-
-    .report-home-btn {
-
-        top: 20px;
-
-        left: 20px;
-
-        padding: 9px 14px;
-
-        font-size: 13px;
-
     }
 
 }
