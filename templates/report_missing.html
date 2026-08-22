@@ -12,7 +12,14 @@
 {% block content %}
 
 <form action="/report-missing" method="POST" enctype="multipart/form-data" class="report-page" id="missingReportForm">
+    <!-- =========================
+     HOME BUTTON
+========================== -->
 
+    <a href="{{ url_for('home') }}" class="report-home-btn">
+        <span>←</span>
+        Home
+    </a>
     <!-- =========================
          HEADER
     ========================== -->
@@ -650,7 +657,7 @@
                             </span>
                         </label>
 
-                        <input type="email" id="email" name="email" placeholder="example@email.com">
+                        <input type="email" id="email" name="email" placeholder="example@email.com" required>
 
                     </div>
 
