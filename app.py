@@ -599,7 +599,9 @@ def report_missing():
 @app.route("/verify-report-otp", methods=["GET", "POST"])
 def verify_report_otp():
 
-    token = session.get("pending_report_token")
+    token = session.get(
+        "pending_report_token"
+    )
 
     if not token:
 
@@ -747,10 +749,18 @@ def verify_report_otp():
     )
 
     # ==========================================
+    # SAVE REPORT TYPE
+    # IMPORTANT:
+    # Save this BEFORE deleting pending_report
+    # ==========================================
+
+    report_type = pending_report.report_type
+
+    # ==========================================
     # MISSING REPORT
     # ==========================================
 
-    if pending_report.report_type == "missing":
+    if report_type == "missing":
 
         # Generate permanent report ID
         report_id = (
@@ -827,6 +837,7 @@ def verify_report_otp():
                 "email"
             )
         )
+
         db.session.add(
             person
         )
@@ -835,7 +846,7 @@ def verify_report_otp():
     # FOUND REPORT
     # ==========================================
 
-    elif pending_report.report_type == "found":
+    elif report_type == "found":
 
         # Generate permanent report ID
         report_id = (
@@ -969,7 +980,8 @@ def verify_report_otp():
 
     return render_template(
         "success.html",
-        report_id=report_id
+        report_id=report_id,
+        report_type=report_type
     )
 @app.route("/ai-match/<int:found_id>")
 def ai_match(found_id):

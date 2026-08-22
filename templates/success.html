@@ -86,17 +86,19 @@
 
 
         <!-- BUTTONS -->
-        <div class="buttons">
+        {% if report_type == "found" %}
 
-            <a href="/" class="btn-home">
-                🏠 Home
-            </a>
+        <a href="{{ url_for('report_found') }}" class="btn-report">
+            ➕ Report Another Found Person
+        </a>
 
-            <a href="/report-missing" class="btn-report">
-                ➕ Report Another
-            </a>
+        {% else %}
 
-        </div>
+        <a href="{{ url_for('report_missing') }}" class="btn-report">
+            ➕ Report Another Missing Person
+        </a>
+
+        {% endif %}
 
     </div>
 
