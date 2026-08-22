@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 
 {% block extra_css %}
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+
 {% endblock %}
+
 
 {% block content %}
 
@@ -15,12 +18,17 @@
     <div class="dashboard-header">
 
         <div>
-            <h1>MissingLink AI Dashboard</h1>
+
+            <h1>
+                MissingLink AI Dashboard
+            </h1>
 
             <p class="subtitle">
                 Monitor missing and found person reports in one place.
             </p>
+
         </div>
+
 
         <div class="dashboard-actions">
 
@@ -28,9 +36,30 @@
                 + Report Missing
             </a>
 
+
             <a href="{{ url_for('report_found') }}" class="action-btn secondary">
                 + Report Found
             </a>
+
+
+            <!-- =================================================
+                 NEW CASE NOTIFICATION
+            ================================================== -->
+
+            <a href="#new-cases" class="notification-btn" title="New Cases">
+
+                🔔
+
+                {% if new_cases %}
+
+                <span class="notification-count">
+                    {{ new_cases|length }}
+                </span>
+
+                {% endif %}
+
+            </a>
+
 
             <a id="logout-btn" href="{{ url_for('logout') }}">
                 Logout
@@ -39,6 +68,7 @@
         </div>
 
     </div>
+
 
 
     <!-- =====================================================
@@ -52,6 +82,7 @@
     </div>
 
 
+
     <!-- =====================================================
          STATS
     ====================================================== -->
@@ -59,37 +90,305 @@
     <div class="stats">
 
         <div class="stat-card">
-            <h2>{{ missing_count }}</h2>
-            <p>Missing Reports</p>
+
+            <h2>
+                {{ missing_count }}
+            </h2>
+
+            <p>
+                Missing Reports
+            </p>
+
         </div>
 
-        <div class="stat-card">
-            <h2>{{ found_count }}</h2>
-            <p>Found Reports</p>
-        </div>
 
         <div class="stat-card">
-            <h2>{{ missing_count + found_count }}</h2>
-            <p>Total Cases</p>
+
+            <h2>
+                {{ found_count }}
+            </h2>
+
+            <p>
+                Found Reports
+            </p>
+
         </div>
 
+
         <div class="stat-card">
-            <h2>AI</h2>
-            <p>Matching Ready</p>
+
+            <h2>
+                {{ missing_count + found_count }}
+            </h2>
+
+            <p>
+                Total Cases
+            </p>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h2>
+                AI
+            </h2>
+
+            <p>
+                Matching Ready
+            </p>
+
         </div>
 
     </div>
+
+
+
+    <!-- =====================================================
+         NEW CASE NOTIFICATIONS
+    ====================================================== -->
+
+    <section class="dashboard-section new-cases-section" id="new-cases">
+
+        <div class="section-header">
+
+            <div>
+
+                <h2>
+                    🚨 New Cases
+                </h2>
+
+                <p class="new-cases-subtitle">
+                    Recently submitted cases requiring attention.
+                </p>
+
+            </div>
+
+
+            <span>
+
+                {{ new_cases|length }}
+
+                {% if new_cases|length == 1 %}
+                New Case
+                {% else %}
+                New Cases
+                {% endif %}
+
+            </span>
+
+        </div>
+
+
+
+        {% if new_cases %}
+
+        <div class="new-cases-list">
+
+            {% for case in new_cases %}
+
+            <div class="new-case-card">
+
+
+                <!-- =====================================
+                             CASE ICON
+                        ====================================== -->
+
+                <div class="new-case-icon">
+
+                    {% if case.type == "missing" %}
+
+                    🔴
+
+                    {% else %}
+
+                    🟠
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- =====================================
+                             CASE INFORMATION
+                        ====================================== -->
+
+                <div class="new-case-info">
+
+                    <h3>
+
+                        {% if case.type == "missing" %}
+
+                        New Missing Person Case
+
+                        {% else %}
+
+                        New Found Person Case
+
+                        {% endif %}
+
+                    </h3>
+
+
+                    <p class="new-case-report-id">
+
+                        <strong>
+                            Report ID:
+                        </strong>
+
+                        {{ case.report_id }}
+
+                    </p>
+
+
+                    {% if case.type == "missing" %}
+
+                    <p>
+
+                        <strong>
+                            Name:
+                        </strong>
+
+                        {{ case.name }}
+
+                    </p>
+
+                    {% endif %}
+
+
+                    <p>
+
+                        <strong>
+                            Location:
+                        </strong>
+
+                        {{ case.location or "N/A" }}
+
+                    </p>
+
+
+                    <p class="new-case-time">
+
+                        Submitted:
+
+                        {% if case.created_at %}
+
+                        {{ case.created_at.strftime(
+                        "%d %b %Y, %I:%M %p"
+                        ) }}
+
+                        {% else %}
+
+                        Recently
+
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+
+
+                <!-- =====================================
+                             CASE TYPE
+                        ====================================== -->
+
+                <div class="new-case-type">
+
+                    {% if case.type == "missing" %}
+
+                    <span class="new-case-badge missing">
+                        MISSING
+                    </span>
+
+                    {% else %}
+
+                    <span class="new-case-badge found">
+                        FOUND
+                    </span>
+
+                    {% endif %}
+
+                </div>
+
+
+
+                <!-- =====================================
+                             VIEW CASE
+                        ====================================== -->
+
+                <div class="new-case-action">
+
+                    {% if case.type == "missing" %}
+
+                    <a href="#missing-persons" class="view-case-btn">
+                        View Case →
+                    </a>
+
+                    {% else %}
+
+                    <a href="#found-persons" class="view-case-btn">
+                        View Case →
+                    </a>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        {% else %}
+
+
+        <!-- =============================================
+                 NO NEW CASES
+            ============================================== -->
+
+        <div class="empty-new-cases">
+
+            <div class="empty-new-icon">
+                ✓
+            </div>
+
+
+            <div>
+
+                <h3>
+                    No New Cases
+                </h3>
+
+                <p>
+                    There are no newly submitted cases
+                    requiring attention.
+                </p>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+    </section>
+
 
 
     <!-- =====================================================
          MISSING PERSONS
     ====================================================== -->
 
-    <section class="dashboard-section">
+    <section class="dashboard-section" id="missing-persons">
 
         <div class="section-header">
 
-            <h2>Missing Persons</h2>
+            <h2>
+                Missing Persons
+            </h2>
 
             <span>
                 {{ missing_count }} Records
@@ -98,21 +397,25 @@
         </div>
 
 
+
         <div class="case-grid">
 
             {% if missing_people %}
 
+
             {% for person in missing_people %}
 
-            <div class="case-card" data-search="
-                        {{ person.name }}
-                        {{ person.report_id }}
-                        {{ person.last_seen_location }}
-                    ">
 
-                <!-- =================================================
-                         IMAGE
-                    ================================================== -->
+            <div class="case-card" data-search="
+                            {{ person.name }}
+                            {{ person.report_id }}
+                            {{ person.last_seen_location }}
+                        ">
+
+
+                <!-- =================================
+                             IMAGE
+                        ================================== -->
 
                 {% if person.photo_url %}
 
@@ -127,22 +430,27 @@
                 {% endif %}
 
 
-                <!-- =================================================
-                         CASE INFORMATION
-                    ================================================== -->
+
+                <!-- =================================
+                             CASE INFORMATION
+                        ================================== -->
 
                 <div class="case-info">
+
 
                     <h3>
                         {{ person.name }}
                     </h3>
 
 
+
                     <!-- REPORT ID -->
 
                     <p class="report-id">
 
-                        <strong>Report ID:</strong>
+                        <strong>
+                            Report ID:
+                        </strong>
 
                         <span>
                             {{ person.report_id }}
@@ -151,25 +459,38 @@
                     </p>
 
 
+
                     <!-- AGE -->
 
                     <p>
-                        <strong>Age:</strong>
+
+                        <strong>
+                            Age:
+                        </strong>
+
                         {{ person.age or "N/A" }}
+
                     </p>
+
 
 
                     <!-- LOCATION -->
 
                     <p>
-                        <strong>Location:</strong>
+
+                        <strong>
+                            Location:
+                        </strong>
+
                         {{ person.last_seen_location or "N/A" }}
+
                     </p>
 
 
-                    <!-- =================================================
-                             CURRENT STATUS
-                        ================================================== -->
+
+                    <!-- =================================
+                                 CURRENT STATUS
+                            ================================== -->
 
                     <div class="status-section">
 
@@ -177,16 +498,24 @@
                             Current Status
                         </label>
 
-                        <span class="badge
-                                {% if person.status == 'submitted' %}
-                                    submitted
-                                {% elif person.status == 'investigating' %}
-                                    investigating
-                                {% elif person.status == 'potential_match' %}
-                                    potential-match
-                                {% elif person.status == 'found' %}
-                                    found
-                                {% endif %}">
+
+                        <span class="
+                                        badge
+
+                                        {% if person.status == 'submitted' %}
+                                            submitted
+
+                                        {% elif person.status == 'investigating' %}
+                                            investigating
+
+                                        {% elif person.status == 'potential_match' %}
+                                            potential-match
+
+                                        {% elif person.status == 'found' %}
+                                            found
+
+                                        {% endif %}
+                                    ">
 
                             {% if person.status == "submitted" %}
 
@@ -215,13 +544,15 @@
                     </div>
 
 
-                    <!-- =================================================
-                             STATUS UPDATE FORM
-                        ================================================== -->
+
+                    <!-- =================================
+                                 STATUS UPDATE FORM
+                            ================================== -->
 
                     <form action="{{ url_for('update_report_status') }}" method="POST" class="status-form">
 
                         <input type="hidden" name="report_id" value="{{ person.report_id }}">
+
 
                         <input type="hidden" name="report_type" value="missing">
 
@@ -263,17 +594,16 @@
                     </form>
 
 
-                    <!-- =================================================
-                             DELETE REPORT FORM
-                             IMPORTANT:
-                             This is OUTSIDE the status form.
-                        ================================================== -->
+
+                    <!-- =================================
+                                 DELETE REPORT FORM
+                            ================================== -->
 
                     <form method="POST" action="{{ url_for(
-                                'delete_report',
-                                report_type='missing',
-                                id=person.id
-                            ) }}" class="delete-form" onsubmit="return confirmDelete('{{ person.report_id }}');">
+                                    'delete_report',
+                                    report_type='missing',
+                                    id=person.id
+                                ) }}" class="delete-form" onsubmit="return confirmDelete('{{ person.report_id }}');">
 
                         <button type="submit" class="delete-report-btn">
                             Delete Report
@@ -285,9 +615,12 @@
 
             </div>
 
+
             {% endfor %}
 
+
             {% else %}
+
 
             <div class="empty-card">
 
@@ -301,6 +634,7 @@
 
             </div>
 
+
             {% endif %}
 
         </div>
@@ -308,15 +642,18 @@
     </section>
 
 
+
     <!-- =====================================================
          FOUND PERSONS
     ====================================================== -->
 
-    <section class="dashboard-section">
+    <section class="dashboard-section" id="found-persons">
 
         <div class="section-header">
 
-            <h2>Found Persons</h2>
+            <h2>
+                Found Persons
+            </h2>
 
             <span>
                 {{ found_count }} Records
@@ -325,22 +662,26 @@
         </div>
 
 
+
         <div class="case-grid">
 
             {% if found_people %}
 
+
             {% for person in found_people %}
 
-            <div class="case-card" data-search="
-                        {{ person.report_id }}
-                        {{ person.found_location }}
-                        {{ person.organization }}
-                        {{ person.police_station }}
-                    ">
 
-                <!-- =================================================
-                         IMAGE
-                    ================================================== -->
+            <div class="case-card" data-search="
+                            {{ person.report_id }}
+                            {{ person.found_location }}
+                            {{ person.organization }}
+                            {{ person.police_station }}
+                        ">
+
+
+                <!-- =================================
+                             IMAGE
+                        ================================== -->
 
                 {% if person.photo_url %}
 
@@ -355,22 +696,27 @@
                 {% endif %}
 
 
-                <!-- =================================================
-                         CASE INFORMATION
-                    ================================================== -->
+
+                <!-- =================================
+                             CASE INFORMATION
+                        ================================== -->
 
                 <div class="case-info">
+
 
                     <h3>
                         Unknown Person
                     </h3>
 
 
+
                     <!-- REPORT ID -->
 
                     <p class="report-id">
 
-                        <strong>Report ID:</strong>
+                        <strong>
+                            Report ID:
+                        </strong>
 
                         <span>
                             {{ person.report_id }}
@@ -379,25 +725,38 @@
                     </p>
 
 
+
                     <!-- ESTIMATED AGE -->
 
                     <p>
-                        <strong>Estimated Age:</strong>
+
+                        <strong>
+                            Estimated Age:
+                        </strong>
+
                         {{ person.estimated_age or "N/A" }}
+
                     </p>
+
 
 
                     <!-- LOCATION -->
 
                     <p>
-                        <strong>Location:</strong>
+
+                        <strong>
+                            Location:
+                        </strong>
+
                         {{ person.found_location or "N/A" }}
+
                     </p>
 
 
-                    <!-- =================================================
-                             CURRENT STATUS
-                        ================================================== -->
+
+                    <!-- =================================
+                                 CURRENT STATUS
+                            ================================== -->
 
                     <div class="status-section">
 
@@ -405,16 +764,24 @@
                             Current Status
                         </label>
 
-                        <span class="badge
-                                {% if person.status == 'submitted' %}
-                                    submitted
-                                {% elif person.status == 'investigating' %}
-                                    investigating
-                                {% elif person.status == 'potential_match' %}
-                                    potential-match
-                                {% elif person.status == 'found' %}
-                                    found
-                                {% endif %}">
+
+                        <span class="
+                                        badge
+
+                                        {% if person.status == 'submitted' %}
+                                            submitted
+
+                                        {% elif person.status == 'investigating' %}
+                                            investigating
+
+                                        {% elif person.status == 'potential_match' %}
+                                            potential-match
+
+                                        {% elif person.status == 'found' %}
+                                            found
+
+                                        {% endif %}
+                                    ">
 
                             {% if person.status == "submitted" %}
 
@@ -443,13 +810,15 @@
                     </div>
 
 
-                    <!-- =================================================
-                             STATUS UPDATE FORM
-                        ================================================== -->
+
+                    <!-- =================================
+                                 STATUS UPDATE FORM
+                            ================================== -->
 
                     <form action="{{ url_for('update_report_status') }}" method="POST" class="status-form">
 
                         <input type="hidden" name="report_id" value="{{ person.report_id }}">
+
 
                         <input type="hidden" name="report_type" value="found">
 
@@ -491,17 +860,16 @@
                     </form>
 
 
-                    <!-- =================================================
-                             DELETE REPORT FORM
-                             IMPORTANT:
-                             This is OUTSIDE the status form.
-                        ================================================== -->
+
+                    <!-- =================================
+                                 DELETE REPORT FORM
+                            ================================== -->
 
                     <form method="POST" action="{{ url_for(
-                                'delete_report',
-                                report_type='found',
-                                id=person.id
-                            ) }}" class="delete-form" onsubmit="return confirmDelete('{{ person.report_id }}');">
+                                    'delete_report',
+                                    report_type='found',
+                                    id=person.id
+                                ) }}" class="delete-form" onsubmit="return confirmDelete('{{ person.report_id }}');">
 
                         <button type="submit" class="delete-report-btn">
                             Delete Report
@@ -510,11 +878,15 @@
                     </form>
 
 
-                    <!-- =================================================
-                             AI MATCH
-                        ================================================== -->
 
-                    <a href="{{ url_for('ai_match', found_id=person.id) }}" class="ai-match-btn ai-loader-link">
+                    <!-- =================================
+                                 AI MATCH
+                            ================================== -->
+
+                    <a href="{{ url_for(
+                                    'ai_match',
+                                    found_id=person.id
+                                ) }}" class="ai-match-btn ai-loader-link">
                         AI Face Match
                     </a>
 
@@ -522,9 +894,12 @@
 
             </div>
 
+
             {% endfor %}
 
+
             {% else %}
+
 
             <div class="empty-card">
 
@@ -538,11 +913,13 @@
 
             </div>
 
+
             {% endif %}
 
         </div>
 
     </section>
+
 
 
     <!-- =====================================================
@@ -578,6 +955,7 @@
 {% endblock %}
 
 
+
 <!-- =========================================================
      JAVASCRIPT
 ========================================================= -->
@@ -586,318 +964,351 @@
 
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 
+
 <script>
 
-    document.addEventListener("DOMContentLoaded", function () {
-
-        /*
-         * =========================================================
-         * STATUS UPDATE
-         * =========================================================
-         */
-
-        const statusForms = document.querySelectorAll(".status-form");
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
 
 
-        statusForms.forEach(function (form) {
+            /* =====================================================
+               STATUS UPDATE
+            ====================================================== */
 
-            form.addEventListener("submit", async function (event) {
-
-                event.preventDefault();
-
-
-                const button = form.querySelector(".status-update-btn");
-
-                const select = form.querySelector("select");
+            const statusForms =
+                document.querySelectorAll(".status-form");
 
 
-                const reportIdInput = form.querySelector(
-                    'input[name="report_id"]'
-                );
+            statusForms.forEach(
+                function (form) {
 
 
-                const reportTypeInput = form.querySelector(
-                    'input[name="report_type"]'
-                );
+                    form.addEventListener(
+                        "submit",
+                        async function (event) {
+
+                            event.preventDefault();
 
 
-                if (
-                    !button ||
-                    !select ||
-                    !reportIdInput ||
-                    !reportTypeInput
-                ) {
-
-                    return;
-
-                }
+                            const button =
+                                form.querySelector(
+                                    ".status-update-btn"
+                                );
 
 
-                const reportId = reportIdInput.value;
-
-                const reportType = reportTypeInput.value;
-
-                const status = select.value;
-
-
-                const card = form.closest(".case-card");
+                            const select =
+                                form.querySelector(
+                                    "select"
+                                );
 
 
-                const badge = card
-                    ? card.querySelector(".status-section .badge")
-                    : null;
+                            const reportIdInput =
+                                form.querySelector(
+                                    'input[name="report_id"]'
+                                );
 
 
-                const originalText = button.textContent;
+                            const reportTypeInput =
+                                form.querySelector(
+                                    'input[name="report_type"]'
+                                );
 
 
-                /*
-                 * Prevent duplicate requests
-                 */
+                            if (
+                                !button ||
+                                !select ||
+                                !reportIdInput ||
+                                !reportTypeInput
+                            ) {
 
-                if (button.disabled) {
+                                return;
 
-                    return;
-
-                }
-
-
-                button.disabled = true;
-
-                button.textContent = "Updating...";
+                            }
 
 
-                try {
+                            const reportId =
+                                reportIdInput.value;
 
-                    const response = await fetch(
-                        "{{ url_for('update_report_status') }}",
-                        {
 
-                            method: "POST",
+                            const reportType =
+                                reportTypeInput.value;
 
-                            headers: {
 
-                                "Content-Type": "application/json",
+                            const status =
+                                select.value;
 
-                                "Accept": "application/json"
 
-                            },
+                            const card =
+                                form.closest(
+                                    ".case-card"
+                                );
 
-                            body: JSON.stringify({
 
-                                report_id: reportId,
+                            const badge =
+                                card
+                                    ? card.querySelector(
+                                        ".status-section .badge"
+                                    )
+                                    : null;
 
-                                status: status,
 
-                                report_type: reportType
+                            const originalText =
+                                button.textContent;
 
-                            })
+
+                            /* =====================================
+                               PREVENT DUPLICATE REQUESTS
+                            ====================================== */
+
+                            if (button.disabled) {
+
+                                return;
+
+                            }
+
+
+                            button.disabled = true;
+
+                            button.textContent =
+                                "Updating...";
+
+
+                            try {
+
+
+                                const response =
+                                    await fetch(
+                                        "{{ url_for('update_report_status') }}",
+                                        {
+
+                                            method: "POST",
+
+                                            headers: {
+
+                                                "Content-Type":
+                                                    "application/json",
+
+                                                "Accept":
+                                                    "application/json"
+
+                                            },
+
+                                            body:
+                                                JSON.stringify({
+
+                                                    report_id:
+                                                        reportId,
+
+                                                    status:
+                                                        status,
+
+                                                    report_type:
+                                                        reportType
+
+                                                })
+
+                                        }
+                                    );
+
+
+                                const result =
+                                    await response.json();
+
+
+                                if (
+                                    !response.ok ||
+                                    !result.success
+                                ) {
+
+                                    throw new Error(
+                                        result.message ||
+                                        "Unable to update report status."
+                                    );
+
+                                }
+
+
+                                /* =================================
+                                   STATUS LABELS
+                                ================================== */
+
+                                const statusLabels = {
+
+                                    submitted:
+                                        "Report Submitted",
+
+                                    investigating:
+                                        "Under Investigation",
+
+                                    potential_match:
+                                        "Potential Match Found",
+
+                                    found:
+                                        "Person Found"
+
+                                };
+
+
+                                /* =================================
+                                   UPDATE BADGE
+                                ================================== */
+
+                                if (badge) {
+
+                                    badge.textContent =
+                                        statusLabels[status] ||
+                                        "Report Submitted";
+
+
+                                    badge.classList.remove(
+
+                                        "submitted",
+
+                                        "investigating",
+
+                                        "potential-match",
+
+                                        "found"
+
+                                    );
+
+
+                                    if (
+                                        status ===
+                                        "potential_match"
+                                    ) {
+
+                                        badge.classList.add(
+                                            "potential-match"
+                                        );
+
+                                    } else {
+
+                                        badge.classList.add(
+                                            status
+                                        );
+
+                                    }
+
+                                }
+
+
+                                /* =================================
+                                   SUCCESS STATE
+                                ================================== */
+
+                                button.textContent =
+                                    "✓ Updated";
+
+
+                                if (card) {
+
+                                    card.classList.add(
+                                        "status-updated"
+                                    );
+
+
+                                    setTimeout(
+                                        function () {
+
+                                            card.classList.remove(
+                                                "status-updated"
+                                            );
+
+                                        },
+                                        800
+                                    );
+
+                                }
+
+
+                                /* =================================
+                                   RESTORE BUTTON
+                                ================================== */
+
+                                setTimeout(
+                                    function () {
+
+                                        button.textContent =
+                                            originalText;
+
+                                        button.disabled =
+                                            false;
+
+                                    },
+                                    1500
+                                );
+
+
+                            } catch (error) {
+
+
+                                console.error(
+                                    "STATUS UPDATE ERROR:",
+                                    error
+                                );
+
+
+                                button.textContent =
+                                    "Update Failed";
+
+
+                                setTimeout(
+                                    function () {
+
+                                        button.textContent =
+                                            originalText;
+
+                                        button.disabled =
+                                            false;
+
+                                    },
+                                    2000
+                                );
+
+                            }
 
                         }
                     );
 
-
-                    const result = await response.json();
-
-
-                    if (
-                        !response.ok ||
-                        !result.success
-                    ) {
-
-                        throw new Error(
-                            result.message ||
-                            "Unable to update report status."
-                        );
-
-                    }
+                }
+            );
 
 
-                    /*
-                     * =====================================================
-                     * STATUS LABELS
-                     * =====================================================
-                     */
 
-                    const statusLabels = {
+            /* =====================================================
+               DELETE FORM PROTECTION
+            ====================================================== */
 
-                        submitted:
-                            "Report Submitted",
-
-                        investigating:
-                            "Under Investigation",
-
-                        potential_match:
-                            "Potential Match Found",
-
-                        found:
-                            "Person Found"
-
-                    };
+            const deleteForms =
+                document.querySelectorAll(
+                    ".delete-form"
+                );
 
 
-                    /*
-                     * =====================================================
-                     * UPDATE BADGE
-                     * =====================================================
-                     */
+            deleteForms.forEach(
+                function (form) {
 
-                    if (badge) {
+                    form.addEventListener(
+                        "submit",
+                        function (event) {
 
-                        badge.textContent =
-                            statusLabels[status] ||
-                            "Report Submitted";
-
-
-                        /*
-                         * Remove old classes
-                         */
-
-                        badge.classList.remove(
-                            "submitted",
-                            "investigating",
-                            "potential-match",
-                            "found"
-                        );
-
-
-                        /*
-                         * Add new class
-                         */
-
-                        if (status === "potential_match") {
-
-                            badge.classList.add(
-                                "potential-match"
-                            );
-
-                        } else {
-
-                            badge.classList.add(status);
+                            event.stopPropagation();
 
                         }
-
-                    }
-
-
-                    /*
-                     * =====================================================
-                     * SUCCESS STATE
-                     * =====================================================
-                     */
-
-                    button.textContent = "✓ Updated";
-
-
-                    /*
-                     * Small success animation
-                     */
-
-                    if (card) {
-
-                        card.classList.add(
-                            "status-updated"
-                        );
-
-
-                        setTimeout(function () {
-
-                            card.classList.remove(
-                                "status-updated"
-                            );
-
-                        }, 800);
-
-                    }
-
-
-                    /*
-                     * Restore button
-                     */
-
-                    setTimeout(function () {
-
-                        button.textContent =
-                            originalText;
-
-                        button.disabled = false;
-
-                    }, 1500);
-
-
-                } catch (error) {
-
-                    console.error(
-                        "STATUS UPDATE ERROR:",
-                        error
                     );
 
-
-                    /*
-                     * Error state
-                     */
-
-                    button.textContent =
-                        "Update Failed";
-
-
-                    setTimeout(function () {
-
-                        button.textContent =
-                            originalText;
-
-                        button.disabled = false;
-
-                    }, 2000);
-
                 }
-
-            });
-
-        });
-
-
-        /*
-         * =========================================================
-         * DELETE FORM PROTECTION
-         * =========================================================
-         *
-         * Explicitly prevent the delete form from being treated
-         * as a status form.
-         *
-         * The delete request is handled normally by Flask.
-         * =========================================================
-         */
-
-        const deleteForms =
-            document.querySelectorAll(".delete-form");
-
-
-        deleteForms.forEach(function (form) {
-
-            form.addEventListener("submit", function (event) {
-
-                /*
-                 * Stop this event from bubbling to any parent.
-                 *
-                 * This is extra protection against accidental
-                 * status updates.
-                 */
-
-                event.stopPropagation();
-
-            });
+            );
 
         });
 
-    });
 
 
-    /*
-     * =========================================================
-     * DELETE CONFIRMATION
-     * =========================================================
-     */
+    /* =========================================================
+       DELETE CONFIRMATION
+    ========================================================= */
 
     function confirmDelete(reportId) {
 

@@ -2101,7 +2101,13 @@ def logout():
 def dashboard():
 
     if not session.get("organization"):
-        return redirect(url_for("login"))
+        return redirect(
+            url_for("login")
+        )
+
+    # ==========================================
+    # GET ALL REPORTS
+    # ==========================================
 
     missing_people = MissingPerson.query.order_by(
         MissingPerson.created_at.desc()
@@ -2112,7 +2118,68 @@ def dashboard():
     ).all()
 
     # ==========================================
-    # Generate Signed URLs for Missing Photos
+    # NEW CASES
+    # ==========================================
+    # Only newly submitted cases are considered
+    # new cases.
+    #
+    # We use the existing created_at field.
+    # No new database table is required.
+    # ==========================================
+
+    new_missing = MissingPerson.query.filter_by(
+        status="submitted"
+    ).order_by(
+        MissingPerson.created_at.desc()
+    ).limit(5).all()
+
+    new_found = FoundPerson.query.filter_by(
+        status="submitted"
+    ).order_by(
+        FoundPerson.created_at.desc()
+    ).limit(5).all()
+
+    # ==========================================
+    # COMBINE NEW CASES
+    # ==========================================
+
+    new_cases = []
+
+    for person in new_missing:
+
+        new_cases.append({
+            "type": "missing",
+            "report_id": person.report_id,
+            "name": person.name,
+            "location": person.last_seen_location,
+            "created_at": person.created_at
+        })
+
+    for person in new_found:
+
+        new_cases.append({
+            "type": "found",
+            "report_id": person.report_id,
+            "name": "Unknown Person",
+            "location": person.found_location,
+            "created_at": person.created_at
+        })
+
+    # ==========================================
+    # SORT NEW CASES
+    # ==========================================
+
+    new_cases.sort(
+        key=lambda case: case["created_at"],
+        reverse=True
+    )
+
+    # Show only latest 5
+    new_cases = new_cases[:5]
+
+    # ==========================================
+    # GENERATE SIGNED URLs
+    # FOR MISSING PHOTOS
     # ==========================================
 
     for person in missing_people:
@@ -2130,21 +2197,31 @@ def dashboard():
                     3600
                 )
 
-                if isinstance(signed_response, dict):
+                if isinstance(
+                    signed_response,
+                    dict
+                ):
 
                     person.photo_url = (
-                        signed_response.get("signedURL")
-                        or signed_response.get("signedUrl")
+                        signed_response.get(
+                            "signedURL"
+                        )
+                        or
+                        signed_response.get(
+                            "signedUrl"
+                        )
                     )
 
             except Exception as e:
 
                 print(
-                    f"Missing photo URL error for {person.id}: {e}"
+                    f"Missing photo URL error for "
+                    f"{person.id}: {e}"
                 )
 
     # ==========================================
-    # Generate Signed URLs for Found Photos
+    # GENERATE SIGNED URLs
+    # FOR FOUND PHOTOS
     # ==========================================
 
     for person in found_people:
@@ -2162,26 +2239,39 @@ def dashboard():
                     3600
                 )
 
-                if isinstance(signed_response, dict):
+                if isinstance(
+                    signed_response,
+                    dict
+                ):
 
                     person.photo_url = (
-                        signed_response.get("signedURL")
-                        or signed_response.get("signedUrl")
+                        signed_response.get(
+                            "signedURL"
+                        )
+                        or
+                        signed_response.get(
+                            "signedUrl"
+                        )
                     )
 
             except Exception as e:
 
                 print(
-                    f"Found photo URL error for {person.id}: {e}"
+                    f"Found photo URL error for "
+                    f"{person.id}: {e}"
                 )
 
     # ==========================================
-    # Dashboard
+    # DASHBOARD COUNTS
     # ==========================================
 
     missing_count = MissingPerson.query.count()
 
     found_count = FoundPerson.query.count()
+
+    # ==========================================
+    # DASHBOARD
+    # ==========================================
 
     return render_template(
 
@@ -2193,11 +2283,11 @@ def dashboard():
 
         missing_count=missing_count,
 
-        found_count=found_count
+        found_count=found_count,
+
+        new_cases=new_cases
 
     )
-
-
 # ==========================================
 # DELETE REPORT
 # ==========================================
