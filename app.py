@@ -2174,7 +2174,26 @@ def dashboard():
 
     if not last_notification_check:
 
+    # ==============================================
+    # FIRST DASHBOARD VISIT
+    # ==============================================
+    #
+    # Establish notification baseline.
+    #
+    # Old cases before this moment will not be
+    # considered new.
+    #
+    # This timestamp MUST be saved.
+    #
+    # ==============================================
+
         notification_start = now
+
+        session["last_notification_check"] = (
+            now.isoformat()
+        )
+
+        session.modified = True
 
     else:
 
@@ -2186,7 +2205,17 @@ def dashboard():
 
         except (ValueError, TypeError):
 
+            # ==========================================
+            # INVALID SESSION TIMESTAMP
+            # ==========================================
+
             notification_start = now
+
+            session["last_notification_check"] = (
+                now.isoformat()
+            )
+
+            session.modified = True
 
 
     # ========================================================
