@@ -1,199 +1,224 @@
 /* ==========================================
-   MissingLink AI
-   Report Found UI
+   FOUND PERSON REPORT
+   Uses Report Missing Wizard Styles
 ========================================== */
-
-/* Reuse all styles from Report Missing */
 
 @import url("report_missing.css");
 
 
-/* ===============================
-   Accent Colors
-=============================== */
+/* ==========================================
+   FOUND PAGE ACCENT
+========================================== */
 
 :root {
-
     --primary: #0ea5e9;
-
     --primary-light: #38bdf8;
-
 }
 
 
-/* ===============================
-   Upload Icon
-=============================== */
+/* ==========================================
+   FOUND HEADER
+========================================== */
 
-.upload-icon {
+.page-eyebrow {
+    color: #38bdf8;
+}
 
-    background: linear-gradient(135deg, #0ea5e9, #06b6d4);
-
+.step-counter {
+    background: rgba(14, 165, 233, 0.14);
+    border-color: rgba(56, 189, 248, 0.28);
+    color: #7dd3fc;
 }
 
 
-/* ===============================
-   Submit Button
-=============================== */
+/* ==========================================
+   ACTIVE STEP
+========================================== */
 
-.submit-btn {
-
-    background: linear-gradient(135deg, #0ea5e9, #38bdf8);
-
-    box-shadow: 0 15px 35px rgba(14, 165, 233, .35);
-
-}
-
-.submit-btn:hover {
-
-    box-shadow: 0 20px 40px rgba(14, 165, 233, .45);
-
-}
-
-
-/* ===============================
-   AI Status Panel
-=============================== */
-
-.ai-status {
-
-    margin-top: 20px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 12px;
-
-}
-
-
-.status-item {
-
-    padding: 12px 18px;
-
-    background: rgba(255, 255, 255, .05);
-
-    border: 1px solid rgba(255, 255, 255, .08);
-
-    border-radius: 12px;
-
-    color: #d1d5db;
-
-    font-size: 14px;
-
-    transition: .3s;
-
-}
-
-
-.status-item:hover {
-
-    background: rgba(14, 165, 233, .12);
+.step.active .step-number {
+    background: linear-gradient(135deg,
+            #0ea5e9,
+            #38bdf8);
 
     border-color: #38bdf8;
 
-    transform: translateX(6px);
-
+    box-shadow:
+        0 0 25px rgba(14, 165, 233, 0.35);
 }
 
 
-/* ===============================
-   Condition Dropdown
-=============================== */
+/* ==========================================
+   SECTION BADGE
+========================================== */
 
-select[name="condition"] {
-
-    font-weight: 600;
-
+.section-badge {
+    background: rgba(14, 165, 233, 0.14);
+    color: #7dd3fc;
 }
 
 
-/* ===============================
-   Form Heading
-=============================== */
+/* ==========================================
+   UPLOAD ICON
+========================================== */
 
-.form-card h1 {
-
-    color: white;
-
+.upload-icon {
+    background: linear-gradient(135deg,
+            #0ea5e9,
+            #06b6d4);
 }
 
 
-/* ===============================
-   Upload Card Hover
-=============================== */
+/* ==========================================
+   UPLOAD AREA
+========================================== */
 
-.upload-card:hover {
+.upload-box {
+    border-color:
+        rgba(56, 189, 248, 0.45);
+}
+
+.upload-box:hover,
+.upload-box.dragover {
+    border-color: #38bdf8;
+
+    background:
+        rgba(14, 165, 233, 0.08);
+}
+
+.upload-image-icon {
+    background:
+        rgba(14, 165, 233, 0.18);
+
+    color: #7dd3fc;
+}
+
+
+/* ==========================================
+   INPUT FOCUS
+========================================== */
+
+.input-group input:focus,
+.input-group select:focus,
+.input-group textarea:focus,
+.location-search:focus {
+    border-color: #38bdf8;
 
     box-shadow:
-
-        0 25px 60px rgba(0, 0, 0, .45),
-
-        0 0 30px rgba(14, 165, 233, .18);
-
+        0 0 0 3px rgba(14, 165, 233, 0.12);
 }
 
-#para {
+
+/* ==========================================
+   LOCATION
+========================================== */
+
+.location-current-btn {
+    border-color:
+        rgba(56, 189, 248, 0.30);
+
+    background:
+        rgba(14, 165, 233, 0.10);
+
+    color: #7dd3fc;
+}
+
+.location-current-btn:hover {
+    background:
+        rgba(14, 165, 233, 0.18);
+}
+
+
+/* ==========================================
+   CONDITION
+========================================== */
+
+.condition-group {
+    margin-top: 28px;
+}
+
+.description-group {
+    margin-top: 20px;
+}
+
+
+/* ==========================================
+   NEXT BUTTON
+========================================== */
+
+.next-btn {
+    background: linear-gradient(135deg,
+            #0ea5e9,
+            #38bdf8);
+
+    box-shadow:
+        0 12px 30px rgba(14, 165, 233, 0.28);
+}
+
+.next-btn:hover {
+    box-shadow:
+        0 18px 35px rgba(14, 165, 233, 0.40);
+}
+
+
+/* ==========================================
+   SUBMIT BUTTON
+========================================== */
+
+.submit-btn {
+    background: linear-gradient(135deg,
+            #0ea5e9,
+            #38bdf8);
+
+    box-shadow:
+        0 15px 35px rgba(14, 165, 233, 0.35);
+}
+
+.submit-btn:hover {
+    box-shadow:
+        0 20px 40px rgba(14, 165, 233, 0.45);
+}
+
+
+/* ==========================================
+   SELECT
+========================================== */
+
+select {
     color: white;
+    background:
+        rgba(255, 255, 255, 0.08);
 }
+
+select option {
+    color: white;
+    background: #07111f;
+}
+
+
+/* ==========================================
+   PLACEHOLDERS
+========================================== */
 
 input::placeholder,
 textarea::placeholder {
-
-    color: #ffffff;
-
-    opacity: 1;
-
-}
-
-select {
-
-    color: white;
-
-    background: rgba(255, 255, 255, 0.08);
-
+    color: rgba(255, 255, 255, 0.48);
 }
 
 
-select option {
+/* ==========================================
+   PHOTO QUALITY
+========================================== */
 
-    color: white;
-
-    background: #07111f;
-
-}
-
-/* ===============================
-   Animation
-=============================== */
-
-.status-item {
-
-    animation: slideIn .6s ease;
-
+.progress-bar {
+    background: linear-gradient(90deg,
+            #0ea5e9,
+            #22c55e);
 }
 
 
-@keyframes slideIn {
-
-    from {
-
-        opacity: 0;
-
-        transform: translateX(-20px);
-
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform: translateX(0);
-
-    }
-
-}
+/* ==========================================
+   FACE ERROR
+========================================== */
 
 .face-error {
     display: flex;
@@ -203,14 +228,15 @@ select option {
     margin-top: 16px;
     padding: 14px 16px;
 
-    border-radius: 10px;
+    border-radius: 14px;
 
-    background: #fff1f1;
-    border: 1px solid #f2b8b8;
+    background:
+        rgba(239, 68, 68, 0.10);
 
-    color: #b42318;
+    border:
+        1px solid rgba(239, 68, 68, 0.35);
 
-    text-align: left;
+    color: #fca5a5;
 }
 
 .face-error-icon {
@@ -224,7 +250,7 @@ select option {
 
     border-radius: 50%;
 
-    background: #b42318;
+    background: #ef4444;
     color: white;
 
     font-size: 14px;
@@ -244,4 +270,112 @@ select option {
 
     font-size: 13px;
     line-height: 1.5;
+}
+
+
+/* ==========================================
+   RESPONSIVE ADJUSTMENTS
+========================================== */
+
+@media (max-width: 768px) {
+
+    .condition-group,
+    .description-group {
+        margin-top: 22px;
+    }
+
+}
+
+/* =========================================================
+   HOME BUTTON
+========================================================= */
+
+.report-home-btn {
+
+    position: absolute;
+
+    top: 35px;
+    left: 40px;
+
+    display: inline-flex;
+
+    align-items: center;
+    gap: 9px;
+
+    padding: 11px 18px;
+
+    border-radius: 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.10);
+
+    background: rgba(255, 255, 255, 0.05);
+
+    color: #ffffff;
+
+    text-decoration: none;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    transition: all 0.25s ease;
+
+    backdrop-filter: blur(12px);
+
+    z-index: 20;
+}
+
+
+.report-home-btn span {
+
+    font-size: 18px;
+
+    line-height: 1;
+
+    transition: transform 0.25s ease;
+
+}
+
+
+.report-home-btn:hover {
+
+    background: rgba(37, 99, 235, 0.15);
+
+    border-color: rgba(59, 130, 246, 0.45);
+
+    color: #ffffff;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 8px 25px rgba(37, 99, 235, 0.15);
+
+}
+
+
+.report-home-btn:hover span {
+
+    transform: translateX(-3px);
+
+}
+
+
+/* =========================================================
+   HOME BUTTON — MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .report-home-btn {
+
+        top: 20px;
+
+        left: 20px;
+
+        padding: 9px 14px;
+
+        font-size: 13px;
+
+    }
+
 }

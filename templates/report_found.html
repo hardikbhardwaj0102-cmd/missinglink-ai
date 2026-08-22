@@ -11,104 +11,152 @@
 
 {% block content %}
 
-<form action="/report-found" method="POST" enctype="multipart/form-data" class="report-page">
+<form action="/report-found" method="POST" enctype="multipart/form-data" class="report-page" id="foundReportForm">
+    <!-- =========================
+     HOME BUTTON
+========================== -->
 
+    <a href="{{ url_for('home') }}" class="report-home-btn">
+        <span>←</span>
+        Home
+    </a>
 
-    <!-- =====================================================
-         LEFT SIDE
-    ====================================================== -->
+    <!-- =========================================
+         PAGE HEADER
+    ========================================== -->
 
-    <div class="upload-section">
+    <div class="wizard-header">
 
-        <div class="upload-card">
+        <div class="wizard-title-row">
 
-            <div class="upload-icon">
-                📷
-            </div>
+            <div>
 
-
-            <h2>
-                Upload Photo
-            </h2>
-
-
-            <p id="para">
-                Upload a clear front-facing image for the best
-                AI matching accuracy.
-            </p>
-
-
-            <!-- PHOTO UPLOAD -->
-
-            <label for="photoInput" class="upload-box">
-
-                <img id="previewImage" src="{{ url_for(
-                        'static',
-                        filename='images/upload-placeholder.png'
-                    ) }}" alt="Preview">
-
-                <span>
-                    Click to Upload
+                <span class="page-eyebrow">
+                    FOUND PERSON REPORT
                 </span>
 
-            </label>
+                <h1>
+                    Report Found Person
+                </h1>
+
+                <p>
+                    Provide information step by step to help identify
+                    and reunite the person with their family.
+                </p>
+
+            </div>
 
 
-            <input type="file" id="photoInput" name="photo" accept="image/*" required>
+            <div class="step-counter" id="stepCounter">
+
+                Step 1 of 3
+
+            </div>
+
+        </div>
 
 
-            <!-- =================================================
-                 FACE ERROR
-            ================================================== -->
+        <!-- STEPS -->
 
-            {% if face_error %}
+        <div class="steps">
 
-            <div class="face-error">
 
-                <div class="face-error-icon">
-                    !
+            <div class="step active" id="stepIndicator1">
+
+                <div class="step-number">
+
+                    <span class="step-default">
+                        01
+                    </span>
+
+                    <span class="step-check">
+                        ✓
+                    </span>
+
                 </div>
 
 
-                <div class="face-error-content">
+                <div class="step-label">
 
                     <strong>
-                        Photo Validation Failed
+                        Person
                     </strong>
 
-
-                    <p>
-                        {{ face_error }}
-                    </p>
+                    <span>
+                        Basic details
+                    </span>
 
                 </div>
 
             </div>
 
-            {% endif %}
+
+            <div class="step-line">
+                <span class="step-line-progress"></span>
+            </div>
 
 
-            <!-- =================================================
-                 AI PHOTO QUALITY
-            ================================================== -->
+            <div class="step" id="stepIndicator2">
 
-            <div class="ai-score">
+                <div class="step-number">
 
-                <h3>
-                    AI Photo Quality
-                </h3>
+                    <span class="step-default">
+                        02
+                    </span>
 
-
-                <div class="progress">
-
-                    <div class="progress-bar"></div>
+                    <span class="step-check">
+                        ✓
+                    </span>
 
                 </div>
 
 
-                <p>
-                    Waiting for image...
-                </p>
+                <div class="step-label">
+
+                    <strong>
+                        Found Details
+                    </strong>
+
+                    <span>
+                        Location and condition
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="step-line">
+                <span class="step-line-progress"></span>
+            </div>
+
+
+            <div class="step" id="stepIndicator3">
+
+                <div class="step-number">
+
+                    <span class="step-default">
+                        03
+                    </span>
+
+                    <span class="step-check">
+                        ✓
+                    </span>
+
+                </div>
+
+
+                <div class="step-label">
+
+                    <strong>
+                        Finder
+                    </strong>
+
+                    <span>
+                        Contact information
+                    </span>
+
+                </div>
 
             </div>
 
@@ -118,75 +166,437 @@
 
 
 
-    <!-- =====================================================
-         RIGHT SIDE
-    ===================================================== -->
+    <!-- =========================================
+         WIZARD
+    ========================================== -->
 
-    <div class="form-section">
-
-        <div class="form-card">
+    <div class="wizard-container">
 
 
-            <!-- =================================================
-                 HEADER
-            ================================================== -->
+        <!-- =====================================
+             STEP 1 — FOUND PERSON
+        ====================================== -->
 
-            <h1>
-                Report Found Person
-            </h1>
+        <section class="wizard-step active-step" id="step1">
 
-
-            <p id="para">
-                Submit information about a found individual.
-                The report will be securely stored and later
-                compared with missing person records.
-            </p>
+            <div class="step-card person-step-card">
 
 
+                <!-- PHOTO -->
 
-            <!-- =================================================
-                 FOUND PERSON DETAILS
-            ================================================== -->
+                <div class="upload-section">
 
-            <div class="form-grid">
+                    <div class="section-heading">
+
+                        <div class="section-badge">
+                            STEP 01
+                        </div>
+
+                        <h2>
+                            Found Person
+                        </h2>
+
+                        <p>
+                            Upload a clear photo and provide the
+                            person's visible characteristics.
+                        </p>
+
+                    </div>
 
 
-                <!-- ESTIMATED AGE -->
+                    <div class="upload-card">
 
-                <div class="input-group">
+                        <div class="upload-icon">
+                            📷
+                        </div>
 
-                    <label>
-                        Estimated Age
-                    </label>
+                        <h3>
+                            Upload Photo
+                        </h3>
+
+                        <p>
+                            A clear front-facing photo improves
+                            AI matching accuracy.
+                        </p>
 
 
-                    <input type="number" name="estimated_age" placeholder="Approximate age" min="0" max="120" required>
+                        <label for="photoInput" class="upload-box" id="uploadBox">
+
+                            <div class="upload-placeholder" id="uploadPlaceholder">
+
+                                <span class="upload-image-icon">
+                                    ↑
+                                </span>
+
+                                <strong>
+                                    Drag & drop photo
+                                </strong>
+
+                                <small>
+                                    or click to browse
+                                </small>
+
+                            </div>
+
+
+                            <img id="previewImage" class="preview-image" alt="Selected photo preview">
+
+                        </label>
+
+
+                        <input type="file" id="photoInput" name="photo" accept="image/*" required>
+
+
+                        {% if face_error %}
+
+                        <div class="face-error">
+
+                            <div class="face-error-icon">
+                                !
+                            </div>
+
+                            <div class="face-error-content">
+
+                                <strong>
+                                    Photo Validation Failed
+                                </strong>
+
+                                <p>
+                                    {{ face_error }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                        {% endif %}
+
+
+                        <div class="ai-score">
+
+                            <div class="score-header">
+
+                                <h3>
+                                    AI Photo Quality
+                                </h3>
+
+                                <span id="qualityPercentage">
+                                    --
+                                </span>
+
+                            </div>
+
+
+                            <div class="progress">
+
+                                <div class="progress-bar" id="progressBar">
+                                </div>
+
+                            </div>
+
+
+                            <p id="qualityText">
+                                Waiting for image...
+                            </p>
+
+                        </div>
+
+                    </div>
 
                 </div>
 
 
 
-                <!-- GENDER -->
+                <!-- PERSON DETAILS -->
 
-                <div class="input-group">
+                <div class="person-form-section">
 
-                    <label>
-                        Gender
+                    <div class="form-grid">
+
+
+                        <!-- AGE -->
+
+                        <div class="input-group">
+
+                            <label for="estimatedAge">
+                                Estimated Age
+                            </label>
+
+                            <input type="number" id="estimatedAge" name="estimated_age" placeholder="Approximate age"
+                                min="0" max="120" required>
+
+                        </div>
+
+
+                        <!-- GENDER -->
+
+                        <div class="input-group">
+
+                            <label for="gender">
+                                Gender
+                            </label>
+
+                            <select id="gender" name="gender" required>
+
+                                <option value="" selected disabled>
+
+                                    Select gender
+
+                                </option>
+
+                                <option value="Male">
+                                    Male
+                                </option>
+
+                                <option value="Female">
+                                    Female
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <!-- HEIGHT -->
+
+                        <div class="input-group full-width">
+
+                            <label for="height">
+
+                                Height
+
+                                <span class="optional">
+                                    Optional
+                                </span>
+
+                            </label>
+
+                            <input type="text" id="height" name="height" placeholder="e.g. 170 cm">
+
+                        </div>
+
+
+                        <!-- CLOTHING -->
+
+                        <div class="input-group full-width">
+
+                            <label for="clothing">
+
+                                Clothing
+
+                                <span class="optional">
+                                    Optional
+                                </span>
+
+                            </label>
+
+                            <textarea id="clothing" name="clothing" rows="4"
+                                placeholder="Example: Blue T-shirt, black jeans, shoes, accessories..."></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="wizard-buttons person-buttons">
+
+                        <div class="step-help">
+                            Complete the required information to continue.
+                        </div>
+
+
+                        <button type="button" class="next-btn" id="step1Next">
+
+                            Continue
+                            <span>→</span>
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =====================================
+             STEP 2 — FOUND DETAILS
+        ====================================== -->
+
+        <section class="wizard-step" id="step2">
+
+            <div class="full-step-card">
+
+                <div class="section-badge">
+                    STEP 02
+                </div>
+
+                <h2>
+                    Found Details
+                </h2>
+
+                <p class="section-description">
+                    Tell us when, where, and in what condition the
+                    person was found.
+                </p>
+
+
+                <!-- DATE / TIME -->
+
+                <div class="form-grid location-date-grid">
+
+                    <div class="input-group">
+
+                        <label for="foundDate">
+                            Found Date
+                        </label>
+
+                        <input type="date" name="found_date" id="foundDate" required>
+
+                    </div>
+
+
+                    <div class="input-group">
+
+                        <label for="foundTime">
+
+                            Found Time
+
+                            <span class="optional">
+                                Optional
+                            </span>
+
+                        </label>
+
+                        <input type="time" name="found_time" id="foundTime">
+
+                    </div>
+
+                </div>
+
+
+                <!-- LOCATION -->
+
+                <div class="location-picker">
+
+                    <div class="location-picker-header">
+
+                        <div>
+
+                            <h3 class="location-picker-title">
+                                Where was the person found?
+                            </h3>
+
+                            <p class="location-picker-subtitle">
+                                Search for an address, area, landmark
+                                or city and select the correct location.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="location-search-wrapper">
+
+                        <input type="text" id="foundLocationSearch" class="location-search"
+                            placeholder="Search address, area, landmark or city..." autocomplete="off">
+
+
+                        <div id="foundLocationResults" class="location-search-results">
+                        </div>
+
+                    </div>
+
+
+                    <!-- SELECTED LOCATION -->
+
+                    <div id="foundLocationSelected" class="location-selected">
+
+                        <div class="location-selected-status">
+                            ✓ Location Selected
+                        </div>
+
+                        <div id="foundLocationName" class="location-selected-name">
+                        </div>
+
+                        <div id="foundCoordinates" class="location-coordinates">
+                        </div>
+
+                    </div>
+
+
+                    <div id="foundLocationError" class="location-error">
+                    </div>
+
+
+                    <!-- HIDDEN VALUES -->
+
+                    <input type="hidden" name="found_location" id="foundLocationValue">
+
+
+                    <input type="hidden" name="found_latitude" id="foundLatitude">
+
+
+                    <input type="hidden" name="found_longitude" id="foundLongitude">
+
+
+                    <!-- CURRENT LOCATION -->
+
+                    <button type="button" id="foundCurrentLocation" class="location-current-btn">
+
+                        <span>⌖</span>
+
+                        <span>
+                            Use My Current Location
+                        </span>
+
+                    </button>
+
+                </div>
+
+
+                <!-- CONDITION -->
+
+                <div class="input-group condition-group">
+
+                    <label for="condition">
+                        Current Condition
                     </label>
 
+                    <select name="condition" id="condition" required>
 
-                    <select name="gender">
+                        <option value="" selected disabled>
 
-                        <option value="Male">
-                            Male
+                            Select condition
+
                         </option>
 
-                        <option value="Female">
-                            Female
+                        <option value="Healthy">
+                            Healthy
                         </option>
 
-                        <option value="Other">
-                            Other
+                        <option value="Minor Injuries">
+                            Minor Injuries
+                        </option>
+
+                        <option value="Seriously Injured">
+                            Seriously Injured
+                        </option>
+
+                        <option value="Unconscious">
+                            Unconscious
+                        </option>
+
+                        <option value="Needs Medical Attention">
+                            Needs Medical Attention
                         </option>
 
                     </select>
@@ -194,92 +604,182 @@
                 </div>
 
 
+                <!-- DESCRIPTION -->
 
-                <!-- HEIGHT -->
+                <div class="input-group description-group">
 
-                <div class="input-group">
+                    <label for="description">
 
-                    <label>
-                        Height
+                        Description
+
+                        <span class="optional">
+                            Optional
+                        </span>
+
                     </label>
 
-
-                    <input type="text" name="height" placeholder="e.g. 170 cm">
+                    <textarea id="description" rows="5" name="description"
+                        placeholder="Describe appearance, behaviour, identifying marks, accessories, or any useful observations."></textarea>
 
                 </div>
 
 
+                <!-- BUTTONS -->
 
-                <!-- CLOTHING -->
+                <div class="wizard-buttons">
 
-                <div class="input-group">
+                    <button type="button" class="back-btn" id="step2Back">
 
-                    <label>
-                        Clothing
-                    </label>
+                        ← Back
 
-
-                    <input type="text" name="clothing" placeholder="Blue T-shirt, Black Jeans">
-
-                </div>
+                    </button>
 
 
+                    <button type="button" class="next-btn" id="step2Next">
 
-                <!-- FOUND DATE -->
+                        Continue
+                        <span>→</span>
 
-                <div class="input-group">
-
-                    <label>
-                        Found Date
-                    </label>
-
-
-                    <input type="date" name="found_date" id="foundDate" required>
-
-                </div>
-
-
-
-                <!-- FOUND TIME -->
-
-                <div class="input-group">
-
-                    <label>
-                        Found Time
-                    </label>
-
-
-                    <input type="time" name="found_time">
+                    </button>
 
                 </div>
 
             </div>
 
+        </section>
 
 
-            <!-- =================================================
-                 FOUND LOCATION
-            ================================================== -->
 
-            <div class="location-picker">
+        <!-- =====================================
+             STEP 3 — FINDER
+        ====================================== -->
+
+        <section class="wizard-step" id="step3">
+
+            <div class="full-step-card">
+
+                <div class="section-badge">
+                    STEP 03
+                </div>
+
+                <h2>
+                    Finder Information
+                </h2>
+
+                <p class="section-description">
+                    Provide contact information so authorities or family
+                    members can contact you regarding this report.
+                </p>
 
 
-                <!-- LOCATION HEADER -->
+                <div class="form-grid">
 
-                <div class="location-picker-header">
+
+                    <!-- FINDER NAME -->
+
+                    <div class="input-group">
+
+                        <label for="finderName">
+                            Finder Name
+                        </label>
+
+                        <input type="text" id="finderName" name="finder_name" placeholder="Enter your full name"
+                            required>
+
+                    </div>
+
+
+                    <!-- PHONE -->
+
+                    <div class="input-group">
+
+                        <label for="phone">
+                            Phone Number
+                        </label>
+
+                        <input type="tel" id="phone" name="phone" placeholder="+91 XXXXX XXXXX" required>
+
+                    </div>
+
+
+                    <!-- EMAIL -->
+
+                    <div class="input-group">
+
+                        <label for="email">
+
+                            Email
+
+                            <span class="optional">
+                                Optional
+                            </span>
+
+                        </label>
+
+                        <input type="email" id="email" name="email" placeholder="example@email.com" required>
+
+                    </div>
+
+
+                    <!-- ORGANIZATION -->
+
+                    <div class="input-group">
+
+                        <label for="organization">
+
+                            Organization
+
+                            <span class="optional">
+                                Optional
+                            </span>
+
+                        </label>
+
+                        <input type="text" id="organization" name="organization"
+                            placeholder="NGO / Hospital / Volunteer">
+
+                    </div>
+
+
+                    <!-- POLICE STATION -->
+
+                    <div class="input-group full-width">
+
+                        <label for="policeStation">
+
+                            Police Station
+
+                            <span class="optional">
+                                Optional
+                            </span>
+
+                        </label>
+
+                        <input type="text" id="policeStation" name="police_station"
+                            placeholder="Enter police station name">
+
+                    </div>
+
+                </div>
+
+
+                <!-- READY MESSAGE -->
+
+                <div class="final-message">
+
+                    <div class="final-icon">
+                        ✓
+                    </div>
 
                     <div>
 
-                        <h3 class="location-picker-title">
-                            Found Location
-                        </h3>
+                        <strong>
+                            Ready to submit
+                        </strong>
 
-
-                        <p class="location-picker-subtitle">
-                            Search for the place where the person
-                            was found. Select a location from the
-                            suggestions to automatically capture
-                            its coordinates.
+                        <p>
+                            Please make sure the information is correct
+                            before submitting the found person report.
                         </p>
 
                     </div>
@@ -287,258 +787,28 @@
                 </div>
 
 
+                <!-- BUTTONS -->
 
-                <!-- =================================================
-                     SEARCH
-                ================================================== -->
+                <div class="wizard-buttons">
 
-                <div class="location-search-wrapper">
+                    <button type="button" class="back-btn" id="step3Back">
 
+                        ← Back
 
+                    </button>
 
-                    <input type="text" id="foundLocationSearch" class="location-search"
-                        placeholder="Search address, area, landmark or city..." autocomplete="off">
 
+                    <button type="submit" class="submit-btn">
 
-                    <!-- SEARCH RESULTS -->
+                        Submit Found Report
 
-                    <div id="foundLocationResults" class="location-search-results">
-                    </div>
-
-                </div>
-
-
-
-                <!-- =================================================
-                     SELECTED LOCATION
-                ================================================== -->
-
-                <div id="foundLocationSelected" class="location-selected">
-
-
-                    <div class="location-selected-status">
-
-                        ✓ Location Selected
-
-                    </div>
-
-
-                    <div id="foundLocationName" class="location-selected-name">
-                    </div>
-
-
-                    <div id="foundCoordinates" class="location-coordinates">
-                    </div>
-
-                </div>
-
-
-
-                <!-- =================================================
-                     ERROR
-                ================================================== -->
-
-                <div id="foundLocationError" class="location-error">
-                </div>
-
-
-
-                <!-- =================================================
-                     HIDDEN VALUES
-                ================================================== -->
-
-                <input type="hidden" name="found_location" id="foundLocationValue">
-
-
-                <input type="hidden" name="found_latitude" id="foundLatitude">
-
-
-                <input type="hidden" name="found_longitude" id="foundLongitude">
-
-
-
-                <!-- =================================================
-                     CURRENT LOCATION
-                ================================================== -->
-
-                <button type="button" id="foundCurrentLocation" class="location-current-btn">
-
-                    <span>
-                        ⌖
-                    </span>
-
-                    <span>
-                        Use My Current Location
-                    </span>
-
-                </button>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 CURRENT CONDITION
-            ================================================== -->
-
-            <div class="input-group">
-
-                <label>
-                    Current Condition
-                </label>
-
-
-                <select name="condition">
-
-                    <option>
-                        Healthy
-                    </option>
-
-                    <option>
-                        Minor Injuries
-                    </option>
-
-                    <option>
-                        Seriously Injured
-                    </option>
-
-                    <option>
-                        Unconscious
-                    </option>
-
-                    <option>
-                        Needs Medical Attention
-                    </option>
-
-                </select>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 DESCRIPTION
-            ================================================== -->
-
-            <div class="input-group">
-
-                <label>
-                    Description
-                </label>
-
-
-                <textarea rows="5" name="description"
-                    placeholder="Describe appearance, behaviour, identifying marks, accessories, or any useful observations."></textarea>
-
-            </div>
-
-
-
-            <hr>
-
-
-
-            <!-- =================================================
-                 FINDER INFORMATION
-            ================================================== -->
-
-            <h2>
-                Finder Information
-            </h2>
-
-
-            <div class="form-grid">
-
-
-                <!-- FINDER NAME -->
-
-                <div class="input-group">
-
-                    <label>
-                        Finder Name
-                    </label>
-
-
-                    <input type="text" name="finder_name" placeholder="Enter finder name" required>
-
-                </div>
-
-
-
-                <!-- PHONE -->
-
-                <div class="input-group">
-
-                    <label>
-                        Phone Number
-                    </label>
-
-
-                    <input type="tel" name="phone" placeholder="+91 XXXXX XXXXX" required>
-
-                </div>
-
-
-
-                <!-- EMAIL -->
-
-                <div class="input-group">
-
-                    <label>
-                        Email
-                    </label>
-
-
-                    <input type="email" name="email" placeholder="example@email.com">
-
-                </div>
-
-
-
-                <!-- ORGANIZATION -->
-
-                <div class="input-group">
-
-                    <label>
-                        Organization
-                    </label>
-
-
-                    <input type="text" name="organization" placeholder="NGO / Hospital / Volunteer">
-
-                </div>
-
-
-
-                <!-- POLICE STATION -->
-
-                <div class="input-group">
-
-                    <label>
-                        Police Station
-                    </label>
-
-
-                    <input type="text" name="police_station" placeholder="Optional">
+                    </button>
 
                 </div>
 
             </div>
 
-
-
-            <!-- =================================================
-                 SUBMIT
-            ================================================== -->
-
-            <button type="submit" class="submit-btn">
-
-                Submit Found Report
-
-            </button>
-
-
-        </div>
+        </section>
 
     </div>
 
@@ -547,82 +817,16 @@
 {% endblock %}
 
 
-
 {% block extra_js %}
-
-
-<!-- =========================================================
-     FOUND REPORT JAVASCRIPT
-========================================================= -->
 
 <script src="{{ url_for(
     'static',
     filename='js/report_found.js'
 ) }}"></script>
 
-
-
-<!-- =========================================================
-     LOCATION PICKER JAVASCRIPT
-========================================================= -->
-
 <script src="{{ url_for(
     'static',
     filename='js/location-picker.js'
 ) }}"></script>
-
-
-
-<script>
-
-    /* =========================================================
-       FOUND DATE
-       Allow only dates before today
-    ========================================================= */
-
-    const foundDate =
-        document.getElementById("foundDate");
-
-
-    if (foundDate) {
-
-        const yesterday =
-            new Date();
-
-
-        yesterday.setDate(
-            yesterday.getDate() - 1
-        );
-
-
-        const year =
-            yesterday.getFullYear();
-
-
-        const month =
-            String(
-                yesterday.getMonth() + 1
-            ).padStart(
-                2,
-                "0"
-            );
-
-
-        const day =
-            String(
-                yesterday.getDate()
-            ).padStart(
-                2,
-                "0"
-            );
-
-
-        foundDate.max =
-            `${year}-${month}-${day}`;
-
-    }
-
-</script>
-
 
 {% endblock %}
