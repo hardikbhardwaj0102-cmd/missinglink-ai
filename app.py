@@ -2100,6 +2100,10 @@ def logout():
 @app.route("/dashboard")
 def dashboard():
 
+    # ==========================================
+    # ORGANIZATION LOGIN CHECK
+    # ==========================================
+
     if not session.get("organization"):
         return redirect(
             url_for("login")
@@ -2120,24 +2124,63 @@ def dashboard():
     # ==========================================
     # NEW CASES
     # ==========================================
-    # Only newly submitted cases are considered
-    # new cases.
     #
-    # We use the existing created_at field.
-    # No new database table is required.
+    # A case is NEW only if it was created after
+    # the organization's previous dashboard visit.
+    #
+    # We DO NOT use status="submitted" here.
+    #
     # ==========================================
 
-    new_missing = MissingPerson.query.filter_by(
-        status="submitted"
+    now = datetime.utcnow()
+
+    last_notification_check = session.get(
+        "last_notification_check"
+    )
+
+    # ==========================================
+    # FIRST DASHBOARD VISIT
+    # ==========================================
+    #
+    # Do NOT show all old cases as NEW.
+    #
+    # ==========================================
+
+    if last_notification_check:
+
+        try:
+
+            last_notification_check = datetime.fromisoformat(
+                last_notification_check
+            )
+
+        except (ValueError, TypeError):
+
+            last_notification_check = now
+
+    else:
+
+        last_notification_check = now
+
+    # ==========================================
+    # FIND NEW MISSING CASES
+    # ==========================================
+
+    new_missing = MissingPerson.query.filter(
+        MissingPerson.created_at > last_notification_check
     ).order_by(
         MissingPerson.created_at.desc()
-    ).limit(5).all()
+    ).all()
 
-    new_found = FoundPerson.query.filter_by(
-        status="submitted"
+    # ==========================================
+    # FIND NEW FOUND CASES
+    # ==========================================
+
+    new_found = FoundPerson.query.filter(
+        FoundPerson.created_at > last_notification_check
     ).order_by(
         FoundPerson.created_at.desc()
-    ).limit(5).all()
+    ).all()
 
     # ==========================================
     # COMBINE NEW CASES
@@ -2148,21 +2191,33 @@ def dashboard():
     for person in new_missing:
 
         new_cases.append({
+
             "type": "missing",
+
             "report_id": person.report_id,
+
             "name": person.name,
+
             "location": person.last_seen_location,
+
             "created_at": person.created_at
+
         })
 
     for person in new_found:
 
         new_cases.append({
+
             "type": "found",
+
             "report_id": person.report_id,
+
             "name": "Unknown Person",
+
             "location": person.found_location,
+
             "created_at": person.created_at
+
         })
 
     # ==========================================
@@ -2174,7 +2229,10 @@ def dashboard():
         reverse=True
     )
 
-    # Show only latest 5
+    # ==========================================
+    # SHOW ONLY LATEST 5 NEW CASES
+    # ==========================================
+
     new_cases = new_cases[:5]
 
     # ==========================================
@@ -2215,8 +2273,8 @@ def dashboard():
             except Exception as e:
 
                 print(
-                    f"Missing photo URL error for "
-                    f"{person.id}: {e}"
+                    f"Missing photo URL error "
+                    f"for {person.id}: {e}"
                 )
 
     # ==========================================
@@ -2257,8 +2315,8 @@ def dashboard():
             except Exception as e:
 
                 print(
-                    f"Found photo URL error for "
-                    f"{person.id}: {e}"
+                    f"Found photo URL error "
+                    f"for {person.id}: {e}"
                 )
 
     # ==========================================
@@ -2268,6 +2326,25 @@ def dashboard():
     missing_count = MissingPerson.query.count()
 
     found_count = FoundPerson.query.count()
+
+    # ==========================================
+    # MARK CURRENT CHECK TIME
+    # ==========================================
+    #
+    # This happens AFTER we have calculated
+    # the new cases.
+    #
+    # Therefore the cases found above are shown
+    # as NEW during this dashboard request.
+    #
+    # On the next dashboard visit they won't
+    # appear as NEW again.
+    #
+    # ==========================================
+
+    session["last_notification_check"] = (
+        now.isoformat()
+    )
 
     # ==========================================
     # DASHBOARD
@@ -2287,154 +2364,6 @@ def dashboard():
 
         new_cases=new_cases
 
-    )
-# ==========================================
-# DELETE REPORT
-# ==========================================
-
-@app.route("/delete-report/<report_type>/<int:id>", methods=["POST"])
-def delete_report(report_type, id):
-
-    # ==========================================
-    # ORGANIZATION LOGIN CHECK
-    # ==========================================
-
-    if not session.get("organization"):
-        flash(
-            "Please log in to delete a report.",
-            "danger"
-        )
-
-        return redirect(url_for("login"))
-
-    # ==========================================
-    # FIND REPORT
-    # ==========================================
-
-    report = None
-    bucket_name = None
-
-    if report_type == "missing":
-
-        report = MissingPerson.query.get_or_404(id)
-
-        bucket_name = "missing-person-photos"
-
-    elif report_type == "found":
-
-        report = FoundPerson.query.get_or_404(id)
-
-        bucket_name = "found-person-photos"
-
-    else:
-
-        flash(
-            "Invalid report type.",
-            "danger"
-        )
-
-        return redirect(url_for("dashboard"))
-
-    # ==========================================
-    # SAVE PHOTO PATH BEFORE DATABASE DELETE
-    # ==========================================
-
-    photo_path = report.photo_path
-
-    report_id = report.report_id
-
-    # ==========================================
-    # DELETE PHOTO FROM SUPABASE
-    # ==========================================
-
-    if photo_path:
-
-        try:
-
-            # --------------------------------------
-            # Normalize storage path
-            # --------------------------------------
-
-            clean_path = photo_path
-
-            prefix = bucket_name + "/"
-
-            if clean_path.startswith(prefix):
-
-                clean_path = clean_path[len(prefix):]
-
-            # --------------------------------------
-            # Delete from Supabase
-            # --------------------------------------
-
-            supabase.storage.from_(
-                bucket_name
-            ).remove([
-                clean_path
-            ])
-
-            print(
-                f"Supabase photo deleted: "
-                f"{bucket_name}/{clean_path}"
-            )
-
-        except Exception as e:
-
-            print(
-                f"SUPABASE DELETE ERROR "
-                f"({report_id}):",
-                e
-            )
-
-            flash(
-                "The report could not be deleted because "
-                "its photo could not be removed from storage.",
-                "danger"
-            )
-
-            return redirect(
-                url_for("dashboard")
-            )
-
-    # ==========================================
-    # DELETE DATABASE RECORD
-    # ==========================================
-
-    try:
-
-        db.session.delete(report)
-
-        db.session.commit()
-
-        # ======================================
-        # SUCCESS
-        # ======================================
-
-        flash(
-            f"Report {report_id} has been permanently deleted.",
-            "success"
-        )
-
-    except Exception as e:
-
-        db.session.rollback()
-
-        print(
-            f"DATABASE DELETE ERROR ({report_id}):",
-            e
-        )
-
-        flash(
-            "Unable to delete the report. Please try again.",
-            "danger"
-        )
-
-    # ==========================================
-    # RETURN TO NORMAL DASHBOARD
-    # ==========================================
-
-    return redirect(
-        url_for("dashboard")
     )
 # ==========================================
 # UPDATE REPORT STATUS
