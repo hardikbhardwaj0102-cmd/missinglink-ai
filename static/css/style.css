@@ -2041,3 +2041,47 @@ img {
     border-radius: 20px;
 
 }
+
+/* =========================================================
+   MISSINGLINK LOGO IMAGE
+   ========================================================= */
+
+.logo {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    color: var(--white);
+
+    text-decoration: none;
+
+}
+
+
+.logo-image {
+
+    width: 62px;
+
+    height: 58px;
+
+    object-fit: contain;
+
+    display: block;
+
+}
+
+
+.logo span {
+
+    color: #f5f4ef;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    letter-spacing: -0.3px;
+
+}
