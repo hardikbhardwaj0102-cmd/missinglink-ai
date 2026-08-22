@@ -3733,6 +3733,40 @@ def new_cases():
         missing_count=missing_count,
         found_count=found_count
     )
+# ============================================================
+# MISSING CASES PAGE
+# ============================================================
+
+@app.route("/missing-cases")
+def missing_cases():
+
+    missing_people = MissingPerson.query.order_by(
+        MissingPerson.created_at.desc()
+    ).all()
+
+    return render_template(
+        "missing_cases.html",
+        missing_people=missing_people,
+        missing_count=len(missing_people)
+    )
+
+
+# ============================================================
+# FOUND CASES PAGE
+# ============================================================
+
+@app.route("/found-cases")
+def found_cases():
+
+    found_people = FoundPerson.query.order_by(
+        FoundPerson.created_at.desc()
+    ).all()
+
+    return render_template(
+        "found_cases.html",
+        found_people=found_people,
+        found_count=len(found_people)
+    )
 # ==========================================
 # Run App
 # ==========================================
